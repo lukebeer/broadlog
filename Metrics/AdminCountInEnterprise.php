@@ -17,8 +17,8 @@ $systemCrawler = new SystemCrawler($client);
 $serviceProviderCrawler = new ServiceProviderCrawler($client);
 
 foreach ($systemCrawler->getServiceProviderList() as $sp) {
-    $controller->setMetric('broadworks.'.OCIP_NAME.".enterprises.{$sp}.users");
-    $count = count($serviceProviderCrawler->getUserListList($sp));
+    $controller->setMetric('broadworks.' . OCIP_NAME . ".enterprises.{$sp}.admins");
+    $count = count($serviceProviderCrawler->getAdminList($sp));
     $controller->send($count);
-    echo "Users: $sp $count \n";
+    echo "Admins: $sp $count \n";
 }
