@@ -3,6 +3,7 @@ namespace Broadlog\Crawlers;
 require_once '../Config.php';
 require_once BROADWORKS_OCIP_PATH . '/common.php';
 
+use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaServiceProvider\ServiceProviderAccessDeviceGetListRequest;
 use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaServiceProvider\ServiceProviderAdminGetListRequest14;
 use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaUser\UserGetListInServiceProviderRequest;
 use Broadworks_OCIP\core\Client\Client;
@@ -17,28 +18,40 @@ class ServiceProviderCrawler
         $this->client = $client;
     }
 
-    public function getUserListList($serviceProvider)
+    public function getUserList($serviceProvider)
     {
-        $users = [];
+        $list = [];
         $request = new UserGetListInServiceProviderRequest($serviceProvider);
         if ($response = $request->get($this->client)) {
             foreach ($response->getUserTable()->getAllRows() as $row) {
-                $users[] = $row[0];
+                $list[] = $row[0];
             }
         }
-        return $users;
+        return $list;
     }
 
     public function getAdminList($serviceProvider)
     {
-        $admins = [];
+        $list = [];
         $request = new ServiceProviderAdminGetListRequest14($serviceProvider);
         if ($response = $request->get($this->client)) {
             foreach ($response->getServiceProviderAdminTable()->getAllRows() as $row) {
-                $admins[] = $row[0];
+                $list[] = $row[0];
             }
         }
-        return $admins;
+        return $list;
+    }
+
+    public function getAccessDeviceList($serviceProvider)
+    {
+        $list = [];
+        $request = new ServiceProviderAccessDeviceGetListRequest($serviceProvider);
+        if ($response = $request->get($this->client)) {
+            foreach ($response->getAccessDeviceTable()->getAllRows() as $row) {
+                $list[] = $row[0];
+            }
+        }
+        return $list;
     }
 }
 
