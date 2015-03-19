@@ -6,4 +6,5 @@ if (file_exists($file)) {
     system('php AdminCountInEnterprise.php');
     system('php UserCountInEnterprise.php');
     system('php AccessDeviceCountInEnterprise.php');
+    system('php SystemLicensingUsage.php');
 }

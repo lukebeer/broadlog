@@ -3,6 +3,7 @@ namespace Broadlog\Crawlers;
 require_once '../Config.php';
 require_once BROADWORKS_OCIP_PATH . '/common.php';
 
+use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaServiceProvider\ServiceProviderServiceGetAuthorizationListRequest;
 use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaServiceProvider\ServiceProviderAccessDeviceGetListRequest;
 use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaServiceProvider\ServiceProviderAdminGetListRequest14;
 use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaUser\UserGetListInServiceProviderRequest;
@@ -52,6 +53,15 @@ class ServiceProviderCrawler
             }
         }
         return $list;
+    }
+
+    public function getServicePackAuthorizationList($serviceProvider)
+    {
+        $request = new ServiceProviderServiceGetAuthorizationListRequest($serviceProvider);
+        if ($response = $request->get($this->client)) {
+            return $response;
+        }
+        return false;
     }
 }
 
