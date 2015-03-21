@@ -1,7 +1,8 @@
 <?php
 namespace Broadlog;
 
-set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__);
+define('BROADLOG_PATH', dirname(__DIR__));
+set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . PATH_SEPARATOR . BROADLOG_PATH);
 spl_autoload_register(function ($c) {
     require_once preg_replace('#\\\|_(?!.*\\\)#', '/', $c) . '.php';
 });
