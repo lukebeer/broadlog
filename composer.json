@@ -1,0 +1,25 @@
+{
+    "name": "lukebeer/broadlog",
+    "description": "Logging and analytics engine for Broadworks",
+    "type": "vcs",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Luke Beer",
+            "email": "eat.lemons@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Broadlog\\": "src/Broadlog/"
+        },
+        "classmap": ["src/"]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:lukebeer/broadlog.git"
+        }
+    ]
+    "minimum-stability": "dev"
+}
