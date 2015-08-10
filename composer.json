@@ -20,6 +20,6 @@
             "type": "vcs",
             "url":  "git@github.com:lukebeer/broadlog.git"
         }
-    ]
+    ],
     "minimum-stability": "dev"
 }
