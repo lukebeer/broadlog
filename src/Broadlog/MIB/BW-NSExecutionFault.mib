@@ -1,0 +1,234 @@
+-- File Name : BW-NSExecutionFault.mib
+
+BW-NSExecutionFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npExceptionMessage, npMessage, npUserId, npRequestUriUser, npCallId, npTreatment, npSipErrorCode, npInstanceName, npPolicyFeature, npRemoteAddress, npDeviceType, npDeviceName, npNodeId, npNbTransactions, npPeriod, npCurrentThresholdValue, npApplicationServerSetName, npApplicationServerSetContent
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks NS Execution application."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200912020000Z"
+                DESCRIPTION     "Created the MIB based on the defunct BW-NetworkServerFault MIB."
+    ::=  {  common  1  }
+
+  bwPMNSExecutionServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Network Server (NS) Execution Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMNSExecutionServerLaunched, bwPMNSExecutionServerShutDown, bwPMNSExecutionServerRestarted, and bwPMNSExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Execution Server process."
+    ::=  {  systemFaults 1001  }
+
+  bwPMNSExecutionServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Network Server (NS) Execution Server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMNSExecutionServerLaunched, bwPMNSExecutionServerShutDown, bwPMNSExecutionServerRestarted, and bwPMNSExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Execution Server process."
+    ::=  {  systemFaults 1002  }
+
+  bwPMNSExecutionServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Network Server (NS) Execution Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMNSExecutionServerLaunched, bwPMNSExecutionServerShutDown, bwPMNSExecutionServerRestarted, and bwPMNSExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Execution Server process."
+    ::=  {  systemFaults 1003  }
+
+  bwPMNSExecutionServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Network Server (NS) Execution Server death.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMNSExecutionServerLaunched, bwPMNSExecutionServerShutDown, bwPMNSExecutionServerRestarted, and bwPMNSExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Execution Server process."
+    ::=  {  systemFaults 1004  }
+
+  bwNSMemLeakInSessionFactory  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the internal session factory leaks.  This could reduce the amount of memory available to the Network Server.
+@severity:critical
+@subcomponent:callp"
+    ::=  {  systemFaults 1010  }
+
+  bwNSPolicyDeploymentError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification states that the Network Server has problems deploying a policy.
+@severity:low
+@subcomponent:filesystem"
+    ::=  {  systemFaults 1011  }
+
+  bwNSDatabaseDataInconsistencyError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that an inconsistency has been introduced in the database.
+@severity:medium
+@subcomponent:database"
+    ::=  {  systemFaults 1012  }
+
+  bwNSCallGotTreatment  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npRequestUriUser, npCallId, npTreatment, npSipErrorCode }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the following call has not been completed and received a treatment.
+@severity:informational
+@subcomponent:sip"
+    ::=  {  systemFaults 1013  }
+
+  bwNSInvalidDialPlan  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "States that a dial plan contains an invalid entry.
+@severity:medium
+@subcomponent:database"
+    ::=  {  systemFaults 1014  }
+
+  bwNSSCRPInconsistentList  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npInstanceName }
+    STATUS      current
+    DESCRIPTION
+        "One of the Service Center policy instances has an inconsistent service center routing list.
+@severity:informational
+@subcomponent:database"
+    ::=  {  systemFaults 1015  }
+
+  bwNSUnlicensedFeature  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npPolicyFeature }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when the Network Server loads a policy instance from a policy not correctly licensed.
+@severity:medium
+@subcomponent:licensing"
+    ::=  {  systemFaults 1016  }
+
+  bwCallLogRegister  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Send when a client (that is, the CLI) registers with the call log server.
+@severity:informational
+@subcomponent:loggingserver"
+    ::=  {  systemFaults 1019  }
+
+  bwCallLogUnregister  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Send when a client (that is, the CLI) un-registers from the call log server.
+@severity:informational
+@subcomponent:loggingserver"
+    ::=  {  systemFaults 1020  }
+
+  bwCallLogFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Send when the server is unable to deliver a log to a given client.
+@severity:medium
+@subcomponent:loggingserver"
+    ::=  {  systemFaults 1021  }
+
+  bwCallLogUnregisterFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Send when the server un-registers an unreachable client.
+@severity:informational
+@subcomponent:loggingserver"
+    ::=  {  systemFaults 1022  }
+
+  bwNSASRUnknownHostError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The Network Server does not know about the hosting NE specified in the ASR request.  The request cannot be processed.
+@severity:medium
+@subcomponent:nrs"
+    ::=  {  systemFaults 1023  }
+
+  bwNetworkDeviceNodeIsFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npDeviceType, npDeviceName, npNodeId }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is generated whenever a network device node that was previously responding does not respond to an application-level ping.
+@severity:high
+@subcomponent:networkDeviceManagement"
+    ::=  {  systemFaults 1032  }
+
+  bwLicenseViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npNbTransactions, npPeriod }
+    STATUS      current
+    DESCRIPTION
+        "License violation. This alarm occurs when the number of transactions recorded in any time period exceeds the licensed maximum.
+@severity:major
+@subcomponent:licensing"
+    ::=  {  systemFaults 1034  }
+
+  bwLicenseThreshold  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npNbTransactions, npPeriod, npCurrentThresholdValue }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the system call processing traffic (transaction/sec) has reached 80% of the limit defined in the license file.
+@severity:high
+@subcomponent:licensing"
+    ::=  {  systemFaults 1035  }
+
+-- bwServiceControlProxyConnFailed ::=  {  systemFaults 1036  } moved to BW-NSPortalFault.mib
+-- bwServiceControlProxyConnTerminated ::=  {  systemFaults 1037  } moved to BW-NSPortalFault.mib
+
+  bwNonInviteLicenseViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npNbTransactions, npPeriod }
+    STATUS      current
+    DESCRIPTION
+        "License violation.  This alarm occurs when the number of non-SIP invite transactions recorded in any time period exceeds the licensed maximum.
+@severity:major
+@subcomponent:licensing"
+    ::=  {  systemFaults 1038  }
+
+  bwNonInviteLicenseThreshold  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npNbTransactions, npPeriod, npCurrentThresholdValue }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the system non-call processing traffic (non-SIP invite transaction/sec) has reached 80% of the limit defined in the license file.
+@severity:major
+@subcomponent:licensing"
+    ::=  {  systemFaults 1039  }
+
+-- bwLocationAPIRequestError ::=  { systemFaults 1040 } moved to BW-NSPortalFault.mib
+
+  bwNSASCapacityExceeded  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npApplicationServerSetName, npApplicationServerSetContent}
+    STATUS      current
+    DESCRIPTION
+        "Too many users are provisioned against an Application Server set. This may cause overload and loss of service.
+@severity:critical
+@subcomponent:callp"
+    ::=  {  systemFaults 1041  }
+
+END

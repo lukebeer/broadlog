@@ -1,0 +1,544 @@
+-- File Name : BW-ProvisioningFault.mib
+
+BW-ProvisioningFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npRemotePort, npMessage, npReason, npHost, npUserId, npServiceProviderId, npLicenseKey, npGroupId, npFirstName, npLastName, npGroupName, npOriginalAddress, npNewAddress, npDeviceName, npBridgeName, npOperation, npDomain, npTaskName, npNbOfErrors, npTimeLength, npFeatureName, npServerName, npConfiguredAddress, npResolvedAddress, npFilename, npUrl, npCommand, npPublicIdentity, npDataReference, npResultCodeType, npResultCode, npMaximumNbItems, npError, npExceptionMessage, npProfileDescription, npNetAddress, npReportName, npDateTime
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the Provisioning Server."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200907200000Z"
+                DESCRIPTION     "MIB Creation, based on the defunct BW-ApplicationServerFault.mib."
+    ::=  {  common  1  }
+
+-- Provisioning Server Faults...
+
+  bwPMProvisioningServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Provisioning Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMProvisioningServerLaunched, bwPMProvisioningServerShutDown, bwPMProvisioningServerRestarted, and bwPMProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the ProvisioningServer process running on the BroadWorks Application Server"
+    ::=  {  systemFaults 3505  }
+
+  bwPMProvisioningServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Provisioning Server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMProvisioningServerLaunched, bwPMProvisioningServerShutDown, bwPMProvisioningServerRestarted, and bwPMProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the ProvisioningServer process running on the BroadWorks Application Server"
+    ::=  {  systemFaults 3506  }
+
+  bwPMProvisioningServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Provisioning Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMProvisioningServerLaunched, bwPMProvisioningServerShutDown, bwPMProvisioningServerRestarted, and bwPMProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the ProvisioningServer process running on the BroadWorks Application Server"
+    ::=  {  systemFaults 3507  }
+
+  bwPMProvisioningServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Provisioning Server death.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMProvisioningServerLaunched, bwPMProvisioningServerShutDown, bwPMProvisioningServerRestarted, and bwPMProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the ProvisioningServer process running on the BroadWorks Application Server"
+    ::=  {  systemFaults 3508  }
+
+  bwNSSynchronizationConnectivityFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason }
+    STATUS      current
+    DESCRIPTION
+        "Failure to create data synchronization connection between Application Server and Network Server.
+@severity:high
+@subcomponent:nssynch"
+    ::=  {  systemFaults 3537  }
+
+  bwNSLocationConnectivityFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npReason, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "Failure with connectivity between the Application Server and the Network Server.
+@severity:high
+@subcomponent:nssynch"
+    ::=  {  systemFaults 3539  }
+
+  bwNSLocationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npMessage, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Data may be out of synch between the Application Server and the Network Server.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 3540  }
+
+  bwLicenseUserServiceAccntViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npLicenseKey }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the license allocation has exceeded the limit.
+@severity:high
+@subcomponent:licensing"
+    ::=  {  systemFaults 3545  }
+
+  bwAddUserEvent  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a user is added.
+@severity:informational
+@subcomponent:transevent"
+    ::=  {  systemFaults 3546  }
+
+  bwDeleteUserEvent  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a user is deleted.
+@severity:informational
+@subcomponent:transevent"
+    ::=  {  systemFaults 3547  }
+
+  bwAddGroupEvent  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npGroupId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a group is added.
+@severity:informational
+@subcomponent:transevent"
+    ::=  {  systemFaults 3548  }
+
+  bwDeleteGroupEvent  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npGroupId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a group is deleted.
+@severity:informational
+@subcomponent:transevent"
+    ::=  {  systemFaults 3549  }
+
+  bwUserAddressChangeEvent  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFirstName, npLastName, npGroupName, npOriginalAddress, npNewAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a user's address has changed.
+@severity:informational
+@subcomponent:transevent"
+    ::=  {  systemFaults 3550  }
+
+  bwGroupAddressChangeEvent  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npGroupName, npOriginalAddress, npNewAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a group's address has changed.
+@severity:informational
+@subcomponent:transevent"
+    ::=  {  systemFaults 3551  }
+
+  bwLDAPConnectionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npRemotePort }
+    STATUS      current
+    DESCRIPTION
+        "Unable to establish a connection to the specified LDAP server.
+@severity:medium
+@subcomponent:ldap"
+    ::=  {  systemFaults 3563  }
+
+  bwLDAPConfigurationError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npRemotePort }
+    STATUS      current
+    DESCRIPTION
+        "Problem communicating with an LDAP server.  The problem is related to a system configuration error.
+@severity:medium
+@subcomponent:ldap"
+    ::=  {  systemFaults 3564  }
+
+-- bwCPEDeviceConfigurationDeviceReset was moved to BroadworksFault in R17.0
+--   ::=  {  systemFaults 3572  } is reserved.
+
+  bwICBridgeCommunicationError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npBridgeName, npGroupName, npRemoteAddress, npOperation, npReason }
+    STATUS      current
+    DESCRIPTION
+        "The alarm is generated at provisioning time when a communication problem to the BroadWorks Conferencing Server is detected.
+@severity:medium
+@subcomponent:conferencing"
+    ::=  {  systemFaults 3578  }
+
+  bwICBridgeResetError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npBridgeName }
+    STATUS      obsolete
+    DESCRIPTION
+        "The alarm is generated when the bridge reset password operation is completed, successfully or not.
+@severity:medium
+@subcomponent:conferencing"
+    ::=  {  systemFaults 3579  }
+
+  bwExternalAuthenticationUnknownUser  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npDomain }
+    STATUS      current
+    DESCRIPTION
+        "Applies to the scenario when the:
+User ID is not provided or unknown, and/or,
+Domain is required but not provided or unknown/incorrect.
+@severity:low
+@subcomponent:externalAuthentication"
+    ::=  {  systemFaults 3583  }
+
+  bwSrvcPackMigrationTerminated  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "An administrator deliberately terminated a migration task before it was finished.
+@severity:informational
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3584  }
+
+  bwSrvcPackMigrationCompletedWithErrors  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId, npNbOfErrors }
+    STATUS      current
+    DESCRIPTION
+        "A migration task ran to completion, but there were one or more errors.
+@severity:medium
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3585  }
+
+  bwSrvcPackMigrationStoppedDueToErrors  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId, npNbOfErrors }
+    STATUS      current
+    DESCRIPTION
+        "A migration task was automatically stopped by the system because the number of errors reached the error threshold.
+@severity:medium
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3586  }
+
+  bwSrvcPackMigrationStoppedDueToTimeLimit  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId, npTimeLength }
+    STATUS      current
+    DESCRIPTION
+        "A migration task was automatically stopped by the system because the duration of the task reached the maximum allowed time.
+@severity:medium
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3587  }
+
+  bwSrvcPackMigrationStoppedBySysShutdown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId }
+    STATUS      current
+    DESCRIPTION
+        "A migration task was automatically stopped by the system because the system was shut down.
+@severity:medium
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3588  }
+
+  bwSrvcPackMigrationFoundUnfinishedTask  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId }
+    STATUS      current
+    DESCRIPTION
+        "An unfinished migration task was found during system restart.  This could happen if the system is not shut down gracefully.
+@severity:medium
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3589  }
+
+  bwSrvcPackMigrationLicenseViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId }
+    STATUS      current
+    DESCRIPTION
+        "A migration task was stopped because of pre-existing system license violation.
+@severity:medium
+@subcomponent:servicePackMigration
+"
+    ::=  {  systemFaults 3590  }
+
+  bwSrvcPackMigrationSpSrvcQuantityViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId, npFeatureName }
+    STATUS      current
+    DESCRIPTION
+        "A migration task was stopped because of pre-existing system license violation.
+@severity:medium
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3591  }
+
+  bwSrvcPackMigrationSystemError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTaskName, npServiceProviderId }
+    STATUS      current
+    DESCRIPTION
+        "A migration task was stopped due to a non-recoverable system error.
+@severity:medium
+@subcomponent:servicePackMigration"
+    ::=  {  systemFaults 3592  }
+
+  bwCallLogSOAPServerUnreachable  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServerName, npConfiguredAddress, npResolvedAddress }
+    STATUS      current
+    DESCRIPTION
+        "A Call Detail Server is not responding to read Requests.
+@severity:high
+@subcomponent:callLogs"
+    ::=  {  systemFaults 3600  }
+
+  bwOciReportingAclViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Connection request received from an unknown external system.
+@severity:low
+@subcomponent:ociReporting"
+    ::=  {  systemFaults 3607  }
+
+  bwOciReportingConnectionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Error detected on connection to an external system.
+@severity:low
+@subcomponent:ociReporting"
+    ::=  {  systemFaults 3608  }
+
+  bwOciReportingBackLogFileDeleted NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFilename, npHost }
+    STATUS      current
+    DESCRIPTION
+        "The total size of the OCI reporting backlog files exceeded the system limit (500 MB).  The oldest file is deleted.
+@severity:low
+@subcomponent:ociReporting"
+    ::=  {  systemFaults 3615  }
+
+  bwProvisioningValidationConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Connection between the Provisioning Server and the Execution Server for provisioning validation cannot be established.
+@severity:low
+@subcomponent:ociReporting"
+    ::=  {  systemFaults 3616  }
+
+  bwShNoAvailableHosts   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCommand, npPublicIdentity, npDataReference }
+    STATUS      current
+    DESCRIPTION
+        "This fault is generated when host selection has exhausted all hosts.
+@severity:high
+@subcomponent:sh"
+    ::= { systemFaults 3639 }
+
+  bwShUserUnknownInHSS   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCommand, npPublicIdentity }
+    STATUS      current
+    DESCRIPTION
+        "This fault is generated whenever the Application Server receives an answer indicating that the user is unknown in the HSS.
+@severity:high
+@subcomponent:sh"
+    ::= { systemFaults 3640 }
+
+  bwShUserUnknownInAS   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCommand, npPublicIdentity }
+    STATUS      current
+    DESCRIPTION
+        "This fault is generated whenever the Application Server receives a request for a public identity that is unknown.
+@severity:high
+@subcomponent:sh"
+    ::= { systemFaults 3641 }
+
+  bwShGeneralErrorReceived   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCommand, npPublicIdentity, npResultCodeType, npResultCode }
+    STATUS      current
+    DESCRIPTION
+        "This fault is generated whenever the Application Server encounters an error that results in the failure of the public identity refresh procedure for reasons other than unknown user or host selection exhaustion.
+@severity:high
+@subcomponent:sh"
+    ::= { systemFaults 3642 }
+
+  bwShSystemRefreshInitiated   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification is generated whenever the Application Server initiates the system refresh procedure over the Sh Interface.
+@severity:informational
+@subcomponent:sh"
+    ::= { systemFaults 3643 }
+
+  bwShSystemRefreshTerminated   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason }
+    STATUS      current
+    DESCRIPTION
+        "This notification is generated whenever the Application Server has stopped the system refresh procedure over the Sh Interface.
+@severity:informational
+@subcomponent:sh"
+    ::= { systemFaults 3644 }
+
+  bwMobilityManagerUnreachable NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUrl, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "A connection could not be established between BroadWorks and Mobility Manager.
+@severity:high
+@subcomponent:mm"
+    ::= { systemFaults 3637 }
+
+  bwMobilityManagerError   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "Mobility Manager returned an error.
+@severity:high
+@subcomponent:mm"
+    ::= { systemFaults 3638 }
+
+  bwShInterfaceInitializationError   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "This fault is generated when the Condor Sh APN cannot be initialized.
+@severity:high
+@subcomponent:sh"
+    ::= { systemFaults 3649 }
+
+  bwCPEDeviceConfigurationNumFilesExceeded NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npMaximumNbItems }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is generated when the Device Management system has exceeded the maximum number of files to be generated.
+@severity:high
+@subcomponent:filesystem"
+    ::= { systemFaults 3659 }
+
+  bwCallCenterConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Connection between the Provisioning Server and the Execution Server for Call Center cannot be established.
+@severity:high
+@subcomponent:bcct
+@correlationrules:This alarm is cleared by the Application Server once connection is re-established or reconfigured."
+    ::= { systemFaults 3661 }
+
+    bwPsInterfaceInitializationError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "The Diameter Interface cannot be initialized. 
+@severity:high
+@subcomponent:diameter"
+    ::= { systemFaults 2601 }
+  
+  bwPsPeerConnectionFailure NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npServerName, npRemoteAddress, npRemotePort }
+    STATUS      current
+    DESCRIPTION
+        "A failure occurred on a connection between the PS and a Diameter Peer (or the XS if operating in Relay mode).
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 2602 }
+
+  bwServiceLicenseCollectionFailure NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "The Service License Collection Script could not successfully complete.
+@severity:low
+@subcomponent:licensing"
+    ::= { systemFaults 2603 }
+
+  bwSubscriberProfileSyncIOError NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npProfileDescription }
+    STATUS      current
+    DESCRIPTION
+        "Several attempt to sync a profile to the SubscriberAgent failed due to a communication issue.
+@severity:medium
+@subcomponent:subscriberProfileSync"
+    ::= { systemFaults 2604 }
+
+  bwSubscriberProfileSyncDataError NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npProfileDescription }
+    STATUS      current
+    DESCRIPTION
+        "Several attempt to sync a profile to the SubscriberAgent failed.
+@severity:high
+@subcomponent:subscriberProfileSync"
+    ::= { systemFaults 2605 }
+
+  bwCCScheduledReportFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npNetAddress, npReportName, npUserId, npDateTime }
+    STATUS      current
+    DESCRIPTION
+        "Failed to generate a call center scheduled report.
+@severity:medium
+@subcomponent:ccReporting"
+    ::=  {  systemFaults 2606  }
+
+  bwSCFAPIURLUnreachable  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Connection to SCF API failed due to URL not being reachable.
+@severity:high
+@subcomponent:ps"
+    ::=  {  systemFaults 2607  }
+
+  bwCCScheduledReportGenerationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npNetAddress, npReportName, npUserId, npDateTime }
+    STATUS      current
+    DESCRIPTION
+        "Failed to generate a call center scheduled report.
+@severity:medium
+@subcomponent:ccReporting"
+    ::=  {  systemFaults 2608  }
+
+  bwCCScheduledReportConfigurationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Failed to start the call center scheduling task.
+@severity:medium
+@subcomponent:ccReporting"
+    ::=  {  systemFaults 2609  }
+
+  bwBroadCloudTransactionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npBroadCloudRequest, npUserId, npBroadCloudUid, npBroadCloudService, npBroadCloudFailureReason }
+    STATUS      current
+    DESCRIPTION
+        "Failed to execute provisioning request to the BroadCloud server.
+@severity:medium
+@subcomponent:broadCloud"
+    ::=  {  systemFaults 2610  }
+
+  bwBroadCloudOutOfSync  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npBroadCloudRequest, npUserId, npBroadCloudUid, npBroadCloudService }
+    STATUS      current
+    DESCRIPTION
+        "Failed execute the rollback request to BroadCloud
+@severity:medium
+@subcomponent:broadCloud"
+    ::=  {  systemFaults 2611  }
+
+bwDeviceManagementFtpBlockedWriteIndication  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason }
+    STATUS      current
+    DESCRIPTION
+        "A timeout of a Device Management (DM) FTP blocked write has occurred.
+@severity:high
+@subcomponent:callLogs"
+    ::=  {  systemFaults 2614  }
+
+END

@@ -1,0 +1,34 @@
+-- File Name : BW-PublicReportingFault.mib
+BW-PublicReportingFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText,  npTransactionLimitPeriod, npGlobalTransactionLimit, npNetAddress
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks Public Reporting Application."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "201008230000Z"
+                DESCRIPTION     "Creation of the Fault MIB."
+    ::=  {  common  1  }
+
+  bwCallCenterWebAppNotReachable NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, npNetAddress }
+    STATUS      current
+    DESCRIPTION
+        "Application could not establish a connection to CCR web application hosting server.
+@severity:high
+@subcomponent:publicReporting
+@correlationrules:This alarm is cleared once the connection is restored."
+    ::=  {  systemFaults 8801  }
+
+END

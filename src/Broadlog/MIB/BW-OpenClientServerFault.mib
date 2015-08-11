@@ -1,0 +1,183 @@
+-- File Name : BW-OpenClientServerFault.mib
+BW-OpenClientServerFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npProtocol, npRemoteAddress, npUserId, npLoginLevel
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks Open Client Server."
+    REVISION    "2011050240000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200809160000Z"
+                DESCRIPTION     "Added complete documentation for NOTIFICATION-TYPE entries to the MIB."
+    REVISION    "200805200000Z"
+                DESCRIPTION "Made the MIB conformant to smilint (level 3)"
+    ::=  {  common  1  }
+
+  bwPMOpenClientServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Open Client Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMOpenClientServerLaunched, bwPMOpenClientServerShutDown, bwPMOpenClientServerRestarted, bwPMOpenClientServerDeath, and bwPMOpenClientServerStartupFailed can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Open Client Server process available on some of the BroadWorks servers, for example, Application Server, Web Server, and EMS."
+    ::=  {  systemFaults 501  }
+
+  bwPMOpenClientServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Open Client Server has been shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMOpenClientServerLaunched, bwPMOpenClientServerShutDown, bwPMOpenClientServerRestarted, bwPMOpenClientServerDeath, and bwPMOpenClientServerStartupFailed can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Open Client Server process available on some of the BroadWorks servers, for example, Application Server, Web Server, and EMS."
+    ::=  {  systemFaults 502  }
+
+  bwPMOpenClientServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Open Client Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMOpenClientServerLaunched, bwPMOpenClientServerShutDown, bwPMOpenClientServerRestarted, bwPMOpenClientServerDeath, and bwPMOpenClientServerStartupFailed can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Open Client Server process available on some of the BroadWorks servers, for example, Application Server, Web Server, and EMS."
+    ::=  {  systemFaults 503  }
+
+  bwPMOpenClientServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Open Client Server terminated.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMOpenClientServerLaunched, bwPMOpenClientServerShutDown, bwPMOpenClientServerRestarted, bwPMOpenClientServerDeath, and bwPMOpenClientServerStartupFailed can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Open Client Server process available on some of the BroadWorks servers, for example, Application Server, Web Server, and EMS."
+    ::=  {  systemFaults 504  }
+
+  bwPMOpenClientServerStartupFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the failed Open Client Server startup.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMOpenClientServerLaunched, bwPMOpenClientServerShutDown, bwPMOpenClientServerRestarted, bwPMOpenClientServerDeath, and bwPMOpenClientServerStartupFailed can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Open Client Server process available on some of the BroadWorks servers, for example, Application Server, Web Server, and EMS."
+    ::=  {  systemFaults 505  }
+
+  bwOpenClientServerNSConnFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npProtocol, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates the Open Client Server failed to connect to a Network Server.
+@severity:critical
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 506  }
+
+  bwOpenClientServerASConnFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npProtocol, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates the Open Client Server failed to connect to an Application Server.
+@severity:critical
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 507  }
+
+  bwOpenClientServerClientConnTerminated  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates the Open Client Server terminated a connection between the Open Client Server and client application.
+@severity:informational
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 508  }
+
+  bwOpenClientServerASConnTerminated  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npProtocol, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates a CAP/OSS connection between the Open Client Server and the Application Server has been terminated.
+@severity:critical
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 509  }
+    
+  bwOpenClientServerNSConnTerminated  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npProtocol, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates a connection between the Open Client Server and the Network Server has been terminated.
+@severity:critical
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 510  }
+
+  -- deprecated - replaced by bwOpenClientServerExtAuthConnFailed (state: on)
+  bwOpenClientServerExtAuthConnFailedRaise  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npRemoteAddress }
+    STATUS      deprecated
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+    ::=  {  systemFaults 511  }
+
+  -- deprecated - replaced by bwOpenClientServerExtAuthConnFailed (state: off)
+  bwOpenClientServerExtAuthConnFailedClear  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npRemoteAddress }
+    STATUS      deprecated
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+    ::=  {  systemFaults 512  }
+
+  -- deprecated - replaced by bwOpenClientServerExtAuthProcessingFaile (state: on)
+  bwOpenClientServerExtAuthProcessingFailedRaise  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npRemoteAddress }
+    STATUS      deprecated
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+    ::=  {  systemFaults 513  }
+
+  -- deprecated - replaced by bwOpenClientServerExtAuthProcessingFaile (state: off)
+  bwOpenClientServerExtAuthProcessingFailedClear  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npRemoteAddress }
+    STATUS      deprecated
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+    ::=  {  systemFaults 514  }
+    
+  bwOpenClientServerUserIdForceLoggedOut  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npUserId, npLoginLevel, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "A valid user ID was used to establish an OCI session on the Application Server but the user ID login level is not allowed by the Open Client Server proxying the OCI session.  Therefore, the Open Client Server immediately force logged out the user ID session.
+@severity:low
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 515  }
+
+  bwOpenClientServerExtAuthConnFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Cannot connect to the external authentication server.
+@severity:critical
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 516  }
+
+  bwOpenClientServerExtAuthProcessingFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The WAS returned a processing error while authenticating a user.
+@severity:critical
+@subcomponent:openClientServer"
+    ::=  {  systemFaults 517  }
+
+    
+END

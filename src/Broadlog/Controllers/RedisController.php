@@ -3,10 +3,10 @@ namespace Broadlog\Controllers;
 
 
 /**
- * Class MetricController
+ * Class RedisController
  * @namespace Broadlog\Controllers
  */
-class MetricController
+class RedisController
 {
     /**
      * @var resource

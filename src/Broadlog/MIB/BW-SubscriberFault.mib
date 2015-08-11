@@ -1,0 +1,120 @@
+-- File Name : BW-SubcriberFault.mib
+BW-SubscriberFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, npServerName, npRemoteAddress, npRemotePort, npExceptionMessage, npIdentity, npError, npAlternate
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks Subscriber Agent."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "201007280000Z"
+                DESCRIPTION     "Creation of the Subscriber Agent Fault MIB."
+    ::=  {  common  1  }
+
+  bwIncompatibleProfileData NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "An incompatible profile was encountered and rejected.
+@severity:Medium
+@subcomponent:subscriberAgent"
+    ::=  {  systemFaults 8701  }
+
+  bwSubscriberPeerConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, npServerName, npRemoteAddress, npRemotePort }
+    STATUS      current
+    DESCRIPTION
+        "A failure occurred on a connection between the subscriber Subsystem and a Diameter peer (or the Execution Server if operating in Relay mode).
+@severity:high
+@subcomponent:diameter
+@correlationrules:This alarm is cleared once the connection is restored."
+    ::=  {  systemFaults 8702  }
+
+  bwSubscriberInterfaceInitializationError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "The Diameter interface cannot be initialized.
+@severity:high
+@subcomponent:diameter"
+    ::=  {  systemFaults 8703  }
+
+  bwDiskCacheLimitExceeded NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The size of the disk cache exceeds the configured threshold.  The condition clears itself when the usage falls below the configured threshold.  No operation action can clear the alarms; if the system continuously operates above the threshold, the threshold might be set too low.  The memory cache could also be set too low.
+@severity:medium
+@subcomponent:subscriberAgent
+@correlationrules:This alarm is cleared once the cache size is below the threshold."
+    ::=  {  systemFaults 8704  }
+
+  bwProfileCacheFull NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The profile data cache failed to accept additional subscriber profile data.
+@severity:high
+@subcomponent:subscriberAgent"
+    ::=  {  systemFaults 8705  }
+
+  bwSubscriberAlternateIdentityError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npIdentity, npAlternate, npError, npAlternate }
+    STATUS      current
+    DESCRIPTION
+        "A profile could not be successfully linked to a public user identity on the HSS.
+@severity:Informational
+@subcomponent:subscriberAgent"
+    ::=  {  systemFaults 8706  }
+
+  bwPMsubscriberAgentLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Subscriber Agent has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMsubscriberAgentLaunched, bwPMsubscriberAgentShutDown, bwPMsubscriberAgentStarted, and bwPMsubscriberAgentDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Subscriber Agent process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 8707  }
+
+  bwPMsubscriberAgentShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Subscriber Agent has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMsubscriberAgentLaunched, bwPMsubscriberAgentShutDown, bwPMsubscriberAgentStarted, and bwPMsubscriberAgentDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Subscriber Agent process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 8708  }
+
+  bwPMsubscriberAgentRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Subscriber Agent restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMsubscriberAgentLaunched, bwPMsubscriberAgentShutDown, bwPMsubscriberAgentStarted, and bwPMsubscriberAgentDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Subscriber Agent process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 8709  }
+
+  bwPMsubscriberAgentDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Subscriber Agent death.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMsubscriberAgentLaunched, bwPMsubscriberAgentShutDown, bwPMsubscriberAgentStarted, and bwPMsubscriberAgentDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Subscriber Agent process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 8710  }
+
+END

@@ -1,0 +1,37 @@
+-- File Name : BW-XtendedServicesPlatformFault.mib  
+BW-XtendedServicesPlatformFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "200807181000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "The defines the fault "
+    REVISION    "200807181000Z"
+    DESCRIPTION
+        "MIB Compliancy."
+    ::=  {  common  1  }
+
+  bwXspTransactionGlobalRateLimitExceeded  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "Transaction denial due to high transaction rate for a given webapp."
+    ::=  {  systemFaults 6001  }
+
+  bwXspTransactionUserRateLimitExceeded  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "Transaction denial due to high transaction rate for a given userid."
+    ::=  {  systemFaults 6002  }
+
+END

@@ -1,0 +1,351 @@
+-- File Name : BW-MediaServerFault.mib
+BW-MediaServerFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npStackTrace, npSessionId, npError, npRemoteAddress, npReason, npMethod, npSourceCodec, npDestinationCodec, npFilename
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "The document defines the faults emitted by the Media Server."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200908070000Z"
+                DESCRIPTION "Updated for feature 87688."
+    REVISION    "200809230000Z"
+                DESCRIPTION "Added auto-documentation tags and filled in description for every alarm."
+    REVISION    "200805200000Z"
+                DESCRIPTION "Made the MIB conformant to smilint (level 3)"
+    REVISION    "200009191431Z"
+                DESCRIPTION "Not Available"    
+    ::=  {  common  1  }
+
+  bwPMMediaServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Media Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMMediaServerLaunched, bwPMMediaServerShutDown, bwPMMediaServerRestarted, and bwPMMediaServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Media Server main process."
+    ::=  {  systemFaults 1501  }
+
+  bwPMMediaServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Media Server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMMediaServerLaunched, bwPMMediaServerShutDown, bwPMMediaServerRestarted, and bwPMMediaServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Media Server main process."
+    ::=  {  systemFaults 1502  }
+
+  bwPMMediaServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Media Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMMediaServerLaunched, bwPMMediaServerShutDown, bwPMMediaServerRestarted, and bwPMMediaServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Media Server main process."
+    ::=  {  systemFaults 1503  }
+
+  bwPMMediaServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Media Server termination.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMMediaServerLaunched, bwPMMediaServerShutDown, bwPMMediaServerRestarted, and bwPMMediaServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Media Server main process."
+    ::=  {  systemFaults 1504  }
+
+  msSoftwareError  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npStackTrace }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a software error occurred.
+@severity:low
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1505  }
+
+  msMemAllocFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates a memory allocation failure.
+@severity:high
+@subcomponent:ivr"
+    ::=  {  systemFaults 1506  }
+
+  msStaleSession  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npSessionId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a stale IVR or conferencing session has been detected.
+@severity:informational
+@subcomponent:mcp"
+    ::=  {  systemFaults 1507  }
+
+  msInvalidAudioFile  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "Media Server cannot retrieve the audio file or internal audio operation errors.
+@severity:high
+@subcomponent:filesystem"
+    ::=  {  systemFaults 1509  }
+
+  msShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time a shutdown request was received.
+@severity:informational
+@subcomponent:mcp"
+    ::=  {  systemFaults 1510  }
+
+  msSmtpFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npRemoteAddress, npReason }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a Media Server could not connect to an SMTP server.
+@severity:high
+@subcomponent:smtp"
+    ::=  {  systemFaults 1511  }
+
+  msLicenseHWViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that there is an attempt to run the application on an unlicensed server.
+@severity:critical
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1512  }
+
+  msHTTPConnectionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npError }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates HTTP connection failure errors.
+@severity:high
+@subcomponent:filesystem"
+    ::=  {  systemFaults 1513  }
+
+  msHTTPFileNotFound  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that an audio file could not be retrieved from an HTTP server.
+@severity:low
+@subcomponent:filesystem"
+    ::=  {  systemFaults 1515  }
+
+  msHTTPReceiveFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates HTTP reception failure errors.
+@severity:high
+@subcomponent:filesystem"
+    ::=  {  systemFaults 1516  }
+
+  msRTPInterfaceFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that no Media Server RTP interfaces are operational.
+@severity:critical
+@subcomponent:rtp"
+    ::=  {  systemFaults 1517  }
+
+  msRTPInterfaceNotFound  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that one of the RTP interface cards does not exist, and is not operational or configured.
+@severity:medium
+@subcomponent:rtp"
+    ::=  {  systemFaults 1518  }
+
+  msnddExecutionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates the problem in executing ndd command - most likely because the Media Server is not installed at root.
+@severity:high
+@subcomponent:rtp"
+    ::=  {  systemFaults 1519  }
+
+  msLiveAudioHWFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "Could not open the analog audio port to provide liveAudio service.
+@severity:high
+@subcomponent:liveAudio"
+    ::=  {  systemFaults 1520  }
+
+  msLiveAudioLicenseViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "A license violation has occurred when requesting the live audio service.
+@severity:high
+@subcomponent:liveAudio"
+    ::=  {  systemFaults 1521  }
+
+  msNoPortsAvailable  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This fault occurs when the Media Server cannot accept a new call because all configured ports are already in use.
+@severity:informational
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1522  }
+
+  msVXMLAppServerUnreachable  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npError }
+    STATUS      current
+    DESCRIPTION
+        "VoiceXML Application Server is unreachable.
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1523  }
+
+  msVxmlScriptError  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "An error occurred while running a VoiceXML script.
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1524  }
+
+  msVXMLSecurityThresholdExceeded  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "A VoiceXML script has exceeded a security threshold.
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1525  }
+
+  msMrcpConnectionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npError }
+    STATUS      current
+    DESCRIPTION
+        "Connection attempt to ASR/TTS server failed.
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1526  }
+
+  msMrcpKeepAliveFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "Keep-alive packet to ASR/TTS server failed (timed-out).
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1527  }
+
+  msRouteAdvance  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Outgoing INVITE to an endpoint/load balancer/ASR/TTS server failed (received negative final response or timed out), which caused the Media Server to 'route advance' through the contact list.
+@severity:informational
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1528  }
+
+  msMrcpError  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError }
+    STATUS      current
+    DESCRIPTION
+        "MRCP log message with severity 'error' or 'critical' is generated.
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1529  }
+
+  msCfwFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError, npMethod }
+    STATUS      current
+    DESCRIPTION
+        "The CFW command generated an error
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1530  }
+
+  msVideoTranscodingError  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npFilename, npSourceCodec, npDestinationCodec }
+    STATUS      current
+    DESCRIPTION
+        "Video transcoding failed due to an error in the video bitstream
+@severity:informational
+@subcomponent:video"
+    ::=  {  systemFaults 1531  }
+
+  bwPMLoggerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "OBSOLETED - This notification indicates that the Media Server Logger has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 1532  }
+
+  bwPMLoggerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "OBSOLETED -This notification provides the date and time of the Media Server Logger restart.
+@severity:informational
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 1533  }
+
+  bwPMLoggerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "OBSOLETED -This notification provides the date and time of the Media Server Logger termination.
+@severity:high
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 1534  }
+
+  bwPMLoggerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "OBSOLETED -This notification indicates that the Media Server Logger has been started.
+@severity:informational
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 1535  }
+
+  msCfwConnectionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "A CFW endpoint has become unreachable.  This alarm is cleared once the connection is restored.
+@severity:high
+@subcomponent:mediaControlChannel"
+    ::=  {  systemFaults 1536  }
+
+  bwCcxmlHttpServerFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npLocalInterface, npLocalPort }
+    STATUS      current
+    DESCRIPTION
+        "The Media Server was unable to initialize the CCXML HTTP server.
+@severity:high
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1537  }
+
+END

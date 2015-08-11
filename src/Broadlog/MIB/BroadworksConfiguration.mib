@@ -1,0 +1,141 @@
+--===============================================================
+-- File Name : BroadworksConfiguration.mib
+-- Date      : 02/09/2009
+-- Author    : BroadSoft Inc.
+--===============================================================
+
+BroadworksConfiguration	DEFINITIONS ::= BEGIN
+  IMPORTS
+    DisplayString, 
+    DateAndTime, 
+    TimeStamp,
+    TruthValue
+      FROM SNMPv2-TC
+    MODULE-COMPLIANCE, 
+    OBJECT-GROUP          
+      FROM SNMPv2-CONF
+    enterprises, 
+    MODULE-IDENTITY, 
+    NOTIFICATION-TYPE,
+    OBJECT-TYPE,
+    Gauge32,
+    Counter32,
+    Integer32,
+    Unsigned32
+      FROM SNMPv2-SMI;
+            
+  broadsoft	MODULE-IDENTITY 
+    LAST-UPDATED	"200902090000Z"
+    ORGANIZATION	"Broadsoft, Inc"
+    CONTACT-INFO	"Broadsoft, Inc
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+
+    DESCRIPTION		
+      "This is the System Management Information structure for the Broadsoft Configuration subsystem."
+
+    REVISION "200902090000Z"
+    DESCRIPTION "Ensured MIB conformity."
+
+    ::= {  enterprises  6431  }
+
+  broadworks      OBJECT IDENTIFIER     
+    ::=  {  broadsoft  1  }
+
+  common	OBJECT IDENTIFIER
+    ::=  {  broadworks  1  }
+
+  configurationMgmt OBJECT IDENTIFIER
+    ::= { common 5 }
+
+  cfgAgentState OBJECT IDENTIFIER
+    ::= { configurationMgmt 1 }
+
+  cfgConnectedClients   OBJECT-TYPE
+    SYNTAX              Gauge32
+    MAX-ACCESS          read-only
+    STATUS              current
+    DESCRIPTION
+        "Current number of active client connections."
+    ::=  {  cfgAgentState 1  }
+
+  cfgManagementMode     OBJECT-TYPE
+    SYNTAX              INTEGER { standalone(0), managed(1) }
+    MAX-ACCESS          read-only
+    STATUS              current
+    DESCRIPTION		
+        "Current management mode: { standalone | managed }"
+    ::=  { cfgAgentState 2  }
+
+  cfgSchemaVersion     OBJECT-TYPE
+    SYNTAX              DisplayString
+    MAX-ACCESS          read-only
+    STATUS              current
+    DESCRIPTION		
+        "Configuration schema used by the agent."
+    ::=  { cfgAgentState 3 }
+
+  cfgRequiresRestart   OBJECT-TYPE
+    SYNTAX              INTEGER { true(1), false(2) }
+    MAX-ACCESS          read-only
+    STATUS              current
+    DESCRIPTION		
+        "Requires a BroadWorks restart to deploy a pending configuration."
+    ::=  { cfgAgentState 4  }
+
+  cfgCurrentConfig OBJECT IDENTIFIER
+    ::= { configurationMgmt 2 }
+
+  cfgCurrentVersion    	OBJECT-TYPE	
+    SYNTAX              DisplayString
+    MAX-ACCESS		read-only
+    STATUS		current
+    DESCRIPTION		
+        "Current configuration version."
+    ::=  {  cfgCurrentConfig 1  }
+
+  cfgCurrentSchemaVersion	OBJECT-TYPE	
+    SYNTAX              DisplayString
+    MAX-ACCESS		read-only
+    STATUS		current
+    DESCRIPTION		
+        "Current configuration schema version."
+    ::=  {  cfgCurrentConfig 2  }
+
+  cfgStatistics OBJECT IDENTIFIER
+    ::= { configurationMgmt 3 }
+
+  cfgReadOperations	OBJECT-TYPE	
+    SYNTAX              Unsigned32
+    MAX-ACCESS		read-only
+    STATUS		current
+    DESCRIPTION		
+        "Total number of successful read operations."
+    ::=  {  cfgStatistics 1  }
+
+  cfgReadErrors	OBJECT-TYPE	
+    SYNTAX              Unsigned32
+    MAX-ACCESS		read-only
+    STATUS		current
+    DESCRIPTION		
+        "Total number of failed read operations."
+    ::=  {  cfgStatistics 2  }
+
+  cfgWriteOperations	OBJECT-TYPE	
+    SYNTAX              Unsigned32
+    MAX-ACCESS		read-only
+    STATUS		current
+    DESCRIPTION		
+        "Total number of successful write operations."
+    ::=  {  cfgStatistics 3  }
+
+  cfgWriteErrors  	OBJECT-TYPE	
+    SYNTAX              Unsigned32
+    MAX-ACCESS		read-only
+    STATUS		current
+    DESCRIPTION		
+        "Total number of failed write operations."
+    ::=  {  cfgStatistics 4  }
+
+END

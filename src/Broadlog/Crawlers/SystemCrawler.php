@@ -1,41 +1,62 @@
 <?php
+
+/*
+ * This file is part of the Broadlog package https://github.com/lukebeer/broadlog
+ *
+ * Copyright (c) 2015 Luke Berezynskyj (aka Luke Beer)
+ *
+ * @author Luke Berezynskyj <mail@luke.beer>
+ */
+
 namespace Broadlog\Crawlers;
-require_once '../Config.php';
-require_once BROADWORKS_OCIP_PATH . '/common.php';
-
-use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaSystem\SystemLicensingGetRequest14sp3;
-use Broadworks_OCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaServiceProvider\ServiceProviderGetListRequest;
-use Broadworks_OCIP\core\Client\Client;
 
 
+use BroadworksOCIP\Client\Client;
+use BroadworksOCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaUser as OCISchemaUser;
+use BroadworksOCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaGroup as OCISchemaGroup;
+use BroadworksOCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaServiceProvider as OCISchemaServiceProvider;
+use BroadworksOCIP\api\Rel_17_sp4_1_197_OCISchemaAS\OCISchemaSystem as OCISchemaSystem;
+
+
+/**
+ * Class SystemCrawler
+ * @namespace Broadlog\Crawlers
+ */
 class SystemCrawler
 {
+    /**
+     * @var Client
+     */
     private $client;
-    private $sps = [];
 
+    /**
+     * @param Client $client
+     */
     public function __construct(Client &$client)
     {
         $this->client = $client;
     }
 
-    public function getServiceProviderList()
+    /**
+     * @return bool|\BroadworksOCIP\Builder\Types\TableType
+     */
+    public function getServiceProviderTable()
     {
-        if (count($this->sps) > 0) {
-            return $this->sps;
-        }
-        $spListRequest = new ServiceProviderGetListRequest();
-        $spListResponse = $spListRequest->get($this->client);
-        foreach ($spListResponse->getServiceProviderTable()->getAllRows() as $spRow) {
-            $this->sps[] = $spRow[0];
-        }
-        return $this->sps;
+        $request = new OCISchemaServiceProvider\ServiceProviderGetListRequest();
+        return ($response = $request->get($this->client))
+            ? $response->getServiceProviderTable()
+            : false;
     }
 
+    /**
+     * @return bool|OCISchemaSystem\SystemLicensingGetSystemLicenseListResponse
+     */
     public function getSystemLicensing()
     {
-        $request = new SystemLicensingGetRequest14sp3();
-        $response = $request->get($this->client);
-        return $response;
+        $request = new OCISchemaSystem\SystemLicensingGetSystemLicenseListRequest();
+        return ($response = $request->get($this->client))
+            ? $response
+            : false;
     }
 }
 

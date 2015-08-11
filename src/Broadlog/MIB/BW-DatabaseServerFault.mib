@@ -1,0 +1,62 @@
+-- File Name : BW-DatabaseServerFault.mib
+BW-DatabaseServerFault-MIB DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, npError, npDatabaseObjectType, npObjectId, npUserId, npDate, npMessage
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201001180000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "The document defines the faults emitted by the Database Server."
+    -- MIB history
+    REVISION      "201001180000Z"
+    DESCRIPTION   "Initial Revision"    
+    -- End of MIB history
+    ::=  {  common  1  }
+
+   -- See http://wiki-eng.int.broadsoft.com/eng-wiki/index.php/MIB_-_OID_definitions#Notification_Id_Range for OID range
+  bwDbMonitorDbUnavailable   NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the DbMonitor process is unable to query the database for performance counters.
+@severity:medium
+@subcomponent:dbMonitor"
+    ::=  {  systemFaults 6201  }
+
+  bwDbaErrorDetected   NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npError, npDatabaseObjectType, npObjectId, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the DbMonitor has detected a new entry in the DBA_ERRORS table.
+@severity:medium
+@subcomponent:dbMonitor"
+    ::=  {  systemFaults 6202  }
+
+  bwDbaAlertDetected   NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npDatabaseObjectType, npObjectId, npDate, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the DbMonitor has detected a new entry in the DBA_OUTSTANDING_ALERT table.
+@severity:medium
+@subcomponent:dbMonitor"
+    ::=  {  systemFaults 6203  }
+
+  bwAlertLogEntry   NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npDate, npError, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the DbMonitor has detected a new log entry the alert log file.
+@severity:medium
+@subcomponent:dbMonitor"
+    ::=  {  systemFaults 6204  }
+
+
+END

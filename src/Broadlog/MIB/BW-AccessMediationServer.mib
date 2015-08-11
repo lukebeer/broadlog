@@ -1,0 +1,1704 @@
+--===============================================================
+-- File Name : BW-AccessMediationServer.mib 
+-- Date      : 18/08/2009
+-- Author    : BroadSoft Inc.
+--===============================================================
+
+BW-AccessMediationServer DEFINITIONS ::= BEGIN
+	IMPORTS
+		enterprises, MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-TYPE, Counter32, Gauge32, Counter64, Integer32
+			FROM SNMPv2-SMI
+		MODULE-COMPLIANCE, OBJECT-GROUP          
+			FROM SNMPv2-CONF
+		DateAndTime, DisplayString
+			FROM SNMPv2-TC;
+
+	broadsoft	MODULE-IDENTITY
+		LAST-UPDATED  "200908190000Z"
+		ORGANIZATION	"Broadsoft, Inc"
+		CONTACT-INFO	"Broadsoft, Inc
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+		DESCRIPTION
+				"This is the System Management Information structure for the
+				Broadsoft enterprise."
+		REVISION    "200908190000Z"
+                DESCRIPTION     "Access Mediation Server MIB creation"
+		::=  {  enterprises  6431  }
+		
+  broadworks	OBJECT IDENTIFIER
+		::=  {  broadsoft  1  }		
+	
+	accessMediationServer	OBJECT IDENTIFIER
+		::=  {  broadworks  18  }
+	
+	rtp OBJECT IDENTIFIER
+		::=  {  accessMediationServer  1  }
+		
+	sip OBJECT IDENTIFIER
+		::=  {  accessMediationServer  2  }
+		
+	sccp OBJECT IDENTIFIER
+		::=  {  accessMediationServer  3  }
+
+	receive OBJECT IDENTIFIER
+		::=  {  rtp  1  }
+
+	transmit OBJECT IDENTIFIER
+		::=  {  rtp  2  }
+
+	bwAMSMibConformance	OBJECT IDENTIFIER
+		::=  {  accessMediationServer  100  }
+
+-- ################### ...............................
+-- RTP                 ...............................
+-- ################### ...............................
+
+	bwAMSRtpSessionsCount	OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of RTP sessions"
+		::=  {  rtp 4  }
+	
+	bwAMSRtpSessionsInUse OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"Current number of active RTP sessions. This gauge is incremented when a new RTP session is created and decremented when a RTP session is removed"
+		::=  {  rtp 5  }
+		
+-- Receive ...
+
+	bwAMSRtcpSenderReportsPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The number of RTCP sender reports the public RTP interface receives."
+		::=  {  receive 1  }
+		
+	bwAMSRtpPacketsExpectedPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of packets the public RTP interface expects."
+		::=  {  receive 2  }
+
+	bwAMSRtpPacketsReceivedPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"Total number of packets the public RTP interface receives"
+		::=  {  receive 3  }
+		
+	bwAMSRtpOutOfOrderPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of out of order packets the public RTP interface receives"
+		::=  {  receive 4  }
+		
+	bwAMSRtpBadPayloadPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of packets the public RTP interface receives with an invalid payload"
+		::=  {  receive 5  }
+		
+	bwAMSRtpSsrcPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of packets the public RTP interface receives with an invalid SSRC"
+		::=  {  receive 6  }
+		
+	bwAMSRtpReceivedPacketJitterPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total jitter of packets the public RTP interface receives by this node"
+		::=  {  receive 7  }
+		
+	bwAMSRtcpSenderReportsPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The number of RTCP sender reports the private RTP interface receives"
+		::=  {  receive 8  }
+		
+	bwAMSRtpPacketsExpectedPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of packets the private RTP interface expects"
+		::=  {  receive 9  }
+		
+	bwAMSRtpPacketsReceivedPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of packets the private RTP interface receives"
+		::=  {  receive 10  }
+		
+	bwAMSRtpOutOfOrderPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of out of order packets the private RTP interface receives"
+		::=  {  receive 11  }
+		
+	bwAMSRtpBadPayloadPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of packets the private RTP interface receives with an invalid payload"
+		::=  {  receive 12  }
+		
+	bwAMSRtpSsrcPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total number of packets the private RTP interface receives with an invalid SSRC"
+		::=  {  receive 13  }
+		
+	bwAMSRtpReceivedPacketJitterPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The total jitter of packets the private RTP interface receives by this node"
+		::=  {  receive 14  }
+		
+-- Transmit ...
+
+	bwAMSRtpCumulativePacketsLostPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The number of packets lost on the public RTP interface"
+		::=  {  transmit 1  }
+		
+	bwAMSRtpPacketsSentPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The number of packets sent on the public RTP interface"
+		::=  {  transmit 2  }
+
+	bwAMSRtpFramesSkippedPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The number of skipped frames due to CPU overload on the public RTP interface (one frame = 1 packet per RTP session)"
+		::=  {  transmit 3  }		
+
+	bwAMSRtpTransmitJitterPublic OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The jitter of packets the node transmits, as measured by remote nodes, on the public RTP interface"
+		::=  {  transmit 4  }
+
+	bwAMSRtpCumulativePacketsLostPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"Cumulative count of packets sent by this node but reported lost by remote nodes on the private RTP interface"
+		::=  {  transmit 5  }
+
+	bwAMSRtpPacketsSentPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The number of packets sent on the private RTP interface"
+		::=  {  transmit 6  }
+
+	bwAMSRtpFramesSkippedPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"The number of skipped frames due to CPU overloaded on the private RTP interface (one frame = 1 packet per RTP session)"
+		::=  {  transmit 7  }
+
+	bwAMSRtpTransmitJitterPrivate OBJECT-TYPE
+		SYNTAX			Counter64
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"Jitter of packets transmitted by this node, as measured by remote nodes, on the private RTP interface"
+		::=  {  transmit 8  }
+
+-- ################### ...............................
+-- SIP                 ...............................
+-- ################### ...............................
+
+	bwAMSSipSummaryTotalTransactions OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The counter reflects the number of transactions completed or in-progress"
+		::=  {  sip 2  }
+
+	bwAMSSipStatsInviteIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The counter reflects the total number of INVITE requests received by Access Mediation Server"
+		::=  {  sip 3  }
+
+	bwAMSStatsInviteOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of INVITE requests sent by Access Mediation Server"
+		::=  {  sip 4  }
+
+	bwAMSSipStatsAckIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of ACK requests received by Access Mediation Server"
+		::=  {  sip 5  }
+
+	bwAMSSipStatsAckOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of ACK requests sent by Access Mediation Server"
+		::=  {  sip 6  }
+
+	bwAMSSipStatsByeIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of BYE requests received by Access Mediation Server"
+		::=  {  sip 7  }
+
+	bwAMSSipStatsByeOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of BYE requests sent by Access Mediation Server"
+		::=  {  sip 8  }
+
+	bwAMSSipStatsCancelIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of CANCEL requests received by the Application Server"
+		::=  {  sip 9  }
+
+	bwAMSSipStatsCancelOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of CANCEL requests sent by the Application Server"
+		::=  {  sip 10  }
+
+	bwAMSSipStatsOptionsIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of OPTIONS requests received by the Application Server"
+		::=  {  sip 11  }
+
+	bwAMSSipStatsOptionsOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Total number of OPTIONS requests sent by the Application Server"
+		::=  {  sip 12  }
+
+	bwAMSSipStatsRegisterIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of REGISTER requests received by Access Mediation Server"
+		::=  {  sip 13  }
+
+	bwAMSSipStatsRegisterOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of REGISTER requests sent by Access Mediation Server"
+		::=  {  sip 14  }
+
+	bwAMSSipStatsInfoIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of INFO requests received by the Access Mediation Server"
+		::=  {  sip 15  }
+
+	bwAMSSipStatsInfoOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of INFO requests sent by the Access Mediation Server"
+		::=  {  sip 16  }
+
+	bwAMSSipStatsNotifyIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of NOTIFY requests sent by the Access Mediation Server"
+		::=  {  sip 17  }
+
+	bwAMSSipStatsNotifyOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of NOTIFY requests sent by the Access Mediation Server"
+		::=  {  sip 18  }
+
+	bwAMSSipStatsPrackIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of PRACK requests received by the Access Mediation Server"
+		::=  {  sip 19  }
+
+	bwAMSSipStatsPrackOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of PROACK requests sent by the Access Mediation Server"
+		::=  {  sip 20  }
+
+	bwAMSSipStatsRetryInvites OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of INVITE retries that have been sent by the Access Mediation Server"
+		::=  {  sip 37  }
+
+	bwAMSSipStatsRetryByes OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of BYE retries that have been sent by the Access Mediation Server"
+		::=  {  sip 38  }
+
+	bwAMSSipStatsRetryCancels OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of CANCEL retries that have been sent by the Access Mediation Server"
+		::=  {  sip 39  }
+
+	bwAMSSipStatsRetryResponses OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of RESPONSES retries that have been sent by the Access Mediation Server"
+		::=  {  sip 40  }
+
+	bwAMSSipStatsSubscribeOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of SUBSCRIBE messages sent to the Application Server"
+		::=  {  sip 41  }
+
+	bwAMSSipStatsUpdateIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of UPDATE requests received by Access Mediation Server"
+		::=  {  sip 43  }
+
+	bwAMSSipStatsUpdateOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of UPDATE requests sent by Access Mediation Server"
+		::=  {  sip 44  }
+
+	bwAMSSipStatsTcpIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"The total number of SIP messages received through the TCP"
+		::=  {  sip 47  }
+
+	bwAMSSipStatsTcpOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Total number of SIP messages sent via TCP"
+		::=  {  sip 48  }
+
+	bwAMSSipStatsTcpFailures OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Number of SIP message failures via TCP"
+		::=  {  sip 49  }
+
+	bwAMSSipStatsUdpIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Number of SIP messages received via UDP"
+		::=  {  sip 50  }
+
+	bwAMSSipStatsUdpOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Number of SIP messages sent via UDP"
+		::=  {  sip 51  }
+
+	bwAMSSIPReclaimedStaleTcpConnections   OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Number of SIP TCP connection reclaimed because they were stale"
+		::=  {  sip 52  }
+
+	bwAMSSipStatsActiveTcpConnections OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This gauge is incremented whenever a SIP TCP connection is established.   It decremented whenever a connection is closed"
+		::=  {  sip 54  }
+
+	bwAMSSipStatsSetupSignalDelay OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This gauge is applicable to Access Mediation Server termination calls.  It measures the average time (in milliseconds) it takes between the receipt of an INVITE message for the origination of a new call and the transmission of StartRingerMessage (Sccp terminator). This measurement is intended to reflect the elapsed delay between receipt of the call setup signal from the caller and transmission of the call setup signal to the called party"
+		::=  {  sip 55  }
+
+	bwAMSSipStatsMinSetupSignalDelay OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This measures the shortest SIP setup-signal delay sampled since the system was started or since this measurement was cleared"
+		::=  {  sip 56  }
+
+	bwAMSSipStatsMaxSetupSignalDelay OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This measures the longest SIP setup-signal delay sampled since the system was started or since this measurement was cleared"
+		::=  {  sip 57  }
+
+	bwAMSSipStatsAnswerSignalDelay OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This gauge measures the average time (in milliseconds) between the receipt of a off-hook indicating answer and the transmission of a 200 OK indicating answer to the originator. This measurement is intended to reflect internal queuing, scheduling, and processing delays. This gauge is applicable to only the Application Server originated calls for which the setup-signal delay is measured.  Answer signal delay is not measured when the call has been forwarded, redirected, or when the call has encountered route advancing"
+		::=  {  sip 58  }
+
+	bwAMSSipStatsMinAnswerSignalDelay OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This measures the shortest SIP answer-signal delay sampled since the system was started or since this measurement was cleared"
+		::=  {  sip 59  }
+
+	bwAMSSipStatsMaxAnswerSignalDelay OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This measures the longest SIP answer-signal delay sampled since the system was started or since this measurement was cleared"
+		::=  {  sip 60  }
+
+	bwAMSSipStatsMsgRetryPercentageToOther OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This gauge measures the percentage of SIP requests and reliable responses sent (to nodes other than those covered by bwSipStatsMsgRetryToNePercentage) due to retry.  Of up to the last 100 requests and reliable responses sent, this gauge calculates the percentage sent due to retransmission (i.e. - gauge = (SIP request retransmissions + SIP reliable response retransmissions) / (SIP request initial transmissions + SIP request retransmissions + SIP reliable response initial transmissions + SIP reliable response retransmissions)"
+		::=  {  sip 62  }
+
+  bwAMSSipStatsByeResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsByeResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the BYE requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 65 }
+
+  bwAMSSipStatsByeResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsByeResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Bye"
+    INDEX       { bwAMSSipStatsByeResponseCodeValue }
+    ::= { bwAMSSipStatsByeResponsesTable 1 }
+
+  BwAMSSipStatsByeResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsByeResponseCodeValue  Integer32,
+    bwAMSSipStatsByeResponseIns        Counter32,
+    bwAMSSipStatsByeResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsByeResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the information in this row is related to this value."
+    ::= { bwAMSSipStatsByeResponsesEntry 1 }
+
+  bwAMSSipStatsByeResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Bye"
+    ::= { bwAMSSipStatsByeResponsesEntry 2 }
+
+  bwAMSSipStatsByeResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses sent in response to a Bye"
+    ::= { bwAMSSipStatsByeResponsesEntry 3 }
+
+  bwAMSSipStatsCancelResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsCancelResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Cancel requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 66 }
+
+  bwAMSSipStatsCancelResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsCancelResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Cancel"
+    INDEX       { bwAMSSipStatsCancelResponseCodeValue }
+    ::= { bwAMSSipStatsCancelResponsesTable 1 }
+
+  BwAMSSipStatsCancelResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsCancelResponseCodeValue  Integer32,
+    bwAMSSipStatsCancelResponseIns        Counter32,
+    bwAMSSipStatsCancelResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsCancelResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the information in this row is related to this value."
+    ::= { bwAMSSipStatsCancelResponsesEntry 1 }
+
+  bwAMSSipStatsCancelResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Cancel"
+    ::= { bwAMSSipStatsCancelResponsesEntry 2 }
+
+  bwAMSSipStatsCancelResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses sent in response to a Cancel"
+    ::= { bwAMSSipStatsCancelResponsesEntry 3 }
+
+  bwAMSSipStatsOptionsResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsOptionsResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the OPTIONS requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 67 }
+
+  bwAMSSipStatsOptionsResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsOptionsResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Options"
+    INDEX       { bwAMSSipStatsOptionsResponseCodeValue }
+    ::= { bwAMSSipStatsOptionsResponsesTable 1 }
+
+  BwAMSSipStatsOptionsResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsOptionsResponseCodeValue  Integer32,
+    bwAMSSipStatsOptionsResponseIns        Counter32,
+    bwAMSSipStatsOptionsResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsOptionsResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the information in this row is related to this value."
+    ::= { bwAMSSipStatsOptionsResponsesEntry 1 }
+
+  bwAMSSipStatsOptionsResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Options"
+    ::= { bwAMSSipStatsOptionsResponsesEntry 2 }
+
+  bwAMSSipStatsOptionsResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses sent in response to a Options"
+    ::= { bwAMSSipStatsOptionsResponsesEntry 3 }
+
+  bwAMSSipStatsRegisterResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsRegisterResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Register requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 68 }
+
+  bwAMSSipStatsRegisterResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsRegisterResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Register"
+    INDEX       { bwAMSSipStatsRegisterResponseCodeValue }
+    ::= { bwAMSSipStatsRegisterResponsesTable 1 }
+
+  BwAMSSipStatsRegisterResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsRegisterResponseCodeValue  Integer32,
+    bwAMSSipStatsRegisterResponseIns        Counter32,
+    bwAMSSipStatsRegisterResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsRegisterResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the information in this row is related to this value."
+    ::= { bwAMSSipStatsRegisterResponsesEntry 1 }
+
+  bwAMSSipStatsRegisterResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Register"
+    ::= { bwAMSSipStatsRegisterResponsesEntry 2 }
+
+  bwAMSSipStatsRegisterResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses sent in response to a Register"
+    ::= { bwAMSSipStatsRegisterResponsesEntry 3 }
+
+  bwAMSSipStatsPrackResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsPrackResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Prack requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 69 }
+
+  bwAMSSipStatsPrackResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsPrackResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Prack"
+    INDEX       { bwAMSSipStatsPrackResponseCodeValue }
+    ::= { bwAMSSipStatsPrackResponsesTable 1 }
+
+  BwAMSSipStatsPrackResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsPrackResponseCodeValue  Integer32,
+    bwAMSSipStatsPrackResponseIns        Counter32,
+    bwAMSSipStatsPrackResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsPrackResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the information in this row is related to this value."
+    ::= { bwAMSSipStatsPrackResponsesEntry 1 }
+
+  bwAMSSipStatsPrackResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Prack"
+    ::= { bwAMSSipStatsPrackResponsesEntry 2 }
+
+  bwAMSSipStatsPrackResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses sent in response to a Prack"
+    ::= { bwAMSSipStatsPrackResponsesEntry 3 }
+
+  bwAMSSipStatsInfoResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsInfoResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Info requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 70 }
+
+  bwAMSSipStatsInfoResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsInfoResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Info"
+    INDEX       { bwAMSSipStatsInfoResponseCodeValue }
+    ::= { bwAMSSipStatsInfoResponsesTable 1 }
+
+  BwAMSSipStatsInfoResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsInfoResponseCodeValue  Integer32,
+    bwAMSSipStatsInfoResponseIns        Counter32,
+    bwAMSSipStatsInfoResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsInfoResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the information in this row is related to this value."
+    ::= { bwAMSSipStatsInfoResponsesEntry 1 }
+
+  bwAMSSipStatsInfoResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Info"
+    ::= { bwAMSSipStatsInfoResponsesEntry 2 }
+
+  bwAMSSipStatsInfoResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses sent in response to a Info"
+    ::= { bwAMSSipStatsInfoResponsesEntry 3 }
+
+  bwAMSSipStatsNotifyResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsNotifyResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Notify requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 71 }
+
+  bwAMSSipStatsNotifyResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsNotifyResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Notify"
+    INDEX       { bwAMSSipStatsNotifyResponseCodeValue }
+    ::= { bwAMSSipStatsNotifyResponsesTable 1 }
+
+  BwAMSSipStatsNotifyResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsNotifyResponseCodeValue  Integer32,
+    bwAMSSipStatsNotifyResponseIns        Counter32,
+    bwAMSSipStatsNotifyResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsNotifyResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the Notifyrmation in this row is related to this value."
+    ::= { bwAMSSipStatsNotifyResponsesEntry 1 }
+
+  bwAMSSipStatsNotifyResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Notify"
+    ::= { bwAMSSipStatsNotifyResponsesEntry 2 }
+
+  bwAMSSipStatsNotifyResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses sent in response to a Notify"
+    ::= { bwAMSSipStatsNotifyResponsesEntry 3 }
+
+  bwAMSSipStatsSubscribeResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsSubscribeResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Subscribe requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 72 }
+
+  bwAMSSipStatsSubscribeResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsSubscribeResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Subscribe"
+    INDEX       { bwAMSSipStatsSubscribeResponseCodeValue }
+    ::= { bwAMSSipStatsSubscribeResponsesTable 1 }
+
+  BwAMSSipStatsSubscribeResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsSubscribeResponseCodeValue  Integer32,
+    bwAMSSipStatsSubscribeResponseIns        Counter32
+  }
+
+  bwAMSSipStatsSubscribeResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the Subscribermation in this row is related to this value."
+    ::= { bwAMSSipStatsSubscribeResponsesEntry 1 }
+
+  bwAMSSipStatsSubscribeResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Subscribe"
+    ::= { bwAMSSipStatsSubscribeResponsesEntry 2 }
+
+  bwAMSSipStatsInviteResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsInviteResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Invite requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 73 }
+
+  bwAMSSipStatsInviteResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsInviteResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Invite"
+    INDEX       { bwAMSSipStatsInviteResponseCodeValue }
+    ::= { bwAMSSipStatsInviteResponsesTable 1 }
+
+  BwAMSSipStatsInviteResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsInviteResponseCodeValue  Integer32,
+    bwAMSSipStatsInviteResponseIns        Counter32,
+    bwAMSSipStatsInviteResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsInviteResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the Invitermation in this row is related to this value."
+    ::= { bwAMSSipStatsInviteResponsesEntry 1 }
+
+  bwAMSSipStatsInviteResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Invite"
+    ::= { bwAMSSipStatsInviteResponsesEntry 2 }
+
+  bwAMSSipStatsInviteResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Invite"
+    ::= { bwAMSSipStatsInviteResponsesEntry 3 }
+
+  bwAMSSipStatsUpdateResponsesTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwAMSSipStatsUpdateResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains the counters for all SIP responses to the Update requests received or sent by BroadWorks. Each counter is a 32-Bit counter. The response code is used to index into the table. Here are all the response codes:  100, 180, 181, 182, 183, 200, 300, 301, 302, 305, 380, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 413, 414, 415, 420, 480, 481, 482, 483, 484, 485, 486, 487, 500, 501, 502, 503, 504, 505, 600, 603, 604, 606"
+    ::= { sip 74 }
+
+  bwAMSSipStatsUpdateResponsesEntry OBJECT-TYPE
+    SYNTAX      BwAMSSipStatsUpdateResponsesEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a particular SIP status code received or sent in response to a Update"
+    INDEX       { bwAMSSipStatsUpdateResponseCodeValue }
+    ::= { bwAMSSipStatsUpdateResponsesTable 1 }
+
+  BwAMSSipStatsUpdateResponsesEntry ::= SEQUENCE {
+    bwAMSSipStatsUpdateResponseCodeValue  Integer32,
+    bwAMSSipStatsUpdateResponseIns        Counter32,
+    bwAMSSipStatsUpdateResponseOuts       Counter32
+  }
+
+  bwAMSSipStatsUpdateResponseCodeValue OBJECT-TYPE
+    SYNTAX      Integer32 (100..999)
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This integer represents a SIP status code.  The rest of the Updatermation in this row is related to this value."
+    ::= { bwAMSSipStatsUpdateResponsesEntry 1 }
+
+  bwAMSSipStatsUpdateResponseIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Update"
+    ::= { bwAMSSipStatsUpdateResponsesEntry 2 }
+
+  bwAMSSipStatsUpdateResponseOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "This counter represents the number of SIP responses received in response to a Update"
+    ::= { bwAMSSipStatsUpdateResponsesEntry 3 }
+
+-- ################### ...............................
+-- SCCP                ...............................
+-- ################### ...............................
+
+	bwAMSSccpStatsTcpFailures OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Number of SCCP message failures via TCP"
+		::=  {  sccp 1  }
+
+	bwAMSSccpReclaimedStaleTcpConnections OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"Number of SCCP TCP connection reclaimed because they were stale"
+		::=  {  sccp 2  }
+
+	bwAMSSccpRegisterIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationRegisterMessage received by Access Mediation Server"
+		::=  {  sccp 3  }
+
+	bwAMSSccpRegisterAckOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationRegisterAckMessage sent by Access Mediation Server"
+		::=  {  sccp 4  }
+
+	bwAMSSccpRegisterRejectOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationRegisterRejectMessage sent by Access Mediation Server"
+		::=  {  sccp 5  }
+
+	bwAMSSccpCapabilitiesReqOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationCapabilitiesReqMessage sent by Access Mediation Server"
+		::=  {  sccp 6  }
+
+	bwAMSSccpCapabilitiesResIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationCapabilitiesResMessage received by Access Mediation Server"
+		::=  {  sccp 7  }
+
+	bwAMSSccpIpPortMessageIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationIpPortMessage received by Access Mediation Server"
+		::=  {  sccp 8  }
+
+	bwAMSSccpHeadSetStatusMessageIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationHeadSetStatusMessage received by Access Mediation Server"
+		::=  {  sccp 9  }
+
+	bwAMSSccpButtonTemplateReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationButtonTemplateReqMessage received by Access Mediation Server"
+		::=  {  sccp 10  }
+
+	bwAMSSccpButtonTemplateOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationButtonTemplateMessage sent by Access Mediation Server"
+		::=  {  sccp 11  }
+
+	bwAMSSccpSoftKeyTemplateReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSoftKeyTemplateReqMessage received by Access Mediation Server"
+		::=  {  sccp 12  }
+
+	bwAMSSccpSoftKeyTemplateOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSoftKeyTemplateMessage sent by Access Mediation Server"
+		::=  {  sccp 13  }
+
+	bwAMSSccpSoftKeySetReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSoftKeySetReqMessage received by Access Mediation Server"
+		::=  {  sccp 14  }
+
+	bwAMSSccpSoftKeySetOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSoftKeySetMessage sent by Access Mediation Server"
+		::=  {  sccp 15  }
+
+	bwAMSSccpLineStatReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationLineStatReqMessage received by Access Mediation Server"
+		::=  {  sccp 16  }
+
+	bwAMSSccpLineStatOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationLineStatMessage sent by Access Mediation Server"
+		::=  {  sccp 17  }
+
+	bwAMSSccpSpeedDialStatReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSpeedDialStatReqMessage received by Access Mediation Server"
+		::=  {  sccp 18  }
+
+	bwAMSSccpSpeedDialStatOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSpeedDialStatMessage sent by Access Mediation Server"
+		::=  {  sccp 19  }
+
+	bwAMSSccpRegisterAvailableLinesIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationRegisterAvailableLinesMessage received by Access Mediation Server"
+		::=  {  sccp 20  }
+
+	bwAMSSccpTimeDateReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationTimeDateReqMessage received by Access Mediation Server"
+		::=  {  sccp 21  }
+
+	bwAMSSccpTimeDateOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationTimeDateMessage sent by Access Mediation Server"
+		::=  {  sccp 22  }
+
+	bwAMSSccpDisplayPromptStatusOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationDisplayPromptStatusMessage sent by Access Mediation Server"
+		::=  {  sccp 23  }
+
+	bwAMSSccpSelectSoftKeysOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSelectSoftKeysMessage sent by Access Mediation Server"
+		::=  {  sccp 24  }
+
+	bwAMSSccpActivateCallPlaneOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationActivateCallPlaneMessage sent by Access Mediation Server"
+		::=  {  sccp 25  }
+
+	bwAMSSccpCallInfoOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationCallInfoMessage sent by Access Mediation Server"
+		::=  {  sccp 26  }
+
+	bwAMSSccpCallStateOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationCallStateMessage sent by Access Mediation Server"
+		::=  {  sccp 27  }
+
+	bwAMSSccpClearDisplayOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationClearDisplayMessage sent by Access Mediation Server"
+		::=  {  sccp 28  }
+
+	bwAMSSccpClearPriNotifyOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationClearPriNotifyMessage sent by Access Mediation Server"
+		::=  {  sccp 29  }
+
+	bwAMSSccpClearPromptStatusOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationClearPromptStatusMessage sent by Access Mediation Server"
+		::=  {  sccp 30  }
+
+	bwAMSSccpCloseReceiveChannelOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationCloseReceiveChannelMessage sent by Access Mediation Server"
+		::=  {  sccp 31  }
+
+	bwAMSSccpConfigStatusOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationConfigStatusMessage sent by Access Mediation Server"
+		::=  {  sccp 32  }
+
+	bwAMSSccpConnectionStatisticsReqOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationConnectionStatisticsReqMessage sent by Access Mediation Server"
+		::=  {  sccp 33  }
+
+	bwAMSSccpConnectionStatisticsResIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationConnectionStatisticsResMessage received by Access Mediation Server"
+		::=  {  sccp 34  }
+
+	bwAMSSccpDeactivateCallPlaneOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationDeactivateCallPlaneMessage sent by Access Mediation Server"
+		::=  {  sccp 35  }
+
+	bwAMSSccpDialedNumberOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationDialedNumberMessage sent by Access Mediation Server"
+		::=  {  sccp 36  }
+
+	bwAMSSccpDisplayPriNotifyOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationDisplayPriNotifyMessage sent by Access Mediation Server"
+		::=  {  sccp 37  }
+
+	bwAMSSccpDisplayTextOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationDisplayTextMessage sent by Access Mediation Server"
+		::=  {  sccp 38  }
+
+	bwAMSSccpLampOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationLampMessage sent by Access Mediation Server"
+		::=  {  sccp 39  }
+
+	bwAMSSccpOpenReceiveChannelOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationOpenReceiveChannelMessage sent by Access Mediation Server"
+		::=  {  sccp 41  }
+
+	bwAMSSccpOpenReceiveChannelAckIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationOpenReceiveChannelAckMessage received by Access Mediation Server"
+		::=  {  sccp 42  }
+
+	bwAMSSccpResetOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationResetMessage sent by Access Mediation Server"
+		::=  {  sccp 43  }
+
+	bwAMSSccpSetRingerOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSetRingerMessage sent by Access Mediation Server"
+		::=  {  sccp 44  }
+
+	bwAMSSccpSetSpeakerModeOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSetSpeakerModeMessage sent by Access Mediation Server"
+		::=  {  sccp 45  }
+
+	bwAMSSccpStartMediaTransmissionOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationStartMediaTransmissionMessage sent by Access Mediation Server"
+		::=  {  sccp 46  }
+
+	bwAMSSccpStartToneOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationStartToneMessage sent by Access Mediation Server"
+		::=  {  sccp 47  }
+
+	bwAMSSccpStopMediaTransmissionOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationStopMediaTransmissionMessage sent by Access Mediation Server"
+		::=  {  sccp 48  }
+
+	bwAMSSccpStopToneOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationStopToneMessage sent by Access Mediation Server"
+		::=  {  sccp 49  }
+
+	bwAMSSccpUnregisterIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationUnregisterMessage received by Access Mediation Server"
+		::=  {  sccp 50  }
+
+	bwAMSSccpUnregisterAckOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationUnregisterAckMessage sent by Access Mediation Server"
+		::=  {  sccp 51  }
+
+	bwAMSSccpVersionOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationVersionMessage sent by Access Mediation Server"
+		::=  {  sccp 52  }
+
+	bwAMSSccpKeypadButtonIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationKeypadButtonMessage received by Access Mediation Server"
+		::=  {  sccp 53  }
+
+	bwAMSSccpStimulusIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationStimulusMessage received by Access Mediation Server"
+		::=  {  sccp 54  }
+
+	bwAMSSccpOffHookIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationOff-hookMessage received by Access Mediation Server"
+		::=  {  sccp 55  }
+
+	bwAMSSccpOnHookIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationOnHookMessage received by Access Mediation Server"
+		::=  {  sccp 56  }
+
+	bwAMSSccpOffHookWithCgpnIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationOff-hookWithCgpnMessage received by Access Mediation Server"
+		::=  {  sccp 57  }
+
+	bwAMSSccpRegisterTokenReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationRegisterTokenReqMessage received by Access Mediation Server"
+		::=  {  sccp 58  }
+
+	bwAMSSccpStatsIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of SCCP messages received by the Access Mediation Server"
+		::=  {  sccp 59  }
+
+	bwAMSSccpStatsOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of SCCP messages sent by the Access Mediation Server"
+		::=  {  sccp 60  }
+
+  bwAMSSccpSoftKeyEventIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSoftKeyEventMessage messages received by the Access Mediation Server."
+		::=  {  sccp 61  }
+
+  bwAMSSccpServerReqIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationServerReq messages received by the Access Mediation Server."
+		::=  {  sccp 62  }
+
+  bwAMSSccpAlarmIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationAlarm messages received by the Access Mediation Server."
+		::=  {  sccp 63  }
+
+  bwAMSSccpSetMicroModeOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationSetMicroMode messages sent by the Access Mediation Server."
+		::=  {  sccp 64  }
+
+  bwAMSSccpServerResOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationServerRes messages sent by the Access Mediation Server."
+		::=  {  sccp 65  }
+
+  bwAMSSccpKeepAliveIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationKeepAlive messages received by the Access Mediation Server."
+		::=  {  sccp 66  }
+
+  bwAMSSccpEnblocCallIns OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationEnblocCall messages received by the Access Mediation Server."
+		::=  {  sccp 67  }
+
+  bwAMSSccpKeepAliveAckOuts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS	read-write
+		STATUS			current
+		DESCRIPTION
+		"This counter reflects the total number of StationKeepAliveAck messages sent by the Access Mediation Server."
+		::=  {  sccp 68  }
+
+	bwAMSStatsActiveDevices OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"Current number of active SCCP devices. The counter increments  when a SCCP device registers with the Access Mediation Server and decremented when a SCCP device unregisters or times out and the device session is destroyed"
+		::=  {  sccp 69  }
+
+	bwAMSStatsActiveSessions OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"Current number of active sessions within the AMS.  The counter increments  when a session is created within the Access Mediation Server and decremented when a session is destroyed"
+		::=  {  sccp 70 }
+
+	bwAMSStatsActiveCalls OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+		"Current number of active calls in the AMS.  The counter increments  when a call is created  within the Access Mediation Server and decremented when a call is destroyed"
+		::=  {  sccp 71  }
+
+	bwAMSSccpStatsActiveTcpConnections OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This gauge is incremented whenever a SCCP TCP connection is established.   It decremented whenever a connection is closed"
+		::=  {  sccp 72  }		
+
+	bwAMSSccpStatsRegistrationsPerSecond OBJECT-TYPE
+		SYNTAX			Gauge32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+		"This gauge measures the rate at which the Access Mediation Server sends SIP REGISTER messages.  It uses the timestamps of up to the last 100 registrations sent in calculating the rate"
+		::=  {  sccp 73  }
+
+  bwAMSSccpIncomingCallAttempts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+	  	"This counter reflects the total number of incoming call attempts to SCCP devices."
+    ::=  {  sccp 74  }
+
+  bwAMSSccpIncomingCallCompletions OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+  		"This counter reflects the total number of calls connected to SCCP devices."
+    ::=  { sccp 75 }
+
+  bwAMSSccpOutgoingCallAttempts OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+	  	"This counter reflects the total number of call attempts from SCCP devices."
+    ::= { sccp 76 }
+
+  bwAMSSccpOutgoingCallCompletions OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+  		"This counter reflects the total number of calls connected originated from an SCCP device."
+    ::= { sccp 77 }
+
+-- BroadWorks Access Mediation Server MIB Conformance Definition  ...........................................
+
+bwAMSMibGroups		OBJECT IDENTIFIER ::= { bwAMSMibConformance 1 }
+bwAMSMibCompliancy	OBJECT IDENTIFIER ::= { bwAMSMibConformance 2 }
+
+-- units of conformance
+
+bwAmsRtpGroup    OBJECT-GROUP
+    OBJECTS { bwAMSRtpSessionsCount, bwAMSRtpSessionsInUse }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the RTP information for the Access Mediation Server"
+    ::= { bwAMSMibGroups 1 }
+
+bwAmsRtpReceiveGroup    OBJECT-GROUP
+    OBJECTS { bwAMSRtcpSenderReportsPublic, bwAMSRtpPacketsExpectedPublic, bwAMSRtpPacketsReceivedPublic, bwAMSRtpOutOfOrderPublic, bwAMSRtpBadPayloadPublic, bwAMSRtpSsrcPublic, bwAMSRtpReceivedPacketJitterPublic, bwAMSRtcpSenderReportsPrivate, bwAMSRtpPacketsExpectedPrivate, bwAMSRtpPacketsReceivedPrivate,  bwAMSRtpOutOfOrderPrivate, bwAMSRtpBadPayloadPrivate, bwAMSRtpSsrcPrivate, bwAMSRtpReceivedPacketJitterPrivate  }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the RTP receive information for the Access Mediation Server"
+    ::= { bwAMSMibGroups 2 }
+
+bwAmsRtpTransmitGroup    OBJECT-GROUP
+    OBJECTS { bwAMSRtpCumulativePacketsLostPublic, bwAMSRtpPacketsSentPublic, bwAMSRtpFramesSkippedPublic, bwAMSRtpTransmitJitterPublic, bwAMSRtpCumulativePacketsLostPrivate , bwAMSRtpPacketsSentPrivate, bwAMSRtpFramesSkippedPrivate, bwAMSRtpTransmitJitterPrivate }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the RTP transmit information for the Access Mediation Server"
+    ::= { bwAMSMibGroups 3 }
+
+bwAmsSipGroup    OBJECT-GROUP
+    OBJECTS { bwAMSSipSummaryTotalTransactions, bwAMSSipStatsInviteIns, bwAMSStatsInviteOuts, bwAMSSipStatsAckIns, bwAMSSipStatsAckOuts, bwAMSSipStatsByeIns, bwAMSSipStatsByeOuts, bwAMSSipStatsCancelIns, bwAMSSipStatsCancelOuts, bwAMSSipStatsOptionsIns, bwAMSSipStatsOptionsOuts, bwAMSSipStatsRegisterIns, bwAMSSipStatsRegisterOuts, bwAMSSipStatsInfoIns, bwAMSSipStatsInfoOuts, bwAMSSipStatsNotifyIns, bwAMSSipStatsNotifyOuts, bwAMSSipStatsPrackIns, bwAMSSipStatsPrackOuts, bwAMSSipStatsInviteResponseIns, bwAMSSipStatsInviteResponseOuts, bwAMSSipStatsByeResponseIns, bwAMSSipStatsByeResponseOuts, bwAMSSipStatsCancelResponseIns, bwAMSSipStatsCancelResponseOuts, bwAMSSipStatsOptionsResponseIns, bwAMSSipStatsOptionsResponseOuts, bwAMSSipStatsRegisterResponseIns, bwAMSSipStatsRegisterResponseOuts, bwAMSSipStatsPrackResponseIns, bwAMSSipStatsPrackResponseOuts, bwAMSSipStatsInfoResponseIns, bwAMSSipStatsInfoResponseOuts, bwAMSSipStatsRetryInvites, bwAMSSipStatsRetryByes, bwAMSSipStatsRetryCancels, bwAMSSipStatsRetryResponses, bwAMSSipStatsSubscribeOuts, bwAMSSipStatsSubscribeResponseIns, bwAMSSipStatsUpdateIns, bwAMSSipStatsUpdateOuts, bwAMSSipStatsUpdateResponseIns, bwAMSSipStatsUpdateResponseOuts, bwAMSSipStatsTcpIns, bwAMSSipStatsTcpOuts, bwAMSSipStatsTcpFailures, bwAMSSipStatsUdpIns, bwAMSSipStatsUdpOuts, bwAMSSIPReclaimedStaleTcpConnections, bwAMSSipStatsActiveTcpConnections, bwAMSSipStatsSetupSignalDelay, bwAMSSipStatsMinSetupSignalDelay, bwAMSSipStatsMaxSetupSignalDelay, bwAMSSipStatsAnswerSignalDelay, bwAMSSipStatsMinAnswerSignalDelay, bwAMSSipStatsMaxAnswerSignalDelay, bwAMSSipStatsMsgRetryPercentageToOther }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the SIP information for the Access Mediation Server"
+    ::= { bwAMSMibGroups 4 }
+
+bwAmsSccpGroup    OBJECT-GROUP
+    OBJECTS { bwAMSSccpStatsTcpFailures, bwAMSSccpReclaimedStaleTcpConnections, bwAMSSccpRegisterIns, bwAMSSccpRegisterAckOuts, bwAMSSccpRegisterRejectOuts, bwAMSSccpCapabilitiesReqOuts, bwAMSSccpCapabilitiesResIns, bwAMSSccpIpPortMessageIns, bwAMSSccpHeadSetStatusMessageIns, bwAMSSccpButtonTemplateReqIns, bwAMSSccpButtonTemplateOuts, bwAMSSccpSoftKeyTemplateReqIns, bwAMSSccpSoftKeyTemplateOuts, bwAMSSccpSoftKeySetReqIns, bwAMSSccpSoftKeySetOuts, bwAMSSccpLineStatReqIns, bwAMSSccpLineStatOuts, bwAMSSccpSpeedDialStatReqIns, bwAMSSccpSpeedDialStatOuts, bwAMSSccpRegisterAvailableLinesIns, bwAMSSccpTimeDateReqIns, bwAMSSccpTimeDateOuts, bwAMSSccpDisplayPromptStatusOuts, bwAMSSccpSelectSoftKeysOuts, bwAMSSccpActivateCallPlaneOuts, bwAMSSccpCallInfoOuts, bwAMSSccpCallStateOuts, bwAMSSccpClearDisplayOuts, bwAMSSccpClearPriNotifyOuts, bwAMSSccpClearPromptStatusOuts, bwAMSSccpCloseReceiveChannelOuts, bwAMSSccpConfigStatusOuts, bwAMSSccpConnectionStatisticsReqOuts, bwAMSSccpConnectionStatisticsResIns, bwAMSSccpDeactivateCallPlaneOuts, bwAMSSccpDialedNumberOuts, bwAMSSccpDisplayPriNotifyOuts, bwAMSSccpDisplayTextOuts, bwAMSSccpLampOuts, bwAMSSccpOpenReceiveChannelOuts, bwAMSSccpOpenReceiveChannelAckIns, bwAMSSccpResetOuts, bwAMSSccpSetRingerOuts, bwAMSSccpSetSpeakerModeOuts, bwAMSSccpStartMediaTransmissionOuts, bwAMSSccpStartToneOuts, bwAMSSccpStopMediaTransmissionOuts, bwAMSSccpStopToneOuts, bwAMSSccpUnregisterIns, bwAMSSccpUnregisterAckOuts, bwAMSSccpVersionOuts, bwAMSSccpKeypadButtonIns, bwAMSSccpStimulusIns, bwAMSSccpOffHookIns, bwAMSSccpOnHookIns, bwAMSSccpOffHookWithCgpnIns, bwAMSSccpRegisterTokenReqIns, bwAMSSccpStatsIns, bwAMSSccpStatsOuts, bwAMSSccpSoftKeyEventIns, bwAMSSccpServerReqIns, bwAMSSccpAlarmIns, bwAMSSccpSetMicroModeOuts, bwAMSSccpServerResOuts, bwAMSSccpKeepAliveIns, bwAMSSccpEnblocCallIns, bwAMSSccpKeepAliveAckOuts, bwAMSStatsActiveDevices, bwAMSStatsActiveSessions, bwAMSStatsActiveCalls, bwAMSSccpStatsActiveTcpConnections, bwAMSSccpStatsRegistrationsPerSecond, bwAMSSccpIncomingCallAttempts, bwAMSSccpIncomingCallCompletions, bwAMSSccpOutgoingCallAttempts, bwAMSSccpOutgoingCallCompletions }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the SCCP information for the Access Mediation Server"
+    ::= { bwAMSMibGroups 5 }
+
+bwAmsBasicCompliance MODULE-COMPLIANCE
+	STATUS current
+     	DESCRIPTION
+		"BroadWorks Network Server MIB compliance"
+	MODULE -- this module
+		MANDATORY-GROUPS { bwAmsRtpGroup, bwAmsRtpReceiveGroup, bwAmsRtpTransmitGroup, bwAmsSipGroup, bwAmsSccpGroup }
+	::= { bwAMSMibCompliancy 1 }		
+		
+		
+-- End of MIB file - Do not put anything behind this line ...........................................
+
+END

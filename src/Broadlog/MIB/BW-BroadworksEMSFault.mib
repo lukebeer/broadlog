@@ -1,0 +1,105 @@
+
+-- File Name : BW-NetworkServerFault.mib
+BW-BroadworksEMSFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "200809160000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks Element Management System."
+    REVISION    "200809160000Z"
+                DESCRIPTION     "Added complete documentation for NOTIFICATION-TYPE entries to the MIB."
+    REVISION    "200805200000Z"
+                DESCRIPTION "Made the MIB conformant to smilint (level 3)"
+    ::=  {  common  1  }
+
+  bwPMElementManagementSystemBELaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Element Management System Back End process has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemBELaunched , bwPMElementManagementSystemBEShutDown, bwPMElementManagementSystemBERestarted, and bwPMElementManagementSystemBEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Back End process."
+    ::=  {  systemFaults 3001  }
+
+  bwPMElementManagementSystemBEShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Element Management System Back End process has been shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemBELaunched , bwPMElementManagementSystemBEShutDown, bwPMElementManagementSystemBERestarted, and bwPMElementManagementSystemBEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Back End process."
+    ::=  {  systemFaults 3002  }
+
+  bwPMElementManagementSystemBERestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Element Management System Back End process restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemBELaunched , bwPMElementManagementSystemBEShutDown, bwPMElementManagementSystemBERestarted, and bwPMElementManagementSystemBEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Back End process."
+    ::=  {  systemFaults 3003  }
+
+  bwPMElementManagementSystemBEDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Element Management System Back End process terminated.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemBELaunched , bwPMElementManagementSystemBEShutDown, bwPMElementManagementSystemBERestarted, and bwPMElementManagementSystemBEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Back End process."
+    ::=  {  systemFaults 3004  }
+    
+  bwPMElementManagementSystemFELaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Element Management System Front End process has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemFELaunched , bwPMElementManagementSystemFEShutDown, bwPMElementManagementSystemFERestarted, and bwPMElementManagementSystemFEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Front End process."
+    ::=  {  systemFaults 3005  }
+
+  bwPMElementManagementSystemFEShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Element Management System Front End process has been shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemFELaunched , bwPMElementManagementSystemFEShutDown, bwPMElementManagementSystemFERestarted, and bwPMElementManagementSystemFEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Front End process."
+    ::=  {  systemFaults 3006  }
+
+  bwPMElementManagementSystemFERestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Element Management System Front End process restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemFELaunched , bwPMElementManagementSystemFEShutDown, bwPMElementManagementSystemFERestarted, and bwPMElementManagementSystemFEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Front End process."
+    ::=  {  systemFaults 3007  }
+
+  bwPMElementManagementSystemFEDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Element Management System Front End process terminated.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMElementManagementSystemFELaunched , bwPMElementManagementSystemFEShutDown, bwPMElementManagementSystemFERestarted, and bwPMElementManagementSystemFEDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Element Management System Front End process."
+    ::=  {  systemFaults 3008  }
+    
+END

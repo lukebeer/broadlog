@@ -1,0 +1,2612 @@
+--
+BroadworksFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    enterprises, MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-TYPE, Counter32
+      FROM SNMPv2-SMI
+    DateAndTime, DisplayString
+      FROM SNMPv2-TC;
+
+  broadsoft MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines management information that is common to all elements in a Broadworks system."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200908130000Z"
+                DESCRIPTION     "Added Execution and Provisioning Components."
+    REVISION    "200906150000Z"
+                DESCRIPTION     "Added notification when Memory Allocation is exceeded."
+    REVISION    "200903270000Z"
+                DESCRIPTION     "Added notification for Application State transition."
+    REVISION    "200809160000Z"
+                DESCRIPTION     "Added complete documentation for NOTIFICATION-TYPE entries to the MIB."
+    REVISION    "200805200000Z"
+                DESCRIPTION     "Made the MIB conformant to smilint (level 3)"
+    ::=  {  enterprises  6431  }
+
+  broadworks  OBJECT IDENTIFIER
+    ::=  {  broadsoft  1  }
+
+  common  OBJECT IDENTIFIER
+    ::=  {  broadworks  1  }
+
+  systemFaults  OBJECT IDENTIFIER
+    ::=  {  common  1  }
+
+  -- The Fault Fields are attached to most BroadWorks Faults.
+  faultFields OBJECT IDENTIFIER
+    ::=  {  systemFaults 1  }
+
+  -- Sequential identifier. Represents the total number
+  -- of traps emitted by the SNMP Agent since it started and identifies the fault.
+  identifier  OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "A sequentially generated number, which can be used to uniquely identify the fault."
+    ::=  {  faultFields  1  }
+
+  -- Time at which the fault was emitted. 
+  timeStamp OBJECT-TYPE
+    SYNTAX      DateAndTime
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The date and time at which the fault was generated"
+    ::=  {  faultFields  2  }
+
+  -- Name of the fault being emitted.
+  alarmName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The name of the fault that occurred."
+    ::=  {  faultFields  3  }
+
+  -- Hostname of the system emitting this fault.
+  systemName  OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The hostname of the system"
+    ::=  {  faultFields  4  }
+
+  -- Fault severity
+  severity  OBJECT-TYPE
+    SYNTAX INTEGER  {
+      informational (0),
+      low (1),
+      medium (2),
+      high (3),
+      critical (4) }
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "An indicator of the severity of the fault.
+        informational:  Not service affecting
+        low: Losing redundant connectivity, but not service or capacity affecting.
+        medium: ability to provide connectivity, but service level affecting.
+        high: Inability to provide connectivity over a particular interface.
+        critical: No basic calls can be processed without operator intervention."
+    ::=  {  faultFields  5  }
+
+  -- If the fault is a stateful alarm, gives the state of the alarm.
+  alarmState  OBJECT-TYPE
+    SYNTAX      INTEGER  { off(0), on(1), cleared(2) }
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "Flag that describes the state of the alarm
+        OFF: alarm is off
+        ON: alarm is on
+        CLEARED: alarm is manually cleared"
+    ::=  {  faultFields  6  }
+
+  -- Software component that originated this fault.
+  component OBJECT-TYPE
+    SYNTAX      INTEGER  {
+     applicationserver (0),
+      mediaserver (1),
+      networkserver (2),
+      relayserver (3),
+      servicecontrolproxy (4),
+      elementmanagementsystem (5),
+      webserver (6),
+      calldetailserver (7),
+      xtendedservicesplatform (10),
+      profileserver (11),
+      externaldatabaseapplicationserver (12),
+      ucconnect (13),
+      execution (14),
+      provisioning (15),
+      accessmediationserver (16),
+      nsexecution (17),
+      nsprovisioning (18),
+      nsportal (19),
+      databaseserver (20),
+      executiondatalessserver (21) }
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "Broadworks server that is reporting the fault.
+        applicationserver:  Application server component
+        mediaserver: Media server component
+        networkserver:  Network server component
+        servicecontrolproxy: Service control proxy component
+        elementmanagementsystem: Element management system component
+        xtendedservicesplatform: Xtended Services Platform
+        profileserver: Profile Server
+        ucconnect: UC-Connect application
+        execution: Execution Server
+        provisioning: Provisioning Server
+        accessmediationserver: Access Mediation Server application
+        nsexecution: Network Server Execution application
+        nsprovisioning: Network Server Provisioning application
+        nsportal: Network Server Portal application
+        databasesever: Database Server application
+        executiondatalessserver: Execution Dataless (XS) Server"
+    ::=  {  faultFields  7  }
+
+  -- Gives the subcomponent responsible for the origination of this fault.
+  subcomponent  OBJECT-TYPE
+    SYNTAX      INTEGER  {
+          unspecified ( 0 ) ,
+          processmonitor ( 1 ) ,
+          webserver ( 2 ) ,
+          database ( 3 ) ,
+          sip ( 4 ) ,
+          ccp ( 5 ) ,
+          mgcp ( 6 ) ,
+          mcp ( 7 ) ,
+          smtp ( 8 ) ,
+          pop3 ( 9 ) ,
+          rtcp ( 10 ) ,
+          conferencing ( 11 ) ,
+          rtp ( 12 ) ,
+          ivr ( 13 ) ,
+          filesystem ( 14 ) ,
+          callp ( 15 ) ,
+          nssynch ( 16 ) ,
+          mss ( 17 ) ,
+          transevent ( 18 ) ,
+          emergency ( 19 ),
+          smap ( 20 ),
+          loggingserver ( 21 ),
+          nslocation ( 22 ),
+          ims ( 23 ),
+          nrs ( 24 ),
+          oss ( 25 ),
+          accounting ( 26 ),
+          licensing ( 27 ),
+          ldap ( 28 ),
+          pmReporting ( 29 ),
+          smdi ( 30 ),
+          cpeDeviceManagement ( 31 ),
+          networkDeviceManagement ( 32 ),
+          externalAuthentication ( 33 ),
+          liveAudio ( 34 ),
+          servicePackMigration ( 35 ),
+          cap ( 36 ),
+          openClientServer ( 37 ),
+          voicePortal ( 38 ),
+          callLogs ( 39 ),
+          ociReporting ( 40 ),
+          bcct ( 41 ),
+          diameterServer ( 42 ),
+          taskMonitor ( 44 ),
+          tcp ( 45 ),
+          logging ( 46 ),
+          soap ( 47 ),
+          smpp ( 48 ),
+          mm ( 49 ),
+          dns (50 ),
+          diameterFrontNode ( 51 ),
+          sh ( 52 ),
+          snmpAgent( 53 ),
+          xsp ( 54 ),
+          ps ( 55 ),
+          surveillance( 56 ),
+          subscriberCache( 57 ),
+          trunking( 58 ),
+          mediaControlChannel( 59 ),
+          configd( 60 ),
+          softwareManager(61),
+          security( 62 ),
+          video( 63 ),
+          webcontainer ( 64 ),
+          sccp ( 65 ),
+          diameter( 66 ),
+          http ( 67 ),
+          routePoint ( 68 ),
+          subscriberAgent ( 69 ),
+          subscriberProfileSync ( 70 ),
+          ccReporting ( 71 ),
+          publicReporting ( 72 ),
+          mediaCrInterface ( 73 ),
+          dbMonitor( 74 ),
+          broadCloud( 75 )
+          }
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "The subcomponent field identifies the subcomponent within
+        the component that has triggered the alarm.
+        unspecified: originated from an unspecified location
+        processmonitor: originated from the process monitor
+        The process monitor starts processes, monitors
+        them for process deaths, and restarts them upon death.
+        webserver: originated from the web server
+        database: originated from the database
+        sip: originated from the Session Initiation Protocol io subcomponent
+        ccp: originated from the Call Client Protocol IO subcomponent.
+        The Call Client Protocol provides a means for bi-directional
+        communication between a BroadWorks Feature Server and a call
+        control client.
+        mgcp: originated from the Media Gateway Control Protocol
+        io subcomponent
+        mcp: originated from the Media Control Protocol
+        io subcomponent.  The MCP protocol is the means of
+        communication between the application server and
+        the media server.
+        smtp: originated from the Simple Mail Transfer Protocol
+        IO subcomponent
+        pop3: originated from the POP3 IO subcomponent
+        rtcp: originated from the Realtime Transport Control Protocol
+        IO subcomponent
+        conferencing:  originated from the Conferencing subcomponent
+        rtp: originated from the Realtime Transport Protocol
+        IO subcomponent
+        ivr: originated from the Interactive Voice Response subcomponent
+        filesystem: originated from the filesystem subcomponent
+        callp: originated from the Call Processing subcomponent
+        nssynch: originated from the Network Server Synchronization
+        subcomponent
+        mss: originated from the Media Server Selection subcomponent
+        accounting: originated from the Accounting (billing) subcomponent
+        licensing: originated from the license management subcomponent
+        ldap: originated from the ldap configuration interface subcomponent
+        pmReporting: originated from the PM reporting subcomponent
+        smdi: originated from the SMDI io sub component
+        ccpeDeviceManagement: originated from the CPE device management subcomponent
+        networkDeviceManagement: originated from the network device address
+        mangement component
+        externalAuthentication: originated by the external web server
+        liveAudio: originated by the live audio subcomponent
+        servicePackMigration: originated by the service pack migration subcomponent
+        cap: originated by the call processing application protocol io subcomponent
+        openClientServer: originated by the open client server process
+        voicePortal: originated by the voice portal subcomponent
+        callLogs: originated by the enhanced call logs subcomponent
+        diameterServer: originated by the diameter server process (obsolete)
+        taskMonitor: Originated by the task monitor sub system
+        tcp: Originated by the TCP sub system
+        soap: Originated by the SOAP subcomponent
+        smpp: Originated by the SMPP subcomponent
+        mm: Originated by the Mobility Manager subcomponent
+        diameterFrontNode: originated by the Diameter Front Node process (obsolete)
+        snmpAgent: Originated by the SNMP agent process
+        ps: Originated by the Profile Server subcomponent
+        mediaControlChannel: Originated by the Media Server Media Control Channel Framework subcomponent
+        softwareManager: Originated by the Software Manager process
+        security: Originated from the security subcomponent
+        video: Originated from the video subcomponent
+        webcontainer: Originated from the web container subcomponent
+        sccp: Originated from the SCCP subcomponent
+        diameter: Originated by the diameter stack
+        http: Originated from the http subcomponent
+        routePoint: Originated from the route point subcomponent
+        subscriberAgent: Originated from the Subscriber Agent subcomponent
+        subscriberProfileSync: Originated from the Subscriber Profile Sync subcomponent
+        ccReporting: Originated from the CCReporting subcomponent/application
+        publicReporting: Originated from the PublicReporting application
+        mediaCrInterface: Originated from the Media Cr Interface subcomponent
+        dbMonitor: Originated from the database server DbMonitor subcomponent
+        broadCloud: Originated from the BroadCloud subcomponent"
+    ::=  {  faultFields  8  }
+
+  -- The problem text describes the nature of the problem.
+  problemText OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "Text describing the nature of the problem.  The text consists of constant and variable parts."
+    ::=  {  faultFields  9  }
+
+  -- The recommended actions text describes actions to take in order to fix the fault.
+  recommendedActionsText  OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "Text describing recommended actions to take in order to isolate the problem."
+    ::=  {  faultFields  10  }
+
+  -- The correlation parameter of the fault.
+  correlationParameter  OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS    accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "Correlation parameter."
+    ::=  {  faultFields  11  }
+
+  -- ===============================================================
+  -- The following is a list of all Fault Fields introduced in R15.0
+  -- ===============================================================
+  parameters OBJECT IDENTIFIER
+    ::=  {  faultFields 12  }
+
+  npAlarmList OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Describes a list of alarms"
+    ::=  {  parameters 1  }
+
+  npAllowedAttempts OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "The number of allowed attempts"
+    ::=  {  parameters 2  }
+
+  npAnswerTime OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Answer Time"
+    ::=  {  parameters 3  }
+
+  npBridgeName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Bridge Name"
+    ::=  {  parameters 4  }
+
+  npCallAnswered OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Call Answered"
+    ::=  {  parameters 5  }
+
+  npCallCapacityGroup OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Call Capacity Group"
+    ::=  {  parameters 6  }
+
+  npCallId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Call ID"
+    ::=  {  parameters 7  }
+
+  npCallPersonality OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Call Personality"
+    ::=  {  parameters 8  }
+
+  npCalledNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Called Number"
+    ::=  {  parameters 9  }
+
+  npCalledNumberContext OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Called Number Context"
+    ::=  {  parameters 10  }
+
+  npCaller OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Caller"
+    ::=  {  parameters 11  }
+
+  npCallingNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Calling Number"
+    ::=  {  parameters 12  }
+
+  npCallingNumberContext OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Calling Number Context"
+    ::=  {  parameters 13  }
+
+  npCallingPartyCategory OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Calling Party Category"
+    ::=  {  parameters 14  }
+
+  npCallingPresentationIndicator OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Calling Presentation Indicator"
+    ::=  {  parameters 15  }
+
+  npCallsLimit OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Calls Limit"
+    ::=  {  parameters 16  }
+
+  npCallTreatment OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Call Treatment"
+    ::=  {  parameters 17  }
+
+  npCallType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Call Type"
+    ::=  {  parameters 18  }
+
+  npClientAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Client Address"
+    ::=  {  parameters 19  }
+
+  npClusterName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Cluster Name"
+    ::=  {  parameters 20  }
+
+  npConfiguredAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Configured Address"
+    ::=  {  parameters 21  }
+
+  npConfiguredPhysicalLocation OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Configured Physical Location"
+    ::=  {  parameters 22  }
+
+  npCounterName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Counter Name"
+    ::=  {  parameters 23  }
+
+  npCountryCode OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Country Code"
+    ::=  {  parameters 24  }
+
+  npCpuIdleTimePercentage OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "CPU Idle Time Percentage"
+    ::=  {  parameters 25  }
+
+  npCurrentThresholdValue OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Current Threshold Value"
+    ::=  {  parameters 26  }
+
+  npDate OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Date"
+    ::=  {  parameters 27  }
+
+  npDepartmentName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Department Name"
+    ::=  {  parameters 28  }
+
+  npDestinationUserId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Destination User ID"
+    ::=  {  parameters 29  }
+
+  npDeviceAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Device Address"
+    ::=  {  parameters 30  }
+
+  npDeviceLinePort OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Device Line Port"
+    ::=  {  parameters 31  }
+
+  npDeviceList OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Device List"
+    ::=  {  parameters 32  }
+
+  npDeviceName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Device Name"
+    ::=  {  parameters 33  }
+
+  npDeviceType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Device Type"
+    ::=  {  parameters 34  }
+
+  npDialedNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Dialed Number"
+    ::=  {  parameters 35  }
+
+  npDirection OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Direction"
+    ::=  {  parameters 36  }
+
+  npDomain OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Domain"
+    ::=  {  parameters 37  }
+
+  npEndpointId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Endpoint ID"
+    ::=  {  parameters 38  }
+
+  npExceptionMessage OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Exception Message"
+    ::=  {  parameters 39  }
+
+  npExpectedVersion OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Expected Version"
+    ::=  {  parameters 40  }
+
+  npFailedAttempts OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Failed Attempts"
+    ::=  {  parameters 41  }
+
+  npFailedLoginAttempts OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Failed Login Attempts"
+    ::=  {  parameters 42  }
+
+  npFeatureName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Feature Name"
+    ::=  {  parameters 43  }
+
+  npFilename OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "File Name"
+    ::=  {  parameters 44  }
+
+  npFilenameAlt OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Alternate File Name"
+    ::=  {  parameters 45  }
+
+  npFirstName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "First Name"
+    ::=  {  parameters 46  }
+
+  npGaugeName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Gauge Name"
+    ::=  {  parameters 47  }
+
+  npGroupId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Group ID"
+    ::=  {  parameters 48  }
+
+  npGroupName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Group Name"
+    ::=  {  parameters 49  }
+
+  npGroupNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Group Number"
+    ::=  {  parameters 50  }
+
+  npHost OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Host"
+    ::=  {  parameters 51  }
+
+  npIndex OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Index"
+    ::=  {  parameters 52  }
+
+  npInhibitedNeighbors OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Inhibited Neighbours"
+    ::=  {  parameters 53  }
+
+  npInstanceName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Instance Name"
+    ::=  {  parameters 54  }
+
+  npLastIncomingCallTime OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Last Incoming Call Time"
+    ::=  {  parameters 55  }
+
+  npLastName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Last Name"
+    ::=  {  parameters 56  }
+
+  npLicenseAllocation OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "License Allocation"
+    ::=  {  parameters 57  }
+
+  npLicenseKey OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "License Key"
+    ::=  {  parameters 58  }
+
+  npLicenseLimit OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "License Limit"
+    ::=  {  parameters 59  }
+
+  npLocalInterface OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Local Interface"
+    ::=  {  parameters 60  }
+
+  npLocalPort OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Local Port"
+    ::=  {  parameters 61  }
+
+  npMailboxId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Mailbox ID"
+    ::=  {  parameters 62  }
+
+  npMaxFailedLoginAttempts OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Maximum Failed Login Attempts"
+    ::=  {  parameters 63  }
+
+  npMessage OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Message"
+    ::=  {  parameters 64  }
+
+  npMethod OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Method"
+    ::=  {  parameters 65  }
+
+  npMissingHeader OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Missing Header"
+    ::=  {  parameters 66  }
+
+  npNbDevicesProcessed OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Number of Devices Processed"
+    ::=  {  parameters 67  }
+
+  npNbDevicesWithoutMACAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Number of Devices Without MAC Address"
+    ::=  {  parameters 68  }
+
+  npNbInhibitedNeighbors OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Number of Inhibited Neighbors"
+    ::=  {  parameters 69  }
+
+  npNbOfErrors OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Number of Errors"
+    ::=  {  parameters 70  }
+
+  npNbOfSoapThreads OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Number of SOAP Threads"
+    ::=  {  parameters 71  }
+
+  npNbTransactions OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Number of Transactions"
+    ::=  {  parameters 72  }
+
+  npNetworkCallId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Network Call ID"
+    ::=  {  parameters 73  }
+
+  npNewAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "New Address"
+    ::=  {  parameters 74  }
+
+  npNewAdministrativeState OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "New Administrative State"
+    ::=  {  parameters 75  }
+
+  npNewDomainName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "New Domain Name"
+    ::=  {  parameters 76  }
+
+  npNewOperationalState OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "New Operational State"
+    ::=  {  parameters 77  }
+
+  npNewThresholdValue OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "New Threshold Value"
+    ::=  {  parameters 78  }
+
+  npNewZone OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "New Zone"
+    ::=  {  parameters 79  }
+
+  npNodeId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Node ID"
+    ::=  {  parameters 80  }
+
+  npOldAdministrativeState OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Old Administrative State"
+    ::=  {  parameters 81  }
+
+  npOldDomainName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Old Domain Name"
+    ::=  {  parameters 82  }
+
+  npOldOperationalState OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Old Operational State"
+    ::=  {  parameters 83  }
+
+  npOldZone OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Old Zone"
+    ::=  {  parameters 84  }
+
+  npOperation OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Operation"
+    ::=  {  parameters 85  }
+
+  npOriginalAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Original Address"
+    ::=  {  parameters 86  }
+
+  npOriginalCalledNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Original Called Number"
+    ::=  {  parameters 87  }
+
+  npOriginalCalledNumberContext OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Original Called Number Context"
+    ::=  {  parameters 88  }
+
+  npOriginalCalledNumberPresentationIndicator OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Original Called Number Presentation Indicator"
+    ::=  {  parameters 89  }
+
+  npOriginalCalledReason OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Original Called Reason"
+    ::=  {  parameters 90  }
+
+  npOriginator OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Originator"
+    ::=  {  parameters 91  }
+
+  npPeriod OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Period"
+    ::=  {  parameters 92  }
+
+  npPolicyFeature OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Policy Feature"
+    ::=  {  parameters 93  }
+
+  npProtocol OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Protocol"
+    ::=  {  parameters 94  }
+
+  npReason OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Reason"
+    ::=  {  parameters 95  }
+
+  npRadiusServerList OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Radius Server List"
+    ::=  {  parameters 96  }
+
+  npReceivedPhysicalLocation OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Received Physical Location"
+    ::=  {  parameters 97  }
+
+  npReceivedVersion OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Received Version"
+    ::=  {  parameters 98  }
+
+  npRedirectingNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Redirecting Number"
+    ::=  {  parameters 99  }
+
+  npRedirectingNumberContext OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Redirecting Number Context"
+    ::=  {  parameters 100  }
+
+  npRedirectingNumberPresentationIndicator OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Redirecting Number Presentation Indicator"
+    ::=  {  parameters 101  }
+
+  npRedirectingReason OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Redirecting Reason"
+    ::=  {  parameters 102  }
+
+  npRemoteAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Remote Address"
+    ::=  {  parameters 103  }
+
+  npRemoteParty OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Remote Party"
+    ::=  {  parameters 104  }
+
+  npRemotePort OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Remote Port"
+    ::=  {  parameters 105  }
+
+  npReport OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Report"
+    ::=  {  parameters 106  }
+
+  npRequest OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Request"
+    ::=  {  parameters 107  }
+
+  npResolvedAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Resolved Address"
+    ::=  {  parameters 108  }
+
+  npRoute OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Route"
+    ::=  {  parameters 109  }
+
+  npServerName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Server Name"
+    ::=  {  parameters 110  }
+
+  npServerType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Server Type"
+    ::=  {  parameters 111  }
+
+  npServiceProviderId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Service Provider ID"
+    ::=  {  parameters 112  }
+
+  npSessionId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Session ID"
+    ::=  {  parameters 113  }
+
+  npSessionKey OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Session Key"
+    ::=  {  parameters 114  }
+
+  npSipErrorCode OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "SIP Error Code"
+    ::=  {  parameters 115  }
+
+  npSipRequestMessage OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "SIP Request Message"
+    ::=  {  parameters 116  }
+
+  npSipResponseMessage OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "SIP Response Message"
+    ::=  {  parameters 117  }
+
+  npSizeLimit OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Size Limit"
+    ::=  {  parameters 118  }
+
+  npSmdiNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "SMDI Number"
+    ::=  {  parameters 119  }
+
+  npStackTrace OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Stack Trace"
+    ::=  {  parameters 120  }
+
+  npStartTime OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Start Time"
+    ::=  {  parameters 121   }
+
+  npSubscriberType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Subscriber Type"
+    ::=  {  parameters 122  }
+
+  npTaskName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Task Name"
+    ::=  {  parameters 123  }
+
+  npThreadName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Thread Name"
+    ::=  {  parameters 124  }
+
+  npThresholdName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Threshold Name"
+    ::=  {  parameters 125  }
+
+  npTimeElapsed OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Time Elapsed"
+    ::=  {  parameters 126  }
+
+  npTimeLength OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Time Length"
+    ::=  {  parameters 127  }
+
+  npTimestamp OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Timestamp"
+    ::=  {  parameters 128  }
+
+  npTraceType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Trace Type"
+    ::=  {  parameters 129  }
+
+  npTrunkGroupName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Trunk Group Name"
+    ::=  {  parameters 130  }
+
+  npUrl OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Uniform Resource Locator"
+    ::=  {  parameters 131  }
+
+  npUserId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "User ID"
+    ::=  {  parameters 132  }
+
+  npUserName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "User Name"
+    ::=  {  parameters 133  }
+
+  npUserNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "User Number"
+    ::=  {  parameters 134  }
+
+  npUserUid OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "User UID"
+    ::=  {  parameters 135  }
+
+  npThresholdDescription OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Threshold Description"
+    ::=  {  parameters 136  }
+
+  npSubscriberId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Subscriber ID"
+    ::=  {  parameters 137  }
+
+  npCommand OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Command"
+    ::=  {  parameters 138  }
+
+  npPublicIdentity OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Public Identity"
+    ::=  {  parameters 139  }
+
+  npDataReference OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Data Reference"
+    ::=  {  parameters 140  }
+
+  npResultCode OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Result Code"
+    ::=  {  parameters 141  }
+
+  npResultCodeType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Result Code Type"
+    ::=  {  parameters 142  }
+
+  npError OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Error"
+    ::=  {  parameters 143  }
+
+  npLoginLevel OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Login Level"
+    ::=  {  parameters 144  }
+
+  npMaximumNbItems OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Maximum Number of Items"
+    ::=  {  parameters 145  }
+
+  npRequestUriUser OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Requested User URI"
+    ::=  {  parameters 146  }
+
+  npWebAppContext OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Web Application context path"
+    ::=  {  parameters 147  }
+
+  npTreatment OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Treatment received for call"
+    ::= { parameters 148 }
+
+  npPrimaryAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Primary Address"
+    ::= { parameters 149 }
+
+  npSecondaryAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Secondary Address"
+    ::= { parameters 150 }
+
+  npServiceProviderName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Service Provider Name"
+    ::= { parameters 151 }
+
+  npConfigVersion OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Configuration revision number"
+    ::= { parameters 152 }
+
+  npApplicationName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Name of the application."
+    ::= { parameters 153 }
+
+  npOldEffectiveState OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "Old Effective State"
+    ::= { parameters 154 }
+
+  npNewEffectiveState OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "New Administrative State"
+    ::= { parameters 155 }
+
+  npApplicationMemory OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The quantity of memory allocated for the application."
+    ::= { parameters 156 }
+
+  npSystemMemory OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The total amount of memory in the system that is available to allocate for applications."
+    ::= { parameters 157 }
+
+  npSourceCodec OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Name of original codec."
+    ::= { parameters 158 }
+
+  npDestinationCodec OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Name of destination codec."
+    ::= { parameters 159 }
+    
+  npMaximumAttempt OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Maximum number of attempt."
+    ::= { parameters 160 }
+  
+  npMacAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Mac Address"
+    ::=  {  parameters 161  }
+
+  npMaxNumberOfSessions OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Maximum number of sessions"
+    ::= { parameters 162 }
+
+  npSACGroupId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The Id of the SAC group"
+    ::= { parameters 163 }
+
+  npFileURL OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The file URL"
+    ::= { parameters 164 }
+
+  npObjectId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Object Identifier"
+    ::= { parameters 165 }
+
+  npMSCAddr OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "network MSC Address"
+    ::= { parameters 166 }
+
+  npRoutePointName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The name of the route point"
+    ::= { parameters 167 }
+
+  npProfileDescription OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The profile description"
+    ::= { parameters 168 }
+
+  npTransactionLimitPeriod OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The transaction limit period in secs"
+    ::= { parameters 169 }
+
+  npGlobalTransactionLimit OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The configured global transaction limit"
+    ::= { parameters 170 }
+
+  npNetAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The IP/FQDN Address"
+    ::= { parameters 171 }
+
+  npReportName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The name of the scheduled report. This parameter is encoded using the application/x-www-form-urlencoded MIME format."
+    ::= { parameters 172 }
+
+  npDateTime OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The date and time"
+    ::= { parameters 173 }
+
+  npTimeoutValue OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The timeout value"
+    ::= { parameters 174 }
+
+ npMediaServerAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The address of the Media Server."
+    ::= { parameters 175 }
+
+ npUserDN OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The DN of the paging group."
+    ::= { parameters 176 }
+
+ npApplicationServerSetName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The Application Server set name"
+    ::= { parameters 177 }
+
+ npApplicationServerSetContent OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "A comma-separated list of Hosting NE names that are part of the set."
+    ::= { parameters 178 }
+
+ npIdentity OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The main PUI for the profile."
+    ::= { parameters 179 }
+
+ npAlternate OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The alternate PUI which failed to be linked."
+    ::= { parameters 180 }
+
+ npDatabaseName OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The database name."
+    ::= { parameters 181 }
+
+ npSite OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The database site."
+    ::= { parameters 182 }
+
+ npEnterpriseId OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The enterprise Id."
+    ::= { parameters 183 }
+
+ npAddress OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "The IP address."
+    ::= { parameters 184 }
+
+ npResourceRecordType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Resource record type (NAPTR, SRV, A, PTR) in the query."
+    ::= { parameters 185 }
+
+ npIMRNNumber OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "IMRN number"
+    ::= { parameters 186 }
+
+ npSIPCallID OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "SIP Call ID"
+    ::= { parameters 187 }
+
+ npFrom OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Caller"
+    ::= { parameters 188 }
+
+ npDatabaseObjectType OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION "Database Object type."
+    ::= { parameters 189 }
+ 
+  npBroadCloudRequest OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "The provisioning action requested to BroadCloud. Can be POST, PUT or DELETE"
+    ::=  {  parameters 191  }
+
+  npBroadCloudUid OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "The BroadCloud unique subscriber id."
+    ::=  {  parameters 192  }
+
+  npBroadCloudService OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "The BroadCloud service for which the request was made."
+    ::=  {  parameters 193  }
+
+  npBroadCloudFailureReason OBJECT-TYPE
+    SYNTAX DisplayString
+    MAX-ACCESS accessible-for-notify
+    STATUS current
+    DESCRIPTION
+        "The reason for the failure."
+    ::=  {  parameters 194  }
+
+  -- ===============================================================
+  -- NOTIFICATIONS
+  -- ===============================================================
+  broadsoftNotifications  OBJECT IDENTIFIER
+    ::=  {  systemFaults 0  }
+
+  -- SHARED MODE ONLY
+  -- When a monitoring manager is configured in 'shared' mode, this trap
+  -- defines a notification, which is a message from BroadWorks to the 
+  -- network management station that indicates an abnormal or report-worthy
+  -- condition detected in the system.
+  notification  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "A notification indicates detection of an abnormal condition in the system."
+    ::=  {  systemFaults 2  }
+
+  -- SHARED MODE ONLY
+  -- When a monitoring manager is configured in 'shared' mode, this trap
+  -- defines a alarm, which is a message from the BroadWorks to the NMS that
+  -- indicates an abnormal condition, as well as, the clearing of that 
+  -- abnormal condition.
+  statefulAlarm NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "A stateful alarm alerts to the onset and cleanup of an abnormal condition associated with a resource."
+    ::=  {  systemFaults 3 }
+
+  -- SHARED MODE ONLY
+  -- When a monitoring manager is configured in 'shared' mode, this trap
+  -- defines a software error, which is an exception that has been detected
+  -- by the software. If reflects conditions that should never occur, regardless
+  -- of valid or invalid external stimuli. These normally require the attention
+  -- of BroadSoft support personnel.
+  softwareError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Internal error detected by software."
+    ::=  {  systemFaults 4  }
+
+  bwGeneralSoftwareError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npStackTrace }
+    STATUS      current
+    DESCRIPTION
+        "This software error indicates that an unspecified software error has occurred.
+@severity:medium
+@subcomponent:unspecified"
+    ::=  {  systemFaults 5  }
+
+  bwPMtomcatLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Tomcat server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMtomcatLaunched, bwPMtomcatShutDown, bwPMtomcatStarted, and bwPMtomcatDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Tomcat process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 6  }
+
+  bwPMtomcatShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Tomcat server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMtomcatLaunched, bwPMtomcatShutDown, bwPMtomcatStarted, and bwPMtomcatDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Tomcat process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 7  }
+
+  bwPMtomcatRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Tomcat server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMtomcatLaunched, bwPMtomcatShutDown, bwPMtomcatStarted, and bwPMtomcatDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Tomcat process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 8  }
+
+  bwPMtomcatDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Tomcat server death.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMtomcatLaunched, bwPMtomcatShutDown, bwPMtomcatStarted, and bwPMtomcatDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the Tomcat process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 9  }
+
+  bwSystemHealthReport  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReport }
+    STATUS      current
+    DESCRIPTION
+        "System health report.
+@severity:informational-critical
+@subcomponent:processmonitor
+@correlationrules:The system health should always be at the latest state/severity reported by a bwSystemHealthReport trap.  For example a critical alarm raised through bwSystemHealthReport could be cleared automatically in case the next severity received is informational."
+    ::=  {  systemFaults 10  }
+
+  bwDatabaseSyncReport  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReport }
+    STATUS      current
+    DESCRIPTION
+        "This notification is generated by the synchcheck_basic.pl command.  It provides a detail reports on database differences.
+@severity:low-critical
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 11  }
+
+  bwServerStateTransition  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npOldAdministrativeState, npNewAdministrativeState }
+    STATUS      current
+    DESCRIPTION
+        "Reports a BroadWorks server state transition.
+@severity:informational
+@subcomponent:unspecified
+@correlationrules:It is recommended to clear all alarms associated with a network element whenever there is an NE transition to the enable state, since the network element, itself, will in this case automatically clear all internal error conditions."
+    ::=  {  systemFaults 12  }
+
+  bwCounterThreshold  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npCounterName, npCurrentThresholdValue, npNewThresholdValue, npThresholdDescription }
+    STATUS      current
+    DESCRIPTION
+        "Sent when a counter threshold reaches its limit.
+@severity:variable
+@subcomponent:unspecified"
+    ::=  {  systemFaults 13  }
+
+  bwGaugeLowLimitThreshold  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npGaugeName, npCurrentThresholdValue, npThresholdDescription }
+    STATUS      current
+    DESCRIPTION
+        "Sent when gauge threshold lowNotify value is reached while decreasing.
+@severity:variable
+@subcomponent:unspecified"
+    ::=  {  systemFaults 14  }
+
+  bwGaugeHighLimitThreshold  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npGaugeName, npCurrentThresholdValue, npThresholdDescription }
+    STATUS      current
+    DESCRIPTION
+        "Sent when gauge threshold highNotify value is reached while increasing.
+@severity:variable
+@subcomponent:unspecified"
+    ::=  {  systemFaults 15  }
+
+  bwPMReportingFTPConnectionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "Periodic measurement report could not be sent to FTP server.
+@severity:informational
+@subcomponent:pmReporting"
+    ::=  {  systemFaults 16  }
+
+  bwCPUIdleTimeLimitReached  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCpuIdleTimePercentage, npThresholdName, npCurrentThresholdValue }
+    STATUS      current
+    DESCRIPTION
+        "CPU idle time monitoring.
+@severity:informational-critical
+@subcomponent:processmonitor
+@correlationrules:It is recommended to always keep the highest severity value for this notification until it is cleared."
+    ::=  {  systemFaults 17  }
+
+  bwMemoryLimitReached  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReport }
+    STATUS      current
+    DESCRIPTION
+        "This notification is generated by the bwCPUMon script (memory usage).  It monitors the heap usage for the entire system and for the Execution Server process (Application Server only).
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:It is recommended to always keep the highest severity value for this notification until it is cleared."
+    ::=  {  systemFaults 18  }
+
+  bwNetworkDeviceIsFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServerType, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is generated whenever a network device that was previously responding does not respond to an application-level ping.
+@severity:high
+@subcomponent:networkDeviceManagement
+@correlationrules:It is recommended to always keep the highest severity value for this notification until it is cleared."
+    ::=  {  systemFaults 19  }
+
+  -- 20 was deprecated in Release 16.0
+
+  bwPMremotexlaLaunched   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the remote XLA server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMremotexlaLaunched, bwPMremotexlaShutDown, bwPMremotexlaRestarted, and bwPMremotexlaDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the remoteXLA process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 21  }
+
+  bwPMremotexlaShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the remote XLA server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMremotexlaLaunched, bwPMremotexlaShutDown, bwPMremotexlaRestarted, and bwPMremotexlaDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the remoteXLA process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 22  }
+
+  bwPMremotexlaRestarted   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the remote XLA server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMremotexlaLaunched, bwPMremotexlaShutDown, bwPMremotexlaRestarted, and bwPMremotexlaDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the remoteXLA process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 23  }
+
+  bwPMremotexlaDeath   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the remote XLA server death.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMremotexlaLaunched, bwPMremotexlaShutDown, bwPMremotexlaRestarted, and bwPMremotexlaDeath can be correlated into a single notification.  These events have to be considered as a transition of the state machine for the management of the remoteXLA process running on some of the BroadWorks servers."
+    ::=  {  systemFaults 24  }
+
+  bwLicenseFileNotFound  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFilename }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the system is unable to locate the license files.
+@severity:critical
+@subcomponent:licensing"
+    ::=  {  systemFaults 25  }
+
+  bwSMAPConnectionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The SMAP port failed to be opened.
+@severity:medium
+@subcomponent:smap"
+    ::=  {  systemFaults 26  }
+
+  bwMaximumFailedLoginAttempts  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFailedLoginAttempts, npMaxFailedLoginAttempts }
+    STATUS      current
+    DESCRIPTION
+        "A user has failed to log in the allowed maximum number of times (consecutive login failures).
+@severity:low
+@subcomponent:security"
+    ::=  {  systemFaults 27  }
+
+  bwCommProtocolInitError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npLocalInterface, npLocalPort }
+    STATUS      current
+    DESCRIPTION
+        "Could not bind on TCP port.
+@severity:high
+@subcomponent:bcct"
+    ::=  {  systemFaults 28  }
+
+  bwCommProtocolHostNotAllowed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npLocalInterface, npProtocol }
+    STATUS      current
+    DESCRIPTION
+        "A host that is not allowed for this protocol has attempted to connect.
+@severity:high
+@subcomponent:bcct"
+    ::=  {  systemFaults 29  }
+
+  bwCommProtocolInterfaceNotAllowed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npLocalInterface, npProtocol }
+    STATUS      current
+    DESCRIPTION
+        "Connections for this protocol are not allowed on this interface.
+@severity:high
+@subcomponent:bcct"
+    ::=  {  systemFaults 30  }
+
+  bwSipTcpExceededMax  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "SIP TCP connections reclaimed to avoid exceeding the maximum number of SIP TCP connections.
+@severity:low
+@subcomponent:sip"
+    ::=  {  systemFaults 31  }
+
+  bwSipTcpExceededMaxPerPeer  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "SIP TCP connections associated with the IP address were reclaimed to avoid exceeding the maximum number of SIP TCP connections per peer.
+@severity:low
+@subcomponent:sip"
+    ::=  {  systemFaults 32  }
+
+  bwSipTcpSocketError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "SIP TCP connection associated with IP address and port was released or unable to be established
+@severity:low
+@subcomponent:sip"
+    ::=  {  systemFaults 33  }
+
+  bwTaskMonitorWarning  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTimeLength, npTimeElapsed, npThreadName, npStackTrace }
+    STATUS      current
+    DESCRIPTION
+        "A task is taking longer than normal.
+@severity:low
+@subcomponent:taskMonitor"
+    ::=  {  systemFaults 34  }
+
+  bwTaskMonitorHungTask  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTimeLength, npTimeElapsed, npThreadName, npStackTrace }
+    STATUS      current
+    DESCRIPTION
+        "A task is hung.
+@severity:major-critical
+@subcomponent:taskMonitor"
+    ::=  {  systemFaults 35  }
+
+  bwTcpSubsystemFatalError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npStackTrace }
+    STATUS      current
+    DESCRIPTION
+        "TCP subsystem fatal error.
+@severity:low
+@subcomponent:taskMonitor"
+    ::=  {  systemFaults 36  }
+
+  bwFileServerClusterUnreachable NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npClusterName }
+    STATUS      current
+    DESCRIPTION
+        "The file server cluster is unreachable, causing a file operation to fail.
+@severity:critical
+@subcomponent:filesystem"
+    ::=  {  systemFaults 37  }
+
+  bwFileServerNodeUnreachable NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npClusterName }
+    STATUS      current
+    DESCRIPTION
+        "One node in the file server cluster is not reachable.
+@severity:high
+@subcomponent:filesystem"
+    ::=  {  systemFaults 38   }
+
+  -- 39 & 40 have been deprecated in R15.0, see at the end of file.
+
+  bwAlarmsDiscarded  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTimestamp, npAlarmList }
+    STATUS      current
+    DESCRIPTION
+        "Provides a complete list of all the alarms that the SNMP agent discarded in the past 15 minutes either because they are suppressed or because they exceeded their predefined threshold criteria.
+@severity:low
+@subcomponent:unspecified"
+    ::=  {  systemFaults 41  }
+
+  bwLogQueueSizeLimitReached  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npSizeLimit, npFilename }
+    STATUS      current
+    DESCRIPTION
+        "The server has started to drop log entries because the logging queue size limit has been reached.
+@severity:low
+@subcomponent:unspecified"
+    ::=  {  systemFaults 42  }
+
+  -- 43 has been deprecated in R15.0, see at the end of file.
+
+  bwLicenseFileExpiring  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npDate }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is generated once a day when the license file expiration date is less than seven days from the current day.
+@severity:critical
+@subcomponent:licensing"
+    ::= {  systemFaults 44   }
+
+  bwLicenseFileExpired  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npDate }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent once a day, after the license file has expired.
+@severity:critical
+@subcomponent:licensing"
+    ::= {  systemFaults 45   }
+
+  bwCallOverloadZoneTransition NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npOldZone, npNewZone }
+    STATUS      current
+    DESCRIPTION
+        "This trap is generated when the BroadWorks component enters a new non-call overload control zone.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3618  }
+
+  bwNonCallOverloadZoneTransition NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npOldZone, npNewZone }
+    STATUS      current
+    DESCRIPTION
+        "This trap is generated when the BroadWorks component enters a new call overload control zone.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3619  }
+
+  bwCongestionManagementNeighborOverloaded NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npPeriod }
+    STATUS      current
+    DESCRIPTION
+        "The Server has received a 503 Response with Retry-After from the neighbor and set the neighbor to Overloaded state.
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3635 }
+
+  bwCongestionManagementNeighborsInhibited NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npNbInhibitedNeighbors, npInhibitedNeighbors }
+    STATUS      current
+    DESCRIPTION
+        "The Application Server has identified the main overload source when it enters into the yellow zone.
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 46 }
+
+  bwAlarmsTableLimitReached NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaximumNbItems }
+    STATUS current
+    DESCRIPTION
+        "This alarm is raised when the alarms table has reached the configured maximum number of entries. It warns the manager that no more alarms will be sent until the problem is fixed.
+@severity:critical
+@subcomponent:snmpAgent"
+    ::= { systemFaults 47 }
+
+  bwPMhttpdLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Apache started.
+@severity:informational
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 48  }
+
+  bwPMhttpdShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Apache manually shut down.
+@severity:informational
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 49  }
+
+  bwPMhttpdRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Apache restarted.
+@severity:informational
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 50  }
+
+  bwPMhttpdDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Apache process unexpectedly died.
+@severity:critical
+@subcomponent:processmonitor"
+    ::=  {  systemFaults 51  }
+
+  bwApplicationStateTransition NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npApplicationName, npOldAdministrativeState, npNewAdministrativeState, npOldEffectiveState, npNewEffectiveState }
+    STATUS      current
+    DESCRIPTION
+        "Reports an application's administrative or effective state transition.
+@severity:informational
+@subcomponent:unspecified"
+    ::= { systemFaults 52 }
+
+  bwMemoryAllocationExceeded NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npApplicationMemory, npSystemMemory }
+    STATUS      current
+    DESCRIPTION
+        "Reports a lack of memory when deploying an application..
+@severity:informational
+@subcomponent:softwareManager"
+    ::= { systemFaults 53 }
+
+  bwMemoryOverAllocation NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The memory allocation for application is overallocated.
+@severity:medium
+@subcomponent:softwareManager"
+    ::= { systemFaults 54 }
+    
+bwPMLogServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Log Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMLogServerLaunched, bwPMLogServerShutDown, bwPMLogServerRestarted, and bwPMLogServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Log Server main process."
+    ::=  {  systemFaults 55  }
+
+  bwPMLogServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Log Server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMLogServerLaunched, bwPMLogServerShutDown, bwPMLogServerRestarted, and bwPMLogServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Log Server main process."
+    ::=  {  systemFaults 56  }
+
+  bwPMLogServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Log Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMLogServerLaunched, bwPMLogServerShutDown, bwPMLogServerRestarted, and bwPMLogServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Log Server main process."
+    ::=  {  systemFaults 57  }
+
+  bwPMLogServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Log Server termination.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMLogServerLaunched, bwPMLogServerShutDown, bwPMLogServerRestarted, and bwPMLogServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Log Server main process."
+    ::=  {  systemFaults 58  }
+    
+  bwMaximumFailedUserLoginAttempts NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npMaxFailedLoginAttempts }
+    STATUS      current
+    DESCRIPTION
+        "A specific user/administrator has failed to log in the allowed maximum number of times (consecutive login failures).
+@severity:low
+@subcomponent:security"
+    ::= { systemFaults 59 }
+
+  -- ===============================================================
+  -- Moved from the BW-ApplicationServerFault MIB.
+  -- ===============================================================
+  bwLicenseAuthenticationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the authentication of the license file failed.
+@severity:critical
+@subcomponent:licensing"
+    ::=  {  systemFaults 3541  }
+
+  bwLicenseHWViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that there is an attempt to run the application on an unlicensed server.
+@severity:critical
+@subcomponent:licensing"
+    ::=  {  systemFaults 3543  }
+
+  bwLicenseAccntViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npLicenseKey, npLicenseLimit, npLicenseAllocation }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the license allocation has exceeded the limit.
+@severity:high
+@subcomponent:licensing"
+    ::=  {  systemFaults 3544  }
+
+  bwSipMessageParsingError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMissingHeader, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that BroadWorks is unable to parse an incoming SIP message.
+@severity:low
+@subcomponent:sip"
+    ::= { systemFaults 3509 }
+
+  bwSipUnexpectedMessage  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npSipResponseMessage, npSipRequestMessage  }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that an unexpected SIP message is received.
+@severity:low
+@subcomponent:sip"
+    ::= { systemFaults 3511 }
+
+  bwSipMaxRetriesExceeded  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMethod, npCallId, npDeviceAddress, npRemotePort }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates a SIP request was aborted after maximum number of retries.
+@severity:low
+@subcomponent:sip"
+    ::= { systemFaults 3512 }
+
+  bwSipRequestTimeOutReceived  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npSipResponseMessage, npSipRequestMessage, npDeviceAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a SIP request timeout message was received.
+@severity:medium
+@subcomponent:sip"
+    ::= { systemFaults 3513 }
+
+  bwSipServiceUnavailableReceived  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npSipResponseMessage, npSipRequestMessage, npDeviceAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a SIP service unavailable message was received.
+@severity:low
+@subcomponent:sip"
+    ::= { systemFaults 3514 }
+
+  bwSipServerTimeOutReceived  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npSipResponseMessage, npSipRequestMessage, npDeviceAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that a SIP server timeout message was received.
+@severity:low
+@subcomponent:sip"
+    ::= { systemFaults 3515 }
+
+  bwSipUnrecognisedDomainName  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npHost }
+    STATUS      current
+    DESCRIPTION
+        "The domain name entered in the access device location is unrecognized or the domain name server is unreachable.
+@severity:medium
+@subcomponent:sip"
+    ::= { systemFaults 3518 }
+
+  bwSMTPPrimaryServerEmailMessageDeliveryError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the system failed to deliver an e-mail message via the primary SMTP server.
+@severity:low
+@subcomponent:smtp"
+    ::=  {  systemFaults 3519  }
+
+  bwSMTPConnectivityFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the system has lost the connection to both SMTP servers.
+@severity:high
+@subcomponent:smtp"
+    ::=  {  systemFaults 3520  }
+
+  bwCentralizedDatabaseConnectivityFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npDatabaseName, npSite }
+    STATUS      current
+    DESCRIPTION
+        "A connectivity failure is detected on the connection to a centralized database site for a given schema.
+@severity:high
+@subcomponent:database"
+    ::=  {  systemFaults 60  }
+
+  -- This fault was moved from BW-ApplicationServerFault when the MIB was split into two
+  -- MIBs (BW-ExecutionFault.mib and BW-ProvisioningFault.mib). All BroadWorks servers
+  -- may not actually send this fault.
+  bwCPEDeviceConfigurationDeviceReset  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npDeviceName, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "An IP phone could not be reset.
+@severity:medium
+@subcomponent:unspecified"
+    ::=  {  systemFaults 3572  }
+
+  bwSipTcpConnectionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "Failure to establish TCP connection.
+@severity:low
+@subcomponent:sip"
+    ::= { systemFaults 3595 }
+
+  bwDnsServerUnreachable   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "A DNS server was unreachable for a DNS query.
+@severity:low
+@subcomponent:dns"
+    ::= { systemFaults 3645 }
+
+  bwDnsAllServersUnreachable   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "All DNS servers are unreachable.
+@severity:high
+@subcomponent:dns"
+    ::= { systemFaults 3646 }
+
+  bwLicenseMonitoringFault NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCurrentThresholdValue, npReport }
+    STATUS      current
+    DESCRIPTION
+        "Licensing threshold exceeded.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3665 }
+
+  -- ===============================================================
+  -- Deprecated Notifications/Alarms
+  -- ===============================================================
+  bwFileServerClusterUnreachableClear NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      deprecated
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+    ::=  {  systemFaults 39  }
+
+  bwFileServerNodeUnreachableClear NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      deprecated
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+    ::=  {  systemFaults 40   }    
+
+  bwLogQueueSizeLimitReachedClear  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      deprecated
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data."
+    ::=  {  systemFaults 43  }
+
+  bwNetworkDeviceIsOnline  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npServerType, npRemoteAddress }
+    STATUS      deprecated
+    DESCRIPTION
+        "A notification indicates detection of an abnormal condition in the system."
+    ::=  {  systemFaults 20  }
+    
+END
+

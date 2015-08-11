@@ -1,0 +1,209 @@
+-- File Name : BW-NSPortal.mib
+
+BW-NSPortal DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-COMPLIANCE, OBJECT-GROUP
+        FROM SNMPv2-CONF
+    Counter32, Gauge32, Integer32, MODULE-IDENTITY, NOTIFICATION-TYPE, 
+    OBJECT-TYPE, Unsigned32, enterprises
+        FROM SNMPv2-SMI
+    DisplayString
+        FROM SNMPv2-TC;
+
+broadsoft MODULE-IDENTITY
+    LAST-UPDATED "200912020000Z"
+    ORGANIZATION 
+        "Broadsoft, Inc"
+    CONTACT-INFO 
+        "Broadsoft, Inc
+         220 Perry Parkway
+         Gaithersburg, MD  20877
+         301-977-9440"
+    DESCRIPTION 
+        "This is the module defining the NSPortal application performance counters."
+    REVISION    "200912020000Z"
+    DESCRIPTION 
+        "Creation of the NS Portal MIB based on the defunct BW-BroadworksNetworkServer MIB."
+    ::= { enterprises 6431 }
+
+broadworks OBJECT IDENTIFIER
+    ::= { broadsoft 1 }
+
+nsPortal OBJECT IDENTIFIER
+    ::= { broadworks 19 }
+
+locationApi  OBJECT IDENTIFIER
+    ::= { nsPortal 1 }
+
+bwUserLocationRequests OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "Number of times a user location request has been received."
+    ::= { locationApi 1 }
+
+bwUserLocationRequestSuccess OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "Number of times a user location request has been answered successfully."
+    ::= { locationApi 2 }
+
+bwUserLocationRequestUnknownUser OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "Number of times a user location request could not be processed because the user is unknown."
+    ::= { locationApi 3 }
+
+bwUserLocationRequestFailures OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "Number of times a user location request could not be processed."
+    ::= { locationApi 4 }
+
+serviceControlProxy OBJECT IDENTIFIER
+    ::= { nsPortal 2 }
+
+scpSystemModule OBJECT IDENTIFIER
+    ::= { serviceControlProxy 1 }
+
+bwSCProxyStatsACLViolationCount OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Reflects the total number of messages received from unauthorized host"
+    ::= { scpSystemModule 1 }
+
+bwSCProxyStatsSCPMessageIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Reflects the total number of incoming CAP over HTTP messages"
+    ::= { scpSystemModule 2 }
+
+bwSCProxyStatsSCPMessageOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Reflects the total number of outgoing CAP over HTTP messages"
+    ::= { scpSystemModule 3 }
+
+bwSCProxyStatsSCPMessageErrors OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Reflects the total number of error CAP over HTTP messages sent"
+    ::= { scpSystemModule 4 }
+
+scpCapModule OBJECT IDENTIFIER
+    ::= { serviceControlProxy 2 }
+
+bwSCProxyStatsASTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwSCProxyStatsASEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table holds bwSCProxyStatsASEntry, which consists of an ID, an address, the number of message In, out, and the number of error.  There is one entry per Application Server."
+    ::= { scpCapModule 1 }
+
+bwSCProxyStatsASEntry OBJECT-TYPE
+    SYNTAX      BwSCProxyStatsASEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This row contains information on a Hosting NE address"
+    INDEX       { bwSCProxyStatsASIndex }
+    ::= { bwSCProxyStatsASTable 1 }
+
+BwSCProxyStatsASEntry ::= SEQUENCE {
+    bwSCProxyStatsASIndex           Unsigned32,
+    bwSCProxyStatsASAddr            DisplayString,
+    bwSCProxyStatsASMessageIns      Counter32,
+    bwSCProxyStatsASMessageOuts     Counter32,
+    bwSCProxyStatsASMessageErrors   Counter32
+}
+
+bwSCProxyStatsASIndex OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Index to a HostingNe address entry."
+    ::= { bwSCProxyStatsASEntry 1 }
+
+bwSCProxyStatsASAddr OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "The address of a HostingNe"
+    ::= { bwSCProxyStatsASEntry 2 }
+
+bwSCProxyStatsASMessageIns OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Reflects the total number of incoming CAP messages for a specific HostingNe address"
+    ::= { bwSCProxyStatsASEntry 3 }
+
+bwSCProxyStatsASMessageOuts OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Reflects the total number of outgoing CAP messages for a specific HostingNe address"
+    ::= { bwSCProxyStatsASEntry 4 }
+
+bwSCProxyStatsASMessageErrors OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Reflects the total number of error CAP messages received from a specific HostingNe address"
+    ::= { bwSCProxyStatsASEntry 5 }
+
+bwNSPortalMibConformance OBJECT IDENTIFIER
+    ::= { nsPortal 100 }
+
+bwNSPortalMibGroups OBJECT IDENTIFIER
+    ::= { bwNSPortalMibConformance 1 }
+
+bwNSPortalMibCompliancy OBJECT IDENTIFIER
+    ::= { bwNSPortalMibConformance 2 }
+
+bwNSPortalLocationApiGroup OBJECT-GROUP
+    OBJECTS     { bwUserLocationRequests, 
+                  bwUserLocationRequestSuccess, 
+                  bwUserLocationRequestUnknownUser, 
+                  bwUserLocationRequestFailures }
+    STATUS      current
+    DESCRIPTION 
+        "This group defines counters for LocationAPI in the NSPortal application."
+    ::= { bwNSPortalMibGroups 1 }
+
+bwNsScpStatsGroup OBJECT-GROUP
+    OBJECTS     { bwSCProxyStatsACLViolationCount, 
+                  bwSCProxyStatsSCPMessageIns,  
+                  bwSCProxyStatsSCPMessageOuts, 
+                  bwSCProxyStatsSCPMessageErrors,
+                  bwSCProxyStatsASAddr, 
+                  bwSCProxyStatsASMessageIns, 
+                  bwSCProxyStatsASMessageOuts, 
+                  bwSCProxyStatsASMessageErrors }
+    STATUS      current
+    DESCRIPTION
+       "This group defines statistics for the Service Control Proxy in the NSPortal application."
+    ::= { bwNSPortalMibGroups 2 }
+END

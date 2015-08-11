@@ -1,0 +1,889 @@
+--===============================================================
+-- File Name : BW-WebContainer.mib
+-- Date      : 07/21/2009
+-- Author    : BroadSoft Inc.
+--===============================================================
+
+BW-WebContainer	DEFINITIONS ::= BEGIN
+	IMPORTS
+		DisplayString
+			FROM SNMPv2-TC
+		MODULE-COMPLIANCE, OBJECT-GROUP          
+			FROM SNMPv2-CONF
+		enterprises, MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-TYPE, Gauge32, Counter32, Integer32, Unsigned32
+			FROM SNMPv2-SMI;
+	
+	broadsoft	MODULE-IDENTITY
+		LAST-UPDATED	"200810281054Z"
+		ORGANIZATION	"Broadsoft, Inc"
+		CONTACT-INFO	"Broadsoft, Inc
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+		DESCRIPTION		
+				"The BW-WebContainer.mib is introduces to capture the performance measurements for the BroadWorks Web Container."
+    REVISION    "200810281054Z"
+      DESCRIPTION
+        "Added new counters for XSI-Events feature"
+    REVISION    "200807181000Z"
+      DESCRIPTION
+        "MIB Compliancy."
+				 
+		::=  {  enterprises  6431  }
+
+	broadworks	OBJECT IDENTIFIER
+		::=  {  broadsoft  1  }
+
+	bwWebContainer	OBJECT IDENTIFIER
+		::=  {  broadworks  17  }
+
+	protocols	OBJECT IDENTIFIER
+		::=  {  bwWebContainer  1  }
+
+	security	OBJECT IDENTIFIER
+		::=  {  bwWebContainer  2  }
+
+	bwWebContainerMibConformance	OBJECT IDENTIFIER
+		::=  {  bwWebContainer  1000  }
+
+	bcct	OBJECT IDENTIFIER
+		::=  {  protocols  1  }
+
+	auth	OBJECT IDENTIFIER
+		::=  {  protocols  2  }
+        
+	oci	OBJECT IDENTIFIER
+		::=  {  protocols  3  }
+
+	nsLocationAPI	OBJECT IDENTIFIER
+		::=  {  protocols  4  }
+
+	nsPortalAPI	OBJECT IDENTIFIER
+		::=  {  protocols  5  }
+		
+	http	OBJECT IDENTIFIER
+		::=  {  protocols  6  }
+		
+	xmlInterface	OBJECT IDENTIFIER
+		::=  {  protocols  7  }
+
+	serverResources	OBJECT IDENTIFIER
+		::=  {  http  1  }
+
+	sso	OBJECT IDENTIFIER
+		::=  {  security  1  }
+
+-- WebContainer - BroadWorks Common Communication Protocol ........................
+
+	bwWebContainerCommonCommStatsTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  BwWebContainerCommonCommStatsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"This table contains counters for BCCT for the Web Container process."
+		::=  { bcct  1 }
+
+	bwWebContainerCommonCommStatsEntry	OBJECT-TYPE
+		SYNTAX		BwWebContainerCommonCommStatsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"Definition of the entries for bwWebContainerCommonCommStatsTable."
+		INDEX		{  bwWebContainerCommonCommStatsIndex  }
+		::=  { bwWebContainerCommonCommStatsTable 1 }
+
+	BwWebContainerCommonCommStatsEntry  ::=  SEQUENCE {
+		bwWebContainerCommonCommStatsIndex  Unsigned32,
+		bwWebContainerCommonCommHost  DisplayString,
+		bwWebContainerCommonCommInterface  DisplayString,
+		bwWebContainerCommonCommProtocol  DisplayString,
+		bwWebContainerCommonCommAcceptedOutboundConnections  Counter32,
+		bwWebContainerCommonCommAcceptedInboundConnections  Counter32,
+		bwWebContainerCommonCommRejectedOutboundConnections  Counter32,
+		bwWebContainerCommonCommRejectedInboundConnections  Counter32,
+		bwWebContainerCommonCommOutputMessagesProcessed  Counter32,
+		bwWebContainerCommonCommInputMessagesProcessed  Counter32,
+		bwWebContainerCommonCommOutputCommunicationErrors  Counter32,
+		bwWebContainerCommonCommInputCommunicationErrors  Counter32
+		}
+
+	bwWebContainerCommonCommStatsIndex	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"This integer represents an index in table bwWebContainerCommonCommStatsTable. The index represents a connection for a specific Host-Interfacece-Protocol combination."
+		::=  {  bwWebContainerCommonCommStatsEntry  1  }
+
+	bwWebContainerCommonCommHost	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The address of a host connected to the BroadWorks Common Communication Protocol."
+		::=  {  bwWebContainerCommonCommStatsEntry  2  }
+
+	bwWebContainerCommonCommInterface	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The IP address of a local interface that a protocol is bound to."
+		::=  {  bwWebContainerCommonCommStatsEntry  3  }
+
+	bwWebContainerCommonCommProtocol	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The name of a BroadWorks Common Communication Protocol client protocol, e.g. OCI."
+		::=  {  bwWebContainerCommonCommStatsEntry  4  }
+
+	bwWebContainerCommonCommAcceptedOutboundConnections	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a client in this process connects to the framework to a remote host, using the interface and protocol."
+		::=  {  bwWebContainerCommonCommStatsEntry  5  }
+
+	bwWebContainerCommonCommAcceptedInboundConnections	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a client in this process connects to the framework from a remote host, using the interface and protocol."
+		::=  {  bwWebContainerCommonCommStatsEntry  6  }
+
+	bwWebContainerCommonCommRejectedOutboundConnections	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a client connection request going from this process to a remote host and going through this interface has been rejected for a particular protocol."
+		::=  {  bwWebContainerCommonCommStatsEntry  7  }
+
+	bwWebContainerCommonCommRejectedInboundConnections	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a client connection request coming to this host and going through this interface has been rejected by the framework for a particular protocol."
+		::=  {  bwWebContainerCommonCommStatsEntry  8  }
+
+	bwWebContainerCommonCommOutputMessagesProcessed	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message has been sent and processed for this host, interface and protocol."
+		::=  {  bwWebContainerCommonCommStatsEntry  9  }
+
+	bwWebContainerCommonCommInputMessagesProcessed	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message has been received and processed for this host, interface and protocol."
+		::=  {  bwWebContainerCommonCommStatsEntry  10  }
+
+	bwWebContainerCommonCommOutputCommunicationErrors	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message could not be written because the TCP stack returned an error."
+		::=  {  bwWebContainerCommonCommStatsEntry  11  }
+
+	bwWebContainerCommonCommInputCommunicationErrors	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message could not be read because the TCP stack returned an error."
+		::=  {  bwWebContainerCommonCommStatsEntry  12  }
+
+-- auth modules  ...........................................
+
+	bwWebContainerAuthenticationAttempts	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when the Web Container sends an authentication message to the Authentication Server, e.g. BroadWorks PS."
+		::=  {  auth  1  }
+
+	bwWebContainerAuthenticationFailed	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when the Web Container receives an authentication failure response from the Authentication Server, e.g. BroadWorks PS."
+		::=  {  auth  2  }
+		
+-- oci modules  ...........................................
+   
+	bwWebContainerOCIRequests	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"The number of OCI request messages sent to the BroadWorks PS."
+		::=  {  oci  1  }
+
+	bwWebContainerOCIResponses	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"The number of request response to OCI messages received from the BroadWorks PS."
+		::=  {  oci  2  }
+
+	bwWebContainerOCIUnauthorizedMessage	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"The number of error response due to unauthorized session received from the BroadWorks PS."
+		::=  {  oci  3  }
+
+	bwWebContainerOCICRequests	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"The number of OCI-C request messages sent to the BroadWorks XS."
+		::=  {  oci  4  }
+
+	bwWebContainerOCICResponses	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"The number of request response to OCI-C messages received from the BroadWorks XS."
+		::=  {  oci  5  }
+
+  bwWebContainerOCICMessagesReceived OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS	        read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when a message from an XS is received."
+		::=  {  oci  6  }
+
+  bwWebContainerOCICMessagesRejected OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS	        read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when a message from an XS is rejected before it reaches the web application."
+		::=  {  oci  7  }
+
+  bwWebContainerOCICMessagesDelivered OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS	        read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when a message from an XS is delivered to the web application."
+		::=  {  oci  8  }
+
+  bwWebContainerOCICMessagesReplied OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS	        read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when a reply from an web application is delivered to the XS."
+		::=  {  oci  9  }
+
+  bwWebContainerOCIResponsesRejected OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS	        read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when a reponse from an Execution Server is rejected before it reaches the web application."
+		::=  {  oci  10  }
+
+  bwWebContainerOCICResponsesRejected OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS	        read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when a reponse from an Execution Server is rejected before it reaches the web application."
+		::=  {  oci  11  }
+
+-- nsLocationAPI modules  ...........................................
+
+	bwWebContainerNsLocAPIAttempts	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when the Web Container sends a location API request to a Network Server."
+		::=  {  nsLocationAPI  1  }
+
+	bwWebContainerNsLocAPIResponseFailed	OBJECT-TYPE	
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION		
+				"This counter is incremented when the Web Container receives a failed location API response from the Network Server."
+		::=  {  nsLocationAPI  2  }
+
+-- nsPortalAPI counters ...........................................
+  bwWebContainerNsASDiscoveryAttempts OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-write
+    STATUS     current
+    DESCRIPTION
+      "This counter is incremented when the Web Container sends a PortalAPI request to a Network Server."
+    ::= { nsPortalAPI	1 }
+
+  bwWebContainerNsASDiscoveryAttemptsFailed OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-write
+    STATUS     current
+    DESCRIPTION
+      "This counter is incremented when the Web Container is unable to receive a successful PortalAPI request from the Network Server."
+    ::= { nsPortalAPI	2 }
+    
+-- HTTP server resources counters ...........................................
+	bwHttpAccesses OBJECT-TYPE
+	  SYNTAX     Counter32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "This counter is incremented each tim ean HTTP access is performed. It represents the number of times an HTTP access has been served."
+    ::= { serverResources	1 }
+    
+	bwHttpKBytesServed OBJECT-TYPE
+	  SYNTAX     Counter32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "This counter is incremented each tim ean HTTP access is performed. It represents the number of kilo bytes served through HTTP."
+    ::= { serverResources	2 }
+    
+	bwHttpServerUptime OBJECT-TYPE
+	  SYNTAX     Counter32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "Time the server has been running for."
+    ::= { serverResources	3 }
+    
+	bwHttpRequestsPerSecond OBJECT-TYPE
+	  SYNTAX     Gauge32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "Averages giving the number of requests per seconds.  This counter is calculated by the mod_status from Apache and will be fetched upon request by the CLI or PerformanceManager."
+    ::= { serverResources	4 }
+    
+	bwHttpBytesPerSecond OBJECT-TYPE
+	  SYNTAX     Gauge32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "Averages giving the number of bytes served per seconds.  This counter is calculated by the mod_status from Apache and will be fetched upon request by the CLI or PerformanceManager."
+    ::= { serverResources	5 }
+    
+	bwHttpBytesPerRequest OBJECT-TYPE
+		SYNTAX     Gauge32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "Averages giving the number of bytes served per request.  This counter is calculated by the mod_status from Apache and will be fetched upon request by the CLI or PerformanceManager."
+    ::= { serverResources	6 }
+    
+	bwHttpWorkersBusy OBJECT-TYPE
+		SYNTAX     Gauge32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "The number of workers serving the request."
+    ::= { serverResources	7 }
+    
+	bwHttpWorkersIdle OBJECT-TYPE
+		SYNTAX     Gauge32
+	  MAX-ACCESS read-write
+	  STATUS     current
+	  DESCRIPTION
+	    "The number of idle workers."
+    ::= { serverResources	8 }  
+    
+-- bwHttpOverallRequestsTable.......................................................................    
+	bwHttpOverallRequestsTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  BwHttpOverallRequestsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"This table will hold the overall number of HTTP requests per requests (e.g. GET, PUT, POST)"
+		::=  { serverResources 9 }
+
+	bwHttpOverallRequestsEntry	OBJECT-TYPE
+		SYNTAX		BwHttpOverallRequestsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"Definition of the entries for bwHttpOverallRequestsTable."
+		INDEX		{  bwHttpOverallRequestsIndex  }
+		::=  { bwHttpOverallRequestsTable 1 }
+
+	BwHttpOverallRequestsEntry  ::=  SEQUENCE {
+		bwHttpOverallRequestsIndex  Unsigned32,
+		bwHttpOverallRequestsMethod  DisplayString,
+		bwHttpOverallRequestsNbOfRequests  Counter32
+		}
+
+	bwHttpOverallRequestsIndex	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"This integer represents an index in table bwHttpOverallRequestsTable. The index represents the number of requests for a specific method."
+		::=  {  bwHttpOverallRequestsEntry  1  }
+
+	bwHttpOverallRequestsMethod	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The HTTP method, as defined by rfc2616."
+		::=  {  bwHttpOverallRequestsEntry  2  }
+		
+	bwHttpOverallRequestsNbOfRequests	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The number of requests received."
+		::=  {  bwHttpOverallRequestsEntry  3  }    
+		
+-- bwHttpOverallResponsesTable.......................................................................    
+	bwHttpOverallResponsesTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  BwHttpOverallResponsesEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"This table will hold the overall number of HTTP responses per status code (200, 401, 404, etc.)"
+		::=  { serverResources 10 }
+
+	bwHttpOverallResponsesEntry	OBJECT-TYPE
+		SYNTAX		BwHttpOverallResponsesEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"Definition of the entries for bwHttpOverallResponsesTable."
+		INDEX		{  bwHttpOverallResponsesIndex  }
+		::=  { bwHttpOverallResponsesTable 1 }
+
+	BwHttpOverallResponsesEntry  ::=  SEQUENCE {
+		bwHttpOverallResponsesIndex  Unsigned32,
+		bwHttpOverallResponsesMethod  DisplayString,
+		bwHttpOverallResponsesStatusCode  Unsigned32,
+		bwHttpOverallResponsesNbOfResponses  Counter32
+		}
+
+	bwHttpOverallResponsesIndex	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"This integer represents an index in table bwHttpOverallResponsesTable. The index represents the number of responses for a specific method-statusCode combination."
+		::=  {  bwHttpOverallResponsesEntry  1  }
+
+	bwHttpOverallResponsesMethod	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The HTTP method, as defined by rfc2616."
+		::=  {  bwHttpOverallResponsesEntry  2  }
+		
+	bwHttpOverallResponsesStatusCode	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"Status code, per rfc2616."
+		::=  {  bwHttpOverallResponsesEntry  3  }	
+		
+	bwHttpOverallResponsesNbOfResponses	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The number of responses received."
+		::=  {  bwHttpOverallResponsesEntry  4  }		
+
+-- bwHttpWebAppRequestsTable.......................................................................    
+	bwHttpWebAppRequestsTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  BwHttpWebAppRequestsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"This table will hold the number of HTTP requests per web applications for each requests (e.g. GET, PUT, POST)"
+		::=  { serverResources 11 }
+
+	bwHttpWebAppRequestsEntry	OBJECT-TYPE
+		SYNTAX		BwHttpWebAppRequestsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"Definition of the entries for bwHttpWebAppRequestsTable."
+		INDEX		{  bwHttpWebAppRequestsIndex  }
+		::=  { bwHttpWebAppRequestsTable 1 }
+
+	BwHttpWebAppRequestsEntry  ::=  SEQUENCE {
+		bwHttpWebAppRequestsIndex  Unsigned32,
+		bwHttpWebAppRequestsWebApp  DisplayString,
+		bwHttpWebAppRequestsMethod  DisplayString,
+		bwHttpWebAppRequestsNbOfRequests  Counter32
+		}
+
+	bwHttpWebAppRequestsIndex	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"This integer represents an index in table bwHttpWebAppRequestsTable. The index represents the number of requests for a specific webApp-method combination."
+		::=  {  bwHttpWebAppRequestsEntry  1  }
+
+	bwHttpWebAppRequestsWebApp	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The HTTP method, as defined by rfc2616."
+		::=  {  bwHttpWebAppRequestsEntry  2  }
+		
+	bwHttpWebAppRequestsMethod	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The HTTP method, as defined by rfc2616."
+		::=  {  bwHttpWebAppRequestsEntry  3  }
+		
+	bwHttpWebAppRequestsNbOfRequests	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The number of requests received."
+		::=  {  bwHttpWebAppRequestsEntry  4  }    		
+		
+-- bwHttpWebAppResponsesTable.......................................................................    
+	bwHttpWebAppResponsesTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  BwHttpWebAppResponsesEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"This table contains counters for BCCT for the Web Container process."
+		::=  { serverResources 12 }
+
+	bwHttpWebAppResponsesEntry	OBJECT-TYPE
+		SYNTAX		BwHttpWebAppResponsesEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"Definition of the entries for bwHttpOverallResponsesTable."
+		INDEX		{  bwHttpWebAppResponsesIndex  }
+		::=  { bwHttpWebAppResponsesTable 1 }
+
+	BwHttpWebAppResponsesEntry  ::=  SEQUENCE {
+		bwHttpWebAppResponsesIndex  Unsigned32,
+		bwHttpWebAppResponsesWebApp  DisplayString,
+		bwHttpWebAppResponsesMethod  DisplayString,		
+		bwHttpWebAppResponsesStatusCode  Unsigned32,
+		bwHttpWebAppResponsesNbOfResponses  Counter32
+		}
+
+	bwHttpWebAppResponsesIndex	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"This integer represents an index in table bwHttpOverallResponsesTable. The index represents the number of responses for a specific method-statusCode combination."
+		::=  {  bwHttpWebAppResponsesEntry  1  }
+
+	bwHttpWebAppResponsesWebApp	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The name of the web application."
+		::=  {  bwHttpWebAppResponsesEntry  2  }
+		
+	bwHttpWebAppResponsesMethod	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The HTTP method, as defined by rfc2616."
+		::=  {  bwHttpWebAppResponsesEntry  3  }		
+		
+	bwHttpWebAppResponsesStatusCode	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"Status code, per rfc2616."
+		::=  {  bwHttpWebAppResponsesEntry  4  }	
+		
+	bwHttpWebAppResponsesNbOfResponses	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The number of responses received."
+		::=  {  bwHttpWebAppResponsesEntry  5  }				
+
+-- BroadWorks Xml Interface Protocol ........................
+	xmlInterfaceResources	OBJECT IDENTIFIER
+		::=  {  xmlInterface  1  }
+
+	bwXmlInterfaceWorkersBusy OBJECT-TYPE
+            SYNTAX     Gauge32
+            MAX-ACCESS read-write
+            STATUS     current
+            DESCRIPTION
+                "The number of workers processing an XML request."
+            ::= { xmlInterfaceResources 1 }
+    
+	bwXmlInterfaceWorkersIdle OBJECT-TYPE
+            SYNTAX     Gauge32
+            MAX-ACCESS read-write
+            STATUS     current
+            DESCRIPTION
+                "The number of idle workers."
+            ::= { xmlInterfaceResources	2 }  
+
+	bwXmlInterfaceRequestsActive OBJECT-TYPE
+            SYNTAX     Gauge32
+            MAX-ACCESS read-write
+            STATUS     current
+            DESCRIPTION
+                "The number of active XML requests."
+            ::= { xmlInterfaceResources	3 }  
+
+	bwXmlInterfaceStatsTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  BwXmlInterfaceStatsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"This table contains counters for the Xml Interface."
+		::=  { xmlInterface  2 }
+
+	bwXmlInterfaceStatsEntry	OBJECT-TYPE
+		SYNTAX		BwXmlInterfaceStatsEntry
+		MAX-ACCESS	not-accessible
+		STATUS		current
+		DESCRIPTION
+			"Definition of the entries for bwXmlInterfaceStatsTable."
+		INDEX		{  bwXmlInterfaceStatsIndex  }
+		::=  { bwXmlInterfaceStatsTable 1 }
+
+	BwXmlInterfaceStatsEntry  ::=  SEQUENCE {
+		bwXmlInterfaceStatsIndex  Unsigned32,
+		bwXmlInterfaceHost  DisplayString,
+		bwXmlInterfaceInterface  DisplayString,
+		bwXmlInterfaceAcceptedInboundConnections  Counter32,
+		bwXmlInterfaceRejectedInboundConnections  Counter32,
+		bwXmlInterfaceOutputMessagesProcessed  Counter32,
+		bwXmlInterfaceInputMessagesProcessed  Counter32,
+		bwXmlInterfaceOutputCommunicationErrors  Counter32,
+		bwXmlInterfaceInputCommunicationErrors  Counter32
+		}
+
+	bwXmlInterfaceStatsIndex	OBJECT-TYPE
+		SYNTAX			Unsigned32
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"This integer represents an index in table bwXmlInterfaceStatsTable. The index represents a connection for a specific Host-Interface combination."
+		::=  {  bwXmlInterfaceStatsEntry  1  }
+
+	bwXmlInterfaceHost	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The address of a host connected to the BroadWorks Xml Interface."
+		::=  {  bwXmlInterfaceStatsEntry  2  }
+
+	bwXmlInterfaceInterface	OBJECT-TYPE
+		SYNTAX			DisplayString
+		MAX-ACCESS		read-only
+		STATUS			current
+		DESCRIPTION
+				"The IP address of a local interface that the BroadWorks Xml Interface is bound to."
+		::=  {  bwXmlInterfaceStatsEntry  3  }
+
+	bwXmlInterfaceAcceptedInboundConnections	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a client in this process connects to the framework from a remote host, using the interface."
+		::=  {  bwXmlInterfaceStatsEntry  4  }
+
+	bwXmlInterfaceRejectedInboundConnections	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a client connection request coming to this host and going through this interface has been rejected by the framework."
+		::=  {  bwXmlInterfaceStatsEntry  5  }
+
+	bwXmlInterfaceOutputMessagesProcessed	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message has been sent and processed for this host and interface."
+		::=  {  bwXmlInterfaceStatsEntry  6  }
+
+	bwXmlInterfaceInputMessagesProcessed	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message has been received and processed for this host and interface."
+		::=  {  bwXmlInterfaceStatsEntry  7  }
+
+	bwXmlInterfaceOutputCommunicationErrors	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message could not be written because the TCP stack returned an error."
+		::=  {  bwXmlInterfaceStatsEntry  8  }
+
+	bwXmlInterfaceInputCommunicationErrors	OBJECT-TYPE
+		SYNTAX			Counter32
+		MAX-ACCESS		read-write
+		STATUS			current
+		DESCRIPTION
+				"This counter is incremented whenever a message could not be read because the TCP stack returned an error."
+		::=  {  bwXmlInterfaceStatsEntry  9  }
+
+-- WebContainer Security SSO ........................
+
+	bwWebContainerSSOTokenCreations OBJECT-TYPE
+            SYNTAX     Counter32
+            MAX-ACCESS read-write
+            STATUS     current
+            DESCRIPTION
+                "Number of Single Sign-On tokens generated."
+            ::= { sso 1 }
+    
+	bwWebContainerSSOTokenValidationSuccesses OBJECT-TYPE
+            SYNTAX     Counter32
+            MAX-ACCESS read-write
+            STATUS     current
+            DESCRIPTION
+                "Number of Single Sign-On tokens positively validated."
+            ::= { sso 2 }
+
+	bwWebContainerSSOTokenValidationRejections OBJECT-TYPE
+            SYNTAX     Counter32
+            MAX-ACCESS read-write
+            STATUS     current
+            DESCRIPTION
+                "Number of Single Sign-On tokens rejected."
+            ::= { sso 3 }
+
+-- BroadWorks Open Client Server MIB Conformance Definition  ...........................................
+
+bwWebContainerMibGroups		OBJECT IDENTIFIER ::= { bwWebContainerMibConformance 1 }
+bwWebContainerMibCompliancy	OBJECT IDENTIFIER ::= { bwWebContainerMibConformance 2 }
+
+-- units of conformance
+
+bwWebContainerBcctGroup    OBJECT-GROUP
+    OBJECTS { bwWebContainerCommonCommStatsIndex, bwWebContainerCommonCommHost, bwWebContainerCommonCommInterface, bwWebContainerCommonCommProtocol, bwWebContainerCommonCommAcceptedOutboundConnections, bwWebContainerCommonCommAcceptedInboundConnections, bwWebContainerCommonCommRejectedOutboundConnections, bwWebContainerCommonCommRejectedInboundConnections, bwWebContainerCommonCommOutputMessagesProcessed, bwWebContainerCommonCommInputMessagesProcessed, bwWebContainerCommonCommOutputCommunicationErrors, bwWebContainerCommonCommInputCommunicationErrors }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the BCCT protocol to the BroadWorks Application."
+    ::= { bwWebContainerMibGroups 1 }
+
+bwWebContainerAuthGroup    OBJECT-GROUP
+    OBJECTS { bwWebContainerAuthenticationAttempts, bwWebContainerAuthenticationFailed }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the auth component."
+    ::= { bwWebContainerMibGroups 2 }
+
+bwWebContainerOciGroup    OBJECT-GROUP
+    OBJECTS { bwWebContainerOCIRequests, bwWebContainerOCIResponses, bwWebContainerOCIUnauthorizedMessage, bwWebContainerOCICRequests, bwWebContainerOCICResponses, bwWebContainerOCICMessagesReceived, bwWebContainerOCICMessagesRejected, bwWebContainerOCICMessagesDelivered, bwWebContainerOCICMessagesReplied }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the OCI protocol to the BroadWorks Application."
+    ::= { bwWebContainerMibGroups 3 }
+    
+bwWebContainerNsLocAPIGroup    OBJECT-GROUP
+    OBJECTS { bwWebContainerNsLocAPIAttempts, bwWebContainerNsLocAPIResponseFailed }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the NS Location API protocol to the BroadWorks Network Server."
+    ::= { bwWebContainerMibGroups 4 }
+
+bwWebContainerNsPortalAPIGroup    OBJECT-GROUP
+    OBJECTS { bwWebContainerNsASDiscoveryAttempts, bwWebContainerNsASDiscoveryAttemptsFailed }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the NS Portal API protocol to the BroadWorks Network Server."
+    ::= { bwWebContainerMibGroups 5 }
+
+bwWebContainerHttpResourceGroup    OBJECT-GROUP
+    OBJECTS { bwHttpAccesses, bwHttpKBytesServed, bwHttpServerUptime, 
+              bwHttpRequestsPerSecond, bwHttpBytesPerSecond, bwHttpBytesPerRequest,
+              bwHttpWorkersBusy, bwHttpWorkersIdle, bwHttpOverallRequestsIndex,
+              bwHttpOverallRequestsMethod, bwHttpOverallRequestsNbOfRequests,
+              bwHttpOverallRequestsIndex, bwHttpOverallRequestsMethod,
+              bwHttpOverallRequestsNbOfRequests, bwHttpOverallResponsesIndex,
+              bwHttpOverallResponsesMethod, bwHttpOverallResponsesStatusCode,
+              bwHttpOverallResponsesNbOfResponses, bwHttpWebAppRequestsIndex,
+              bwHttpWebAppRequestsWebApp, bwHttpWebAppRequestsMethod,
+              bwHttpWebAppRequestsNbOfRequests, bwHttpWebAppResponsesIndex,
+              bwHttpWebAppResponsesWebApp, bwHttpWebAppResponsesMethod, 
+              bwHttpWebAppResponsesStatusCode, bwHttpWebAppResponsesNbOfResponses }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the Http resource."
+    ::= { bwWebContainerMibGroups 6 }
+
+bwWebContainerXmlInterfaceResourceGroup    OBJECT-GROUP
+    OBJECTS { bwXmlInterfaceWorkersBusy, bwXmlInterfaceWorkersIdle, bwXmlInterfaceRequestsActive,
+              bwXmlInterfaceStatsIndex, bwXmlInterfaceHost, bwXmlInterfaceInterface, 
+              bwXmlInterfaceAcceptedInboundConnections, bwXmlInterfaceRejectedInboundConnections,
+              bwXmlInterfaceOutputMessagesProcessed, bwXmlInterfaceInputMessagesProcessed,
+              bwXmlInterfaceOutputCommunicationErrors, bwXmlInterfaceInputCommunicationErrors }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the XML interface resources."
+    ::= { bwWebContainerMibGroups 7 }
+
+bwWebContainerSecuritySSOResourceGroup    OBJECT-GROUP
+    OBJECTS { bwWebContainerSSOTokenCreations, bwWebContainerSSOTokenValidationSuccesses,
+              bwWebContainerSSOTokenValidationRejections }
+    STATUS  current
+    DESCRIPTION
+       "This group defines the Web Container statistics for the Security SSO resources."
+    ::= { bwWebContainerMibGroups 8 }
+
+-- 
+bwWebContainerBasicCompliance MODULE-COMPLIANCE
+	STATUS current
+     	DESCRIPTION
+		"BroadWorks Web Container MIB compliance"
+	MODULE -- this module
+        MANDATORY-GROUPS { bwWebContainerBcctGroup, bwWebContainerAuthGroup, bwWebContainerOciGroup, 
+                           bwWebContainerNsLocAPIGroup, bwWebContainerNsPortalAPIGroup, bwWebContainerHttpResourceGroup, 
+                           bwWebContainerXmlInterfaceResourceGroup, bwWebContainerSecuritySSOResourceGroup }
+	::= { bwWebContainerMibCompliancy 1 }
+
+-- End of MIB file - Do not put anything behind this line ...........................................
+
+END

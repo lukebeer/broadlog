@@ -1,0 +1,1106 @@
+-- File Name : BW-DatabaseServer.mib
+-- Date      : 01/18/2010
+-- Author    : BroadSoft
+
+BW-DatabaseServer-MIB DEFINITIONS ::= BEGIN
+  IMPORTS
+    enterprises, MODULE-IDENTITY, OBJECT-TYPE, Unsigned32, Gauge32, Counter64, TimeTicks
+      FROM SNMPv2-SMI
+    MODULE-COMPLIANCE, OBJECT-GROUP
+      FROM SNMPv2-CONF
+    TEXTUAL-CONVENTION, DateAndTime, DisplayString, TimeInterval, TimeStamp
+      FROM SNMPv2-TC;
+
+  broadsoft	MODULE-IDENTITY
+    LAST-UPDATED	"201001270000Z"
+    ORGANIZATION	"Broadsoft, Inc"
+    CONTACT-INFO	"Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB module contains the definition of the SNMP performance management
+         counters for the Database Server."
+    -- MIB history
+    REVISION		"201001270000Z"
+    DESCRIPTION "Added alert submodule."
+    -- 
+    REVISION		"201001180000Z"
+    DESCRIPTION "Added MODULE-COMPLIANCE statements and checked against SMILINT."
+    -- 
+    REVISION		"201001140000Z"
+    DESCRIPTION "The initial revision."
+    -- End of MIB history
+    ::=  {  enterprises  6431  }
+
+  broadworks	OBJECT IDENTIFIER
+    ::=  {  broadsoft  1  }
+
+  databaseServer	OBJECT IDENTIFIER
+    ::=  {  broadworks  27  }
+
+-- The 'info' module presents less dynamic values
+  info	OBJECT IDENTIFIER
+    ::=  {  databaseServer  1  }
+
+  general OBJECT IDENTIFIER
+    ::=  {  info  1  }
+
+  sga	OBJECT IDENTIFIER
+    ::=  {  info  2  }
+
+  error	OBJECT IDENTIFIER
+    ::=  {  info  3 }
+
+  alert	OBJECT IDENTIFIER
+    ::=  {  info  4 }
+
+-- The 'stats' module presents dynamic counters
+  stats	OBJECT IDENTIFIER
+    ::=  {  databaseServer  2  }
+
+  user	OBJECT IDENTIFIER
+    ::=  {  stats  1  }
+
+  redo	OBJECT IDENTIFIER
+    ::=  {  stats  2  }
+
+  enqueue	OBJECT IDENTIFIER
+    ::=  {  stats  3  }
+
+  cache	OBJECT IDENTIFIER
+    ::=  {  stats  4  }
+
+  sql	OBJECT IDENTIFIER
+    ::=  {  stats  5  }
+
+  fileio	OBJECT IDENTIFIER
+    ::=  {  stats  7  }
+
+  rac	OBJECT IDENTIFIER
+    ::=  {  stats  8  }
+
+  debug	OBJECT IDENTIFIER
+    ::=  {  stats  9  }
+
+-- The standard conformance module
+
+  bwDbsMibConformance OBJECT IDENTIFIER
+    ::= { databaseServer 1000 }
+
+-- info general module
+
+  bwInfoDbId OBJECT-TYPE
+     SYNTAX      DisplayString
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION
+        "Unique DBID of the database."
+     ::= { general 1 }
+
+  bwInfoDbUniqueName  OBJECT-TYPE
+     SYNTAX      DisplayString
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "Unique name of the database."
+     ::= { general 2 }
+
+  bwInfoUptime   OBJECT-TYPE
+     SYNTAX      TimeTicks
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "This variable states the duration for which the database instance has been running, in units of 0.01 second."
+     ::= { general 3 }
+     -- #SELECT (86400 *(SYSDATE - STARTUP_TIME)) FROM V$INSTANCE ;
+
+  bwInfoRole   OBJECT-TYPE
+     SYNTAX      DisplayString
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "Role of the database."
+     ::= { general 4 }
+
+  bwInfoOpenMode   OBJECT-TYPE
+     SYNTAX      DisplayString
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "Open mode of the database."
+     ::= { general 5 }
+
+  bwInfoLogMode   OBJECT-TYPE
+     SYNTAX      DisplayString
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "Log mode of the database."
+     ::= { general 6 }
+
+  bwInfoDataguardBroker OBJECT-TYPE
+     SYNTAX      DisplayString
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "Dataguard broker mode of the database."
+     ::= { general 7 }
+
+ SwitchOverStatus ::= TEXTUAL-CONVENTION
+    STATUS	current
+    DESCRIPTION
+    "A Value that represents the swithover status associated to a database instance.
+
+      NOT ALLOWED(0) - On a primary database, this status indicates that there are no valid and enabled standby databases. On a standby database, this status indicates that a switchover request has not been received from the primary database.
+      SESSIONS ACTIVE(1) - The database has active sessions. On a physical standby database, the WITH SESSION SHUTDOWN SQL clause must be specified to perform a role transition while in this state. On a logical standby database, a role transition can be performed while in this state, but the role transition will not complete until all current transactions have committed.
+      SWITCHOVER PENDING(2) - On a physical standby database, this status indicates that a switchover request has been received from the primary database and is being processed. A physical standby database cannot switch to the primary role while in this transient state.
+      SWITCHOVER LATENT(3) - On a physical standby database, this status indicates that a switchover request was pending, but the original primary database has been switched back to the primary role.
+      TO PRIMARY(4) - The database is ready to switch to the primary role.
+      TO STANDBY(5) - The database is ready to switch to either the physical or logical standby role.
+      TO LOGICAL STANDBY(6) - The database has received a data dictionary from a logical standby database and is ready to switch to the logical standby role.
+      RECOVERY NEEDED(7) - On a physical standby database, this status indicates that additional redo must be applied before the database can switch to the primary role.
+      PREPARING SWITCHOVER(8) - On a primary database, this status indicates that a data dictionary is being received from a logical standby database in preparation for switching to the logical standby role. On a logical standby database, this status indicates that the data dictionary has been sent to the primary database and other standby databases.
+      PREPARING DICTIONARY(9) - On a logical standby database, this status indicates that the data dictionary is being sent to the primary database and other standby databases in preparation for switching to the primary role.
+      FAILED DESTINATION(10) - On a primary database, this status indicates that one or more standby destinations are in an error state.
+      RESOLVABLE GAP(11) - On a primary database, this status indicates that one or more standby databases have a redo gap that can be automatically resolved by fetching the missing redo from the primary database or from another standby database.
+      UNRESOLVABLE GAP(12) - On a primary database, this status indicates that one or more standby databases have a redo gap that cannot be automatically resolved by fetching the missing redo from the primary database or from another standby database.
+      LOG SWITCH GAP(13) - On a primary database, this status indicates that one or more standby databases are missing redo due to a recent log switch.
+      UNKNOWN(255) - Status unavailable.
+  "
+    SYNTAX	INTEGER {
+      notAllowed(0),
+      sessionsActive(1),
+      switchoverPending(2),
+      switchoverLatent(3),
+      toPrimary(4),
+      toStandby(5),
+      toLogicalStandby(6),
+      recoveryNeeded(7),
+      preparingSwitcover(8),
+      preparingDictionary(9),
+      failedDestination(10),
+      resolvableGap(11),
+      unresolvableGap(12),
+      logSwitchGap(13),
+      unknown(255)
+    }
+
+  bwInfoSwitchOverStatus OBJECT-TYPE
+      SYNTAX	INTEGER {
+      notAllowed(0),
+      sessionsActive(1),
+      switchoverPending(2),
+      switchoverLatent(3),
+      toPrimary(4),
+      toStandby(5),
+      toLogicalStandby(6),
+      recoveryNeeded(7),
+      preparingSwitcover(8),
+      preparingDictionary(9),
+      failedDestination(10),
+      resolvableGap(11),
+      unresolvableGap(12),
+      logSwitchGap(13),
+      unknown(255)
+    }
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "Switchover status of the database instance."
+     ::= { general 8 }
+
+ FastStartFailOverStatus ::= TEXTUAL-CONVENTION
+    STATUS	current
+    DESCRIPTION
+    "A Value that represents the FastStart failover status associated to a database instance.
+
+    BYSTANDER(0) Fast-start failover is enabled, but this standby database is not the target of the fast-start failover. The database cannot provide fast-start failover status information. Failover is possible.
+
+
+    DISABLED(1) Fast-start failover is disabled. Failover is not possible.
+
+    LOADING DICTIONARY(2) Displays only on a logical standby database that has not yet completed loading a copy of the primary database's data dictionary. Failover is not possible.
+
+    PRIMARY UNOBSERVED(3) Displays only on the target standby database when it is SYNCHRONIZED with or is TARGET UBDER LAG LIMIT of the primary database, has connectivity to the observer, but the primary database does not have a connection to the observer.Failover is not possible.
+
+    REINSTATE FAILED(4) Reinstatement of the failed primary database as a new standby database failed. See Section 10.1 for details about the broker's drc* log files. Failover has completed.
+
+    REINSTATE IN PROGRESS(5) Reinstatement of the failed primary database as a new standby database is in progress. Failover has completed.
+
+    REINSTATE REQUIRED(6) The failed primary database requires reinstatement as a new standby database to the new primary. The observer automatically starts the reinstatement process. REINSTATE REQUIRED is present only after fast-start failover has occurred and shows only on the new primary database. Failover has completed.
+
+    STALLED(7) Displays on the primary database after loss of connectivity to the target standby database and the change to the UNSYNCHRONIZED state (maximum availability mode) or to the TARGET OVER LAG LIMIT state (maximum performance mode) cannot be confirmed by either the target standby database or the observer. ailover is possible.
+
+    TARGET OVER LAG LIMIT(8) Displays if the standby database's redo applied point lags the primary database's redo generation point by more than the number of seconds specified by the FastStartFailoverLagLimit configuration property and the configuration is operating in maximum performance mode. Failover is not possible.
+
+    TARGET UNDER LAG LIMIT(9) Displays if the standby database's redo applied point does not lag the primary database's redo generation point by more than the number of seconds specified by the FastStartFailoverLagLimit configuration property and the configuration is operating in maximum performance mode. Failover is possible.
+
+    SUSPENDED(10) Displays only on the target standby database when either the primary or target standby database was shut down in a controlled fashion (using the NORMAL, IMMEDIATE, or TRANSACTIONAL, options, but not the ABORT option). Failover is not possible.
+
+    SYNCHRONIZED(11) Displays when the primary and target standby databases are synchronized and the configuration is operating in maximum availability mode. Failover may be possible.
+
+    UNSYNCHRONIZED(12) Displays when the target standby database does not have all of the primary database redo data and the configuration is operating in maximum availability mode. Failover is not possible.
+
+    UNKNOWN(255) - Status unavailable.
+  "
+    SYNTAX	INTEGER {
+          bistander(0),
+          disabled(1),
+          loadingDictionnary(2),
+          primaryUnobserved (3),
+          reinstateFailed(4),
+          reinstateInProgress(5),
+          reinstateRequired(6),
+          stalled(7),
+          targetOverLagLimit(8),
+          targetUnderLagLimit(9),
+          suspended(10),
+          synchronized(11),
+          unsynchronized (12),
+          unknown(255)
+    }
+
+  bwInfoFastStartFailOverStatus OBJECT-TYPE
+      SYNTAX	INTEGER {
+          bistander(0),
+          disabled(1),
+          loadingDictionnary(2),
+          primaryUnobserved (3),
+          reinstateFailed(4),
+          reinstateInProgress(5),
+          reinstateRequired(6),
+          stalled(7),
+          targetOverLagLimit(8),
+          targetUnderLagLimit(9),
+          suspended(10),
+          synchronized(11),
+          unsynchronized (12),
+          unknown(255)
+
+    }
+     MAX-ACCESS  read-only
+     STATUS      current
+     DESCRIPTION "Fast start failover status of the database."
+     ::= { general 9 }
+
+-- info sga modules  ..........................................
+
+  bwFixedSize	OBJECT-TYPE
+    SYNTAX        Gauge32
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Size in bytes of the Fixed Size sub-section of the System Global Area, including general information about the state of the database and the instance."
+    ::=  {  sga  1  }
+
+  bwVariableSize	OBJECT-TYPE
+    SYNTAX        Gauge32
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Size in megabytes of the Variable Size sub-section of the System Global Area. This section is influenced by the init.ora parameters."
+    ::=  {  sga  2  }
+
+  bwDatabaseBuffers	OBJECT-TYPE
+    SYNTAX        Gauge32
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Size in megabytes of the Database Buffers sub-section of the System Global Area. This section is influenced by the  init.ora parameters and holds copies of data blocks read from datafiles."
+    ::=  {  sga  3  }
+
+  bwRedoBuffers	OBJECT-TYPE
+    SYNTAX        Gauge32
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Size in megabytes of the Redo Buffers sub-section of the System Global Area, This section is influenced by the  init.ora parameters and holds A is used by a circular buffer in the SGA that holds information about changes made to the database."
+    ::=  {  sga  4  }
+
+-- info error module
+
+  bwDbaErrorsTable	OBJECT-TYPE
+    SYNTAX		SEQUENCE  OF  BwDbaErrorsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This table contains counters for the DBA_ERRORS table, describing the current errors on all stored objects in the database."
+    ::=  { error 1 }
+
+  bwDbaErrorsEntry	OBJECT-TYPE
+    SYNTAX		BwDbaErrorsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This node represents an entry in the DBA_ERRORS table, describing the current error."
+    INDEX		{  bwDbaErrorIndex  }
+    ::=  { bwDbaErrorsTable 1 }
+
+
+  BwDbaErrorsEntry  ::=  SEQUENCE {
+    bwDbaErrorIndex         Unsigned32,
+    bwDbaErrorObjectOwner   DisplayString,
+    bwDbaErrorObjectName    DisplayString,
+    bwDbaErrorObjectType    DisplayString,
+    bwDbaErrorAttribute     DisplayString,
+    bwDbaErrorMessageNumber Gauge32
+    }
+
+  bwDbaErrorIndex	OBJECT-TYPE
+    SYNTAX        Unsigned32
+    MAX-ACCESS		not-accessible
+    STATUS        current
+    DESCRIPTION
+        "This integer represents an index in table bwDbaErrorEntry. The index represents a single database error."
+    ::=  {  bwDbaErrorsEntry  1  }
+
+  bwDbaErrorObjectOwner	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Name of the owner of the database object."
+    ::=  {  bwDbaErrorsEntry  2  }
+
+  bwDbaErrorObjectName	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Name of the database object."
+    ::=  {  bwDbaErrorsEntry  3  }
+
+  bwDbaErrorObjectType	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Type of the database object."
+    ::=  {  bwDbaErrorsEntry  4  }
+
+  bwDbaErrorAttribute	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Attribute of the error, indicating an 'ERROR' or a 'WARNING'."
+    ::=  {  bwDbaErrorsEntry  5  }
+
+  bwDbaErrorMessageNumber	OBJECT-TYPE
+    SYNTAX        Gauge32
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION   "Numeric message number associated with the error, without any prefix."
+    ::=  {  bwDbaErrorsEntry  6  }
+
+-- dba alert
+-- Alert Log
+  bwAlertLogTable	OBJECT-TYPE
+    SYNTAX		SEQUENCE  OF  BwAlertLogEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This table contains counters for the alert log table, describing the alerts available in Oracle alert log file."
+    ::=  { alert 1 }
+
+
+  bwAlertLogEntry	OBJECT-TYPE
+    SYNTAX		BwAlertLogEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This node represents an entry in the alerts table."
+    INDEX		{  bwAlertLogIndex  }
+    ::=  { bwAlertLogTable 1 }
+
+  BwAlertLogEntry  ::=  SEQUENCE {
+    bwAlertLogIndex Unsigned32,
+    bwAlertLogTime  DateAndTime,
+    bwAlertLogCode DisplayString,
+    bwAlertLogMessage DisplayString
+    }
+
+  bwAlertLogIndex	OBJECT-TYPE
+    SYNTAX        Unsigned32
+    MAX-ACCESS		not-accessible
+    STATUS        current
+    DESCRIPTION
+        "This integer represents an index in table bwAlertLogTable"
+    ::=  {  bwAlertLogEntry  1  }
+
+  bwAlertLogTime	OBJECT-TYPE
+    SYNTAX        DateAndTime
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This timestamp represents the time of creation of this event by the database."
+    ::=  {  bwAlertLogEntry  2  }
+
+ bwAlertLogCode	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the Oracle error code associated with this log entry."
+    ::=  {  bwAlertLogEntry  3  }
+
+ bwAlertLogMessage	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the Oracle error message associated with this log entry."
+    ::=  {  bwAlertLogEntry  4  }
+
+-- History table
+  bwDbaAlertsHistoryTable	OBJECT-TYPE
+    SYNTAX		SEQUENCE  OF  BwDbaAlertsHistoryEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This table contains counters for the DBA_ALERT_HISTORY table, describing the a time-limited history of alerts which are no longer outstanding."
+    ::=  { alert 2 }
+
+
+  bwDbaAlertsHistoryEntry	OBJECT-TYPE
+    SYNTAX		BwDbaAlertsHistoryEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This node represents an entry in the alerts table."
+    INDEX		{  bwDbaAlertsHistoryIndex  }
+    ::=  { bwDbaAlertsHistoryTable 1 }
+
+ -- SELECT creation_time,object_name, object_type, message_type,message_level,
+ -- reason  FROM dba_alert_history  
+  BwDbaAlertsHistoryEntry  ::=  SEQUENCE {
+    bwDbaAlertsHistoryIndex Unsigned32,
+    bwDbaAlertsHistoryTime  DateAndTime,
+    bwDbaAlertsHistoryObjectName DisplayString,
+    bwDbaAlertsHistoryObjectType DisplayString,
+    bwDbaAlertsHistoryMessageType DisplayString,
+    bwDbaAlertsHistoryMessageLevel Gauge32,
+    bwDbaAlertsHistoryReason DisplayString
+    }
+
+  bwDbaAlertsHistoryIndex	OBJECT-TYPE
+    SYNTAX        Unsigned32
+    MAX-ACCESS		not-accessible
+    STATUS        current
+    DESCRIPTION
+        "This integer represents an index in table bwDbaAlertsHistoryTable"
+    ::=  {  bwDbaAlertsHistoryEntry  1  }
+
+  bwDbaAlertsHistoryTime	OBJECT-TYPE
+    SYNTAX        DateAndTime
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This timestamp represents the time of creation of this event by the database."
+    ::=  {  bwDbaAlertsHistoryEntry  2  }
+
+ bwDbaAlertsHistoryObjectName	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the name of the object that generated the entry."
+    ::=  {  bwDbaAlertsHistoryEntry  3  }
+
+ bwDbaAlertsHistoryObjectType	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the type of the object that generated the entry."
+    ::=  {  bwDbaAlertsHistoryEntry  4  }
+
+ bwDbaAlertsHistoryMessageType	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the message type of this entry (warning or notification)."
+    ::=  {  bwDbaAlertsHistoryEntry  5  }
+
+ bwDbaAlertsHistoryMessageLevel	OBJECT-TYPE
+    SYNTAX        Gauge32
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This number represents the severity level (lower value means higher severity)."
+    ::=  {  bwDbaAlertsHistoryEntry  6  }
+
+ bwDbaAlertsHistoryReason	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string describes the error."
+    ::=  {  bwDbaAlertsHistoryEntry  7  }
+
+-- Outstanding table
+  bwDbaOustandingAlertsTable	OBJECT-TYPE
+    SYNTAX		SEQUENCE  OF  BwDbaAlertsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This table contains counters for the DBA_OUSTANDING_ALERTs table, describing current alerts."
+    ::=  { alert 3 }
+
+ bwDbaAlertsEntry	OBJECT-TYPE
+    SYNTAX		BwDbaAlertsEntry
+    MAX-ACCESS	not-accessible
+    STATUS		current
+    DESCRIPTION
+      "This node represents an entry in the alerts table."
+    INDEX		{  bwDbaAlertsIndex  }
+    ::=  { bwDbaOustandingAlertsTable 1 }
+
+  BwDbaAlertsEntry  ::=  SEQUENCE {
+    bwDbaAlertsIndex Unsigned32,
+    bwDbaAlertsTime  DateAndTime,
+    bwDbaAlertsObjectName DisplayString,
+    bwDbaAlertsObjectType DisplayString,
+    bwDbaAlertsMessageType DisplayString,
+    bwDbaAlertsMessageLevel Gauge32,
+    bwDbaAlertsReason DisplayString
+    }
+
+  bwDbaAlertsIndex	OBJECT-TYPE
+    SYNTAX        Unsigned32
+    MAX-ACCESS		not-accessible
+    STATUS        current
+    DESCRIPTION
+        "This integer represents an index in table bwDbaAlertsTable"
+    ::=  {  bwDbaAlertsEntry  1  }
+
+  bwDbaAlertsTime	OBJECT-TYPE
+    SYNTAX        DateAndTime
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This timestamp represents the time of creation of this event by the database."
+    ::=  {  bwDbaAlertsEntry  2  }
+
+ bwDbaAlertsObjectName	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the name of the object that generated the entry."
+    ::=  {  bwDbaAlertsEntry  3  }
+
+ bwDbaAlertsObjectType	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the type of the object that generated the entry."
+    ::=  {  bwDbaAlertsEntry  4  }
+
+ bwDbaAlertsMessageType	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string represents the message type of this entry (warning or notification)."
+    ::=  {  bwDbaAlertsEntry  5  }
+
+ bwDbaAlertsMessageLevel	OBJECT-TYPE
+    SYNTAX        Gauge32
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This number represents the severity level (lower value means higher severity)."
+    ::=  {  bwDbaAlertsEntry  6  }
+
+ bwDbaAlertsReason	OBJECT-TYPE
+    SYNTAX        DisplayString
+    MAX-ACCESS		read-only
+    STATUS        current
+    DESCRIPTION
+        "This string describes the error."
+    ::=  {  bwDbaAlertsEntry  7  }
+--
+
+
+
+
+-- user modules  ...........................................
+  bwUserStatsReset OBJECT-TYPE
+     SYNTAX      Gauge32
+     MAX-ACCESS  read-write
+     STATUS      current
+     DESCRIPTION
+        "When set to a value other then 0, all the statistics stored within the user submodule are reset to 0."
+     ::= { user 1 }
+
+  bwSQLNetRoundtripsToFromClient        OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION
+          "Total number of Oracle Net Services messages that completed a roundtrip from the client to the Database server and back to the client."
+      ::=  {  user  2  }
+
+  bwConcurrencyWaitTime        OBJECT-TYPE
+      SYNTAX                  TimeInterval  (0..2147483647)
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION
+          " Time spent waiting for shared resources (System wait class), in units of 0.01 seconds."
+      ::=  {  user 3  }
+
+  bwApplicationWaitTime        OBJECT-TYPE
+      SYNTAX                  TimeInterval  (0..2147483647)
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION
+          " Time spent waiting for the application wait class, in units of 0.01 seconds."
+      ::=  {  user 4  }
+
+  bwUserIOWaitTime        OBJECT-TYPE
+      SYNTAX                  TimeInterval  (0..2147483647)
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION
+          " Time spent waiting for user I/O (Application wait class), in units of 0.01 seconds."
+      ::=  {  user 5  }
+
+-- redo modules  ...........................................
+
+  bwRedoStatsReset        OBJECT-TYPE
+     SYNTAX               Gauge32
+     MAX-ACCESS           read-write
+     STATUS               current
+     DESCRIPTION          "When set to a value other then 0, all the statistics stored within the redo submodule are reset to 0."
+     ::= { redo 1 }
+
+  bwRedoLogSpaceRequests    OBJECT-TYPE
+      SYNTAX                Counter64  
+      MAX-ACCESS            read-only
+      STATUS                current
+      DESCRIPTION          "Number of times the active log file is full and Oracle must wait for disk space to be allocated for the redo log entries. Such space is created by performing a log switch."
+      ::=  {  redo 2  }
+
+  bwRedoLogSpaceWaitTime    OBJECT-TYPE
+      SYNTAX                TimeInterval  (0..2147483647)
+      MAX-ACCESS            read-only
+      STATUS                current
+      DESCRIPTION           "Total elapsed waiting time for 'redo log space requests', in units of 0.01 seconds."
+      ::=  {  redo 3  }
+
+-- enqueue modules  ...........................................
+
+  bwEnqueueStatsReset       OBJECT-TYPE
+     SYNTAX                 Gauge32
+     MAX-ACCESS             read-write
+     STATUS                 current
+     DESCRIPTION            "When set to a value other then 0, all the statistics stored within the enqueue submodule are reset to 0."
+     ::= { enqueue 1 }
+
+  bwEnqueueWaits            OBJECT-TYPE
+      SYNTAX                Counter64  
+      MAX-ACCESS            read-only
+      STATUS                current
+      DESCRIPTION           "Total number of waits that occurred during an enqueue convert or get because the enqueue get was deferred."
+      ::=  {  enqueue 2  }
+
+  bwEnqueueDeadlocks        OBJECT-TYPE
+      SYNTAX                Counter64  
+      MAX-ACCESS            read-only
+      STATUS                current
+      DESCRIPTION           "Number of times that a process detected a potential deadlock when exchanging two buffers and raised an internal, restartable error. Index scans are the only operations that perform exchanges."
+      ::=  {  enqueue 3  }
+
+-- cache modules  ...........................................
+
+  bwCacheStatsReset       OBJECT-TYPE
+     SYNTAX               Gauge32
+     MAX-ACCESS           read-write
+     STATUS               current
+     DESCRIPTION          "When set to a value other then 0, all the statistics stored within the cache submodule are reset to 0."
+     ::= { cache 1 }
+
+  bwDbBlockGets           OBJECT-TYPE
+      SYNTAX              Counter64  
+      MAX-ACCESS          read-only
+      STATUS              current
+      DESCRIPTION         "Number of times a CURRENT block was requested, directly from the RAM data block buffer."
+      ::=  {  cache 2  }
+
+  bwConsistentGets        OBJECT-TYPE
+      SYNTAX              Counter64  
+      MAX-ACCESS          read-only
+      STATUS              current
+      DESCRIPTION         "Number of times a consistent read was requested for a block."
+      ::=  {  cache 3  }
+
+  bwPhysicalReads         OBJECT-TYPE
+      SYNTAX              Counter64  
+      MAX-ACCESS          read-only
+      STATUS              current
+      DESCRIPTION         "Total number of data blocks read from disk."
+      ::=  {  cache 4  }
+
+  bwPhysicalReadIORequests  OBJECT-TYPE
+      SYNTAX                Counter64  
+      MAX-ACCESS            read-only
+      STATUS                current
+      DESCRIPTION           "Number of read requests for application activity (mainly buffer cache and direct load operation) which read one or more database blocks per request."
+      ::=  {  cache 5  }
+
+  bwDbBlockChanges          OBJECT-TYPE
+      SYNTAX                Counter64  
+      MAX-ACCESS            read-only
+      STATUS                current
+      DESCRIPTION           "This statistic counts the total number of changes that were part of an update or delete operation that were made to all blocks in the SGA. Such changes generate redo log entries and hence become permanent changes to the database if the transaction is committed. This approximates total database work. It statistic indicates the rate at which buffers are being dirtied (on a per-transaction or per-second basis, for example)."
+      ::=  {  cache 6  }
+
+  bwPhysicalWrites          OBJECT-TYPE
+      SYNTAX                Counter64  
+      MAX-ACCESS            read-only
+      STATUS                current
+      DESCRIPTION           "Total number of data blocks written to disk."
+      ::=  {  cache 7  }
+
+  bwDBWRCheckpointBuffersWritten  OBJECT-TYPE
+      SYNTAX                      Counter64  
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Number of buffers that were written for checkpoints"
+      ::=  {  cache 8  }
+
+  bwDBWRCheckpoints           OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION             "Number of times the DBWR was asked to scan the cache and write all blocks marked for a checkpoint or the end of recovery."
+      ::=  {  cache 9  }
+
+-- sql modules  ...........................................
+
+  bwSqlStatsReset         OBJECT-TYPE
+     SYNTAX               Gauge32
+     MAX-ACCESS           read-write
+     STATUS               current
+     DESCRIPTION          "When set to a value other then 0, all the statistics stored within the sql submodule are reset to 0."
+     ::= { sql 1 }
+
+  bwWorkareaExecutionsMultipass OBJECT-TYPE
+      SYNTAX                    Counter64  
+      MAX-ACCESS                read-only
+      STATUS                    current
+      DESCRIPTION               "Number of workarea execution that requires multiple passes because the work area size is too small."
+      ::=  {  sql 2  }
+
+  bwParseTimeCpu                OBJECT-TYPE
+      SYNTAX                    TimeInterval  (0..2147483647)
+      MAX-ACCESS                read-only
+      STATUS                    current
+      DESCRIPTION               "Total CPU time used for parsing (hard and soft). In units of 0.01 seconds."
+      ::=  {  sql 3  }
+
+  bwParseTimeElapsed            OBJECT-TYPE
+      SYNTAX                    TimeInterval  (0..2147483647)
+      MAX-ACCESS                read-only
+      STATUS                    current
+      DESCRIPTION               "Total elapsed time for parsing. In units of 0.01 seconds."
+      ::=  {  sql 4  }
+
+  bwParseCountTotal             OBJECT-TYPE
+      SYNTAX                    Counter64  
+      MAX-ACCESS                read-only
+      STATUS                    current
+      DESCRIPTION               "Total number of parse calls (hard, soft, and describe). A soft parse is a check on an object already in the shared pool, to verify that the permissions on the underlying object have not changed."
+      ::=  {  sql 5  }
+
+  bwSortsMemory                 OBJECT-TYPE
+      SYNTAX                    Counter64  
+      MAX-ACCESS                read-only
+      STATUS                    current
+      DESCRIPTION               "Number of sort operations that were performed completely in memory and did not require any disk writes."
+      ::=  {  sql 6  }
+
+  bwSortsDisk                   OBJECT-TYPE
+      SYNTAX                    Counter64  
+      MAX-ACCESS                read-only
+      STATUS                    current
+      DESCRIPTION               "Number of sort operations that required at least one disk write.Sorts that require I/O to disk are quite resource intensive."
+      ::=  {  sql 7  }
+
+  bwSortsRows                   OBJECT-TYPE
+      SYNTAX                    Counter64  
+      MAX-ACCESS                read-only
+      STATUS                    current
+      DESCRIPTION               "Total number of rows sorted."
+      ::=  {  sql 8  }
+
+  bwTableFetchContinuedRow    OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION             "Number of times a chained or migrated row is encountered during a fetch.Retrieving rows that span more than one block increases the logical I/O by a factor that corresponds to the number of blocks than need to be accessed. Exporting and re-importing may eliminate this problem. Evaluate the settings for the storage parameters PCTFREE and PCTUSED. This problem cannot be fixed if rows are larger than database blocks (for example, if the LONG datatype is used and the rows are extremely large)."
+      ::=  {  sql 9  }
+
+  bwIndexFastFullScansFull    OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION             "Number of fast full scans initiated for full segments"
+      ::=  {  sql 10 }
+
+  bwTableScansShortTables     OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION             "Number of table scans performed on short tables."
+      ::=  {  sql 11  }
+
+  bwTableScansLongTables      OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION             "Number of table scans performed on long tables."
+      ::=  {  sql 12  }
+
+-- fileio module  ...........................................
+
+  bwFileIOStatsReset        OBJECT-TYPE
+     SYNTAX                 Gauge32
+     MAX-ACCESS             read-write
+     STATUS                 current
+     DESCRIPTION            "When set to a value other then 0, all the statistics stored within the stat submodule are reset to 0."
+     ::= { fileio 1 }
+
+  bwFileIOStatsTable	      OBJECT-TYPE
+    SYNTAX		              SEQUENCE  OF  BwFileIOStatsEntry
+    MAX-ACCESS	            not-accessible
+    STATUS		              current
+    DESCRIPTION             "This table contains counters for the V$FILESTAT and DBA_DATA_FILES database tables."
+    ::=  { fileio  2 }
+
+  bwFileIOStatsEntry	      OBJECT-TYPE
+    SYNTAX		              BwFileIOStatsEntry
+    MAX-ACCESS	            not-accessible
+    STATUS		              current
+    DESCRIPTION             "Definition of the counters for bwFileIOStatsTable."
+    INDEX		{  bwFileIOStatsIndex  }
+    ::=  { bwFileIOStatsTable 1 }
+
+
+  BwFileIOStatsEntry  ::=  SEQUENCE {
+    bwFileIOStatsIndex              Unsigned32,
+    bwFileIOStatsFileID             Unsigned32,
+    bwFileIOStatsFileName           DisplayString,
+    bwFileIOStatsTableSpaceName     DisplayString,
+    bwFileIOStatsPhysicalReads      Counter64,
+    bwFileIOStatsPhysicalWrites     Counter64,
+    bwFileIOStatsPhysicalBlockReads Counter64,
+    bwFileIOStatsOptimizedPhysReads Counter64,
+    bwFileIOStatsPhysBlkWrites      Counter64,
+    bwFileIOStatsPhysSingleBlkReads Counter64
+    }
+
+  bwFileIOStatsIndex	      OBJECT-TYPE
+    SYNTAX			            Unsigned32
+    MAX-ACCESS		          not-accessible
+    STATUS			            current
+    DESCRIPTION             "This integer represents an index in table bwFileIOStatsTable. The index represents a single database file."
+    ::=  {  bwFileIOStatsEntry  1  }
+
+  bwFileIOStatsFileID	      OBJECT-TYPE
+    SYNTAX			            Unsigned32
+    MAX-ACCESS		          read-only
+    STATUS			            current
+    DESCRIPTION             "Database file id associated with the corresponding bwFileIOStatsFileIndex."
+    ::=  {  bwFileIOStatsEntry  2  }
+
+  bwFileIOStatsFileName	    OBJECT-TYPE
+    SYNTAX			            DisplayString
+    MAX-ACCESS		          read-only
+    STATUS			            current
+    DESCRIPTION             "Name of the database file associated with the corresponding bwFileIOStatsFileIndex."
+    ::=  {  bwFileIOStatsEntry  3  }
+
+  bwFileIOStatsTableSpaceName	OBJECT-TYPE
+    SYNTAX			              DisplayString
+    MAX-ACCESS		            read-only
+    STATUS			              current
+    DESCRIPTION               "Name of the database file associated with the corresponding bwFileIOStatsFileIndex."
+    ::=  {  bwFileIOStatsEntry  4  }
+
+  bwFileIOStatsPhysicalReads  OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION             "Number of physical read operations associated with the corresponding bwFileIOStatsFileIndex."
+      ::=  {  bwFileIOStatsEntry 5}
+
+  bwFileIOStatsPhysicalWrites OBJECT-TYPE
+      SYNTAX                  Counter64  
+      MAX-ACCESS              read-only
+      STATUS                  current
+      DESCRIPTION             "Number of physical writes operations associated with the corresponding bwFileIOStatsFileIndex."
+      ::=  {  bwFileIOStatsEntry 6}
+
+
+  bwFileIOStatsPhysicalBlockReads OBJECT-TYPE
+      SYNTAX                      Counter64  
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Number of block read operations associated with the corresponding bwFileIOStatsFileIndex."
+      ::=  {  bwFileIOStatsEntry 7}
+
+  bwFileIOStatsOptimizedPhysReads OBJECT-TYPE
+      SYNTAX                      Counter64  
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Number of optimized physical read operations associated with the corresponding bwFileIOStatsFileIndex."
+      ::=  {  bwFileIOStatsEntry 8}
+
+
+  bwFileIOStatsPhysBlkWrites      OBJECT-TYPE
+      SYNTAX                      Counter64  
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Number of physical block write operations associated with the corresponding bwFileIOStatsFileIndex."
+      ::=  {  bwFileIOStatsEntry 9}
+
+  bwFileIOStatsPhysSingleBlkReads OBJECT-TYPE
+      SYNTAX                      Counter64  
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Number of single physical block read operations associated with the corresponding bwFileIOStatsFileIndex."
+      ::=  {  bwFileIOStatsEntry 10}
+
+-- rac modules  ...........................................
+  bwRacStatsReset                 OBJECT-TYPE
+     SYNTAX                       Gauge32
+     MAX-ACCESS                   read-write
+     STATUS                       current
+     DESCRIPTION                  "When set to a value other then 0, all the statistics stored within the rac submodule are reset to 0."
+     ::= { rac 1 }
+
+  bwClusterWaitTime               OBJECT-TYPE
+      SYNTAX                      TimeInterval  (0..2147483647)
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Time spent waiting for cluster resources (System wait class). In units of 0.01 seconds."
+      ::=  {  rac 2  }
+
+-- debug modules  ...........................................
+  bwDebugStatsReset               OBJECT-TYPE
+     SYNTAX                       Gauge32
+     MAX-ACCESS                   read-write
+     STATUS                       current
+     DESCRIPTION                  "When set to a value other then 0, all the statistics stored within the debug submodule are reset to 0."
+     ::= { debug 1 }
+
+  bwLeafNodeSplits                OBJECT-TYPE
+      SYNTAX                      Counter64  
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Number of times an index leaf node was split because of the insertion of an additional value."
+      ::=  {  debug 2 }
+
+  bwLeafNode9010Splits            OBJECT-TYPE
+      SYNTAX                      Counter64  
+      MAX-ACCESS                  read-only
+      STATUS                      current
+      DESCRIPTION                 "Number of times an index leaf node was split because of the insertion of an additional value in the right most section of the leaf."
+      ::=  {  debug 3 }
+
+--
+-- DatabaseServer Server MIB Conformance Definition  ...........................................
+--
+
+bwDBSGroups		OBJECT IDENTIFIER
+    ::= { bwDbsMibConformance 1 }
+bwDBSCompliancy    OBJECT IDENTIFIER
+    ::= { bwDbsMibConformance 2 }
+
+-- units of conformance
+ bwDBSGroupInfo OBJECT-GROUP
+    OBJECTS     {  bwInfoDbId, bwInfoDbUniqueName, bwInfoUptime,  bwInfoRole, bwInfoOpenMode, bwInfoLogMode,
+                   bwInfoDataguardBroker, bwInfoSwitchOverStatus, bwInfoFastStartFailOverStatus }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the general information for the Database Server database."
+    ::= { bwDBSGroups 1 }
+
+ bwDBSGroupSga OBJECT-GROUP
+    OBJECTS     { bwFixedSize, bwVariableSize,bwDatabaseBuffers,bwRedoBuffers }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the SGA information for the Database Server database."
+    ::= { bwDBSGroups 2 }
+
+ bwDBSGroupError OBJECT-GROUP
+    OBJECTS     { bwDbaErrorObjectOwner, bwDbaErrorObjectName, bwDbaErrorObjectType, bwDbaErrorAttribute, bwDbaErrorMessageNumber } 
+    STATUS      current
+    DESCRIPTION
+        "This group defines the error information for the Database Server database."
+    ::= { bwDBSGroups 3 }
+
+  bwDBSGroupUserStats OBJECT-GROUP
+    OBJECTS     { bwUserStatsReset, bwSQLNetRoundtripsToFromClient, bwConcurrencyWaitTime, bwApplicationWaitTime, bwUserIOWaitTime }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the user statistics for the Database Server database."
+    ::= { bwDBSGroups 4 }
+
+  bwDBSGroupRedoStats OBJECT-GROUP
+    OBJECTS     { bwRedoStatsReset, bwRedoLogSpaceRequests, bwRedoLogSpaceWaitTime }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the redo statistics for the Database Server database."
+    ::= { bwDBSGroups 5 }
+
+  bwDBSGroupEnqueueStats OBJECT-GROUP
+    OBJECTS     { bwEnqueueStatsReset, bwEnqueueWaits, bwEnqueueDeadlocks }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the cache statistics for the Database Server database."
+    ::= { bwDBSGroups 6 }
+
+  bwDBSGroupCacheStats OBJECT-GROUP
+    OBJECTS     { bwCacheStatsReset, bwDbBlockGets,  bwConsistentGets, bwPhysicalReads, bwPhysicalReadIORequests,
+    bwDbBlockChanges, bwPhysicalWrites, bwDBWRCheckpointBuffersWritten, bwDBWRCheckpoints }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the cache statistics for the Database Server database."
+    ::= { bwDBSGroups 7 }
+
+ bwDBSGroupSqlStats OBJECT-GROUP
+    OBJECTS     { bwSqlStatsReset, bwWorkareaExecutionsMultipass, bwParseTimeCpu, bwParseTimeElapsed, bwParseCountTotal,
+                  bwSortsMemory, bwSortsDisk,  bwSortsRows, bwTableFetchContinuedRow, bwIndexFastFullScansFull,
+                  bwTableScansShortTables, bwTableScansLongTables }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the sql statistics for the Database Server database."
+    ::= { bwDBSGroups 8 }
+
+ bwDBSGroupRacStats OBJECT-GROUP
+    OBJECTS     { bwRacStatsReset, bwClusterWaitTime }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the rac statistics for the Database Server database."
+    ::= { bwDBSGroups 9 }
+
+ bwDBSGroupFileIOStats OBJECT-GROUP
+    OBJECTS     {   bwFileIOStatsReset, bwFileIOStatsFileID, bwFileIOStatsFileName, bwFileIOStatsTableSpaceName,
+                    bwFileIOStatsPhysicalReads, bwFileIOStatsPhysicalWrites, bwFileIOStatsPhysicalBlockReads, bwFileIOStatsOptimizedPhysReads,
+                    bwFileIOStatsPhysBlkWrites, bwFileIOStatsPhysSingleBlkReads   }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the file statistics for the Database Server database."
+    ::= { bwDBSGroups 10 }
+
+ bwDBSGroupDebugStats OBJECT-GROUP
+    OBJECTS     { bwDebugStatsReset, bwLeafNodeSplits, bwLeafNode9010Splits }
+    STATUS      current
+    DESCRIPTION
+        "This group defines the debug statistics for the Database Server database."
+    ::= { bwDBSGroups 11 }
+
+  bwDbsBasicCompliance MODULE-COMPLIANCE
+    STATUS      current
+    DESCRIPTION
+        "BroadWorks Database Server MIB Module compliance"
+
+    MODULE      -- this module
+
+        MANDATORY-GROUPS {  bwDBSGroupInfo, bwDBSGroupSga, bwDBSGroupError, bwDBSGroupUserStats, bwDBSGroupRedoStats, bwDBSGroupEnqueueStats,
+                            bwDBSGroupCacheStats , bwDBSGroupSqlStats, bwDBSGroupFileIOStats, bwDBSGroupRacStats, bwDBSGroupDebugStats}
+
+    ::= { bwDBSCompliancy 1 }
+
+END

@@ -1,0 +1,96 @@
+
+-- File Name : BW-CallDetailServerFault.mib 
+BW-CallDetailServerFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults emitted by the Call Detail Server."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200809160000Z"
+                DESCRIPTION     "Added complete documentation for NOTIFICATION-TYPE entries to the MIB."
+    REVISION    "200805200000Z"
+                DESCRIPTION "Made the MIB conformant to smilint (level 3)"
+    ::=  {  common  1  }
+
+  bwPMCallDetailServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Call Detail Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMCallDetailServerLaunched , bwPMCallDetailServerShutDown, bwPMCallDetailServerRestarted, and bwPMCallDetailServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Call Detail Server main process."
+    ::=  {  systemFaults 2001  }
+
+  bwPMCallDetailServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Call Detail Server has been shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMCallDetailServerLaunched , bwPMCallDetailServerShutDown, bwPMCallDetailServerRestarted, and bwPMCallDetailServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Call Detail Server main process."
+    ::=  {  systemFaults 2002  }
+
+  bwPMCallDetailServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Call Detail Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMCallDetailServerLaunched , bwPMCallDetailServerShutDown, bwPMCallDetailServerRestarted, and bwPMCallDetailServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Call Detail Server main process."
+    ::=  {  systemFaults 2003  }
+
+  bwPMCallDetailServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Call Detail Server terminated.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMCallDetailServerLaunched , bwPMCallDetailServerShutDown, bwPMCallDetailServerRestarted, and bwPMCallDetailServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Call Detail Server main process."
+    ::=  {  systemFaults 2004  }
+
+  bwNetworkServerUnreachable NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The server is unable to communicate with a configured Network Server.
+@severity:high
+@subcomponent:nslocation"
+    ::= { systemFaults 2005 }
+
+  bwCAPSCallCenterLinkDown NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The CAP-S-CallCenter connection to the Application Server is down.
+@severity:high
+@subcomponent:cap"
+    ::= { systemFaults 2006 }
+
+  bwOCIReportingLinkDown NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The OCI Reporting connection to the Application Server is down.
+@severity:medium
+@subcomponent:ociReporting"
+    ::= { systemFaults 2007 }
+
+END

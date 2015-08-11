@@ -1,0 +1,1147 @@
+-- File Name : BW-ExecutionFault.mib
+
+BW-ExecutionFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npMessage, npReason, npMethod, npCallId, npDeviceAddress, npOriginator, npHost, npUserId, npMailboxId, npServiceProviderId, npSessionKey, npStackTrace, npEndpointId, npExceptionMessage, npUserUid, npGroupId, npGroupName, npThreadName, npCountryCode, npOldDomainName, npNewDomainName, npUserNumber, npLastIncomingCallTime, npCaller, npTraceType, npGroupNumber, npDirection, npCallingNumber, npCallingNumberContext, npCallingPresentationIndicator, npCalledNumber, npCalledNumberContext, npStartTime, npAnswerTime, npOriginalCalledNumber, npOriginalCalledNumberContext, npOriginalCalledNumberPresentationIndicator, npOriginalCalledReason, npRedirectingNumber, npRedirectingNumberContext, npRedirectingNumberPresentationIndicator, npRedirectingReason, npRoute, npNetworkCallId, npCallingPartyCategory, npCallCapacityGroup, npClientAddress, npSubscriberType, npSubscriberId, npCallType, npDeviceName, npLocalPort, npSmdiNumber, npTimeElapsed, npServerName, npConfiguredAddress, npFailedAttempts, npAllowedAttempts, npResolvedAddress, npCallPersonality, npRemoteParty, npCallAnswered, npFilename, npDialedNumber, npDeviceLinePort, npReceivedPhysicalLocation, npConfiguredPhysicalLocation, npCallsLimit, npUrl, npNbOfSoapThreads, npTrunkGroupName, npPeriod, npPrimaryAddress, npSecondaryAddress, npMaximumAttempt, npMaxNumberOfSessions, npSACGroupId, npRemotePort, npObjectId, npFileURL, npMSCAddr, npRoutePointName, npMediaServerAddress, npEnterpriseId
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the Execution Server."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200912230000Z"
+                DESCRIPTION     "Added faults for FR52198 - Session Data Replication"
+    REVISION    "200907200000Z"
+                DESCRIPTION     "MIB Creation, based on the defunct BW-ApplicationServerFault.mib."
+    ::=  {  common  1  }
+
+-- Execution Server Faults...
+
+  bwPMExecutionServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Execution Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMExecutionServerLaunched, bwPMExecutionServerShutDown, bwPMExecutionServerRestarted, and bwPMExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Execution Server process running on the BroadWorks Application Server."
+    ::=  {  systemFaults 3501  }
+
+  bwPMExecutionServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Execution Server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMExecutionServerLaunched, bwPMExecutionServerShutDown, bwPMExecutionServerRestarted, and bwPMExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Execution Server process running on the BroadWorks Application Server."
+    ::=  {  systemFaults 3502  }
+
+  bwPMExecutionServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Execution Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMExecutionServerLaunched, bwPMExecutionServerShutDown, bwPMExecutionServerRestarted, and bwPMExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Execution Server process running on the BroadWorks Application Server."
+    ::=  {  systemFaults 3503  }
+
+  bwPMExecutionServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Execution Server death.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMExecutionServerLaunched, bwPMExecutionServerShutDown, bwPMExecutionServerRestarted, and bwPMExecutionServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Execution Server process running on the BroadWorks Application Server."
+    ::=  {  systemFaults 3504  }
+
+
+  bwSipRegistrationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that BroadWorks rejected a registration attempt from an endpoint due to the Emergency Zone feature.
+@severity:low
+@subcomponent:sip"
+    ::=  {  systemFaults 3510  }
+
+  bwSipAuthenticationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npOriginator, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "Authentication challenge from device failed.
+@severity:low
+@subcomponent:sip"
+    ::=  {  systemFaults 3516  }
+
+  bwAclViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMethod, npCallId, npReason }
+    STATUS      current
+    DESCRIPTION
+        "SIP request received from an unknown device.
+@severity:low
+@subcomponent:sip"
+    ::=  {  systemFaults 3517  }
+
+  bwIMSRetrieveMessageError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npMailboxId, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates a fault that occurred during the retrieval of an e-mail message from the incoming mail server.
+@severity:medium
+@subcomponent:ims"
+    ::=  {  systemFaults 3521  }
+
+  bwIMSRetrieveMailBoxInfoError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npRemoteAddress, npUserId, npServiceProviderId }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates an error retrieving a user's mailbox information from the incoming mail server.
+@severity:medium
+@subcomponent:ims"
+    ::=  {  systemFaults 3522  }
+
+  bwIMSConnectionFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npUserId, npMailboxId, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates a fault occurred during an attempt to connect and log in to the incoming mail server.
+@severity:high
+@subcomponent:ims"
+    ::=  {  systemFaults 3523  }
+
+  bwIMSCloseConnectionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npMailboxId, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates an unsuccessful attempt to close the current incoming mail server socket connection.
+@severity:informational
+@subcomponent:ims"
+    ::=  {  systemFaults 3524  }
+
+  bwIMSUpdateMailBoxError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npMailboxId, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates an error while marking messages for deletion.
+@severity:low
+@subcomponent:ims"
+    ::=  {  systemFaults 3525  }
+
+  bwMediaServerNotResponding  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npSessionKey }
+    STATUS      current
+    DESCRIPTION
+        "A Media Server is not responding to Application Server queries.
+@severity:high
+@subcomponent:mcp"
+    ::=  {  systemFaults 3526  }
+
+  bwMssNetworkServerNotResponding  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npSessionKey }
+    STATUS      current
+    DESCRIPTION
+        "A Network Server is not responding to Application Server queries.
+@severity:medium
+@subcomponent:mss"
+    ::=  {  systemFaults 3527  }
+
+  bwMssNoResponse  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npSessionKey }
+    STATUS      current
+    DESCRIPTION
+        "None of the Network Servers has responded to Application Server queries.
+@severity:high
+@subcomponent:mss"
+    ::=  {  systemFaults 3528  }
+
+  bwMGCPIOControllerUnknownReqIDInNotification  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "The MGCP I/O controller has received a notification message from the gateway with an unknown request ID.
+@severity:informational
+@subcomponent:mgcp"
+    ::=  {  systemFaults 3529  }
+
+  bwMGCPMessageParsingError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npStackTrace, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "Unable to parse MGCP message.
+@severity:low
+@subcomponent:mgcp"
+    ::=  {  systemFaults 3530  }
+
+  bwMGCPCallAgentFailedMessageProcessing  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npStackTrace, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "The call agent has failed to process a request failure.  Unexpected failure response message was received.
+@severity:informational
+@subcomponent:mgcp"
+    ::=  {  systemFaults 3531  }
+
+  bwMGCPCallAgentMessageProcessing  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npStackTrace, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "The call agent has failed to process a request.  An unexpected response message was received.
+@severity:informational
+@subcomponent:mgcp"
+    ::=  {  systemFaults 3532  }
+
+  bwMGCPReTransmissionTimeout  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npEndpointId, npDeviceAddress, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "The MGCP request aborted after the maximum number of retries.
+@severity:low
+@subcomponent:mgcp"
+    ::=  {  systemFaults 3533  }
+
+  bwMGCPUnrecognisedDomainName  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npHost }
+    STATUS      current
+    DESCRIPTION
+        "Host name cannot be resolved when trying to connect to an access device.
+@severity:medium
+@subcomponent:mgcp"
+    ::=  {  systemFaults 3534  }
+
+  bwMGCPUDPTransmitter  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npStackTrace, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "There is an encoding problem in the BroadWorks MGCP stack.
+@severity:high
+@subcomponent:mgcp"
+    ::=  {  systemFaults 3535  }
+
+  bwAuditAbnormalCallTermination  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserUid, npSessionKey, npEndpointId, npDeviceAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification is sent when an end device does not respond during an active call or when a call is detected in the system in an incorrect state. Session audit has terminated the call when this alarm is sent.
+@severity:low
+@subcomponent:callp"
+    ::=  {  systemFaults 3536  }
+
+  bwEmergencyCallRoutingFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that there was a problem routing an emergency call to a route.  These are high severity alarms.  A critical alarm is sent if no route could be found or emergency calls cannot be successfully routed.
+@severity:high-critical
+@subcomponent:emergency"
+    ::=  {  systemFaults 3552  }
+
+  bwNetworkRoutingServiceRouteExhaustion  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that all routes have been exhausted to route a call.
+@severity:high-critical
+@subcomponent:callp"
+    ::=  {  systemFaults 3553  }
+
+  bwCallPThreadAutoRestart  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npThreadName }
+    STATUS      current
+    DESCRIPTION
+        "This notification is sent when the Application Server call processing watchdog thread has detected a problem with a call processing thread and has restarted it.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3555  }
+
+  bwForcedExitDueToHungThread  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npThreadName }
+    STATUS      current
+    DESCRIPTION
+        "This notification is sent when the Application Server call processing watchdog thread has detected a problem with a call processing thread. An attempt was made to restart the thread, however this has failed.  The Application Server processes exits and is restarted by the process monitor.
+@severity:critical
+@subcomponent:callp"
+    ::=  {  systemFaults 3556  }
+
+  bwOCPMissingCountryCode  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCountryCode }
+    STATUS      current
+    DESCRIPTION
+        "The outgoing calling plan (OCP) file does not contain definitions for a country code that matches the country code of the BroadWorks user performing the origination.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3557  }
+
+  bwSystemDomainNameReset  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npOldDomainName, npNewDomainName }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that the system domain was changed.
+@severity:high
+@subcomponent:transevent"
+    ::=  {  systemFaults 3558  }
+
+  bwAccountingFTPConnectionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "Problem performing the automatic FTP of the accounting file to the destination FTP server.
+@severity:high
+@subcomponent:accounting"
+    ::=  {  systemFaults 3560  }
+
+  bwCustomerOriginatedTrace  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserNumber, npLastIncomingCallTime, npCaller, npHost, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "Indicates that a user originated a customer-originated trace (COT) request.
+@severity:informational
+@subcomponent:callp"
+    ::=  {  systemFaults 3561  }
+
+  bwMaliciousCallTrace  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npTraceType, npUserNumber, npGroupNumber, npDirection, npCallId, npCallingNumber, npCallingNumberContext, npCallingPresentationIndicator, npCalledNumber, npCalledNumberContext, npStartTime, npAnswerTime, npOriginalCalledNumber, npOriginalCalledNumberContext, npOriginalCalledNumberPresentationIndicator, npOriginalCalledReason, npRedirectingNumber, npRedirectingNumberContext, npRedirectingNumberPresentationIndicator, npRedirectingReason, npRoute, npNetworkCallId, npCallingPartyCategory }
+    STATUS      current
+    DESCRIPTION
+        "Malicious Call Trace is a user service administered by system provider and service provider administrators.  When assigned and active, calls originating from and/or terminating to a user generate an alarm.  The alarm contains a large subset of information listed in a Call Detail Record (for example, calling, called, and redirecting numbers, answer time, and so on) provided the information is available at the moment the alarm is generated.  Malicious Call Trace can be configured in one of three ways:
+Answered:  An alarm is generated for all calls terminating on the user only when answered by the user.
+Alerting:  An alarm is generated for all calls terminating on the user (answered or not, rejected or not).
+All:  An alarm is generated for all of the user's calls (originating and terminating), including originations resulting from a redirection done by the user (such as call forward).
+@severity:informational
+@subcomponent:callp"
+    ::=  {  systemFaults 3562  }
+
+  bwCallCapacityManagementaddCallID  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npGroupName, npCallCapacityGroup }
+    STATUS      current
+    DESCRIPTION
+        "The alarm is sent whenever the Call Capacity Management (CCM) feature blocks a call setup attempt because all allocated bandwidth has already been consumed by other calls.  It does not necessarily mean that there is a problem.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3565  }
+
+  bwSMDIsessionRejected  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npClientAddress }
+    STATUS      current
+    DESCRIPTION
+        "An SMDI session, initiated by an external terminal server, was rejected.
+@severity:low
+@subcomponent:smdi"
+    ::=  {  systemFaults 3566  }
+
+  bwOCPMissingTransferNumber  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npSubscriberType, npSubscriberId, npCallType }
+    STATUS      current
+    DESCRIPTION
+        "There is no transfer number provisioned.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3567  }
+
+  bwOCPMissingAuthorizationCode  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npSubscriberType, npSubscriberId, npCallType }
+    STATUS      current
+    DESCRIPTION
+        "There is no authorization code provisioned.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3568  }
+
+  bwDeviceStatusIsUnavailable  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npDeviceAddress }
+    STATUS      current
+    DESCRIPTION
+        "A device is unavailable.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3570  }
+
+-- bwCPEDeviceConfigurationDeviceReset was moved to BroadworksFault in R17.0
+--   ::=  {  systemFaults 3572  } is reserved.
+
+  bwSMDIInterfaceError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npLocalPort }
+    STATUS      current
+    DESCRIPTION
+        "The SMDI interface could not be started on a specific port.
+@severity:low
+@subcomponent:smdi"
+    ::=  {  systemFaults 3574  }
+
+  bwSMDIConfigurationError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npSmdiNumber }
+    STATUS      current
+    DESCRIPTION
+        "An outgoing SMDI message could not be sent to a SMDI device for the specified user.
+@severity:low
+@subcomponent:smdi"
+    ::=  {  systemFaults 3575  }
+
+  bwSMDIOperationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npSmdiNumber, npReason }
+    STATUS      current
+    DESCRIPTION
+        "For the actual description, refer the BroadWorks FaultManagementGuide as it may contain variable data.
+@severity:low
+@subcomponent:smdi"
+    ::=  {  systemFaults 3576  }
+
+  bwSMDIRouteExhaustion  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npSmdiNumber, npDeviceName }
+    STATUS      current
+    DESCRIPTION
+        "An SMDI message could not be sent because of route exhaustion.
+@severity:low
+@subcomponent:smdi"
+    ::=  {  systemFaults 3577  }
+
+  bwThreadDelayDetected  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npThreadName, npTimeElapsed, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "A thread was delayed.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3594  }
+
+  bwAccountingRadiusServerNotResponding  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServerName, npConfiguredAddress, npResolvedAddress }
+    STATUS      current
+    DESCRIPTION
+        "A Call Detail Server is not responding to write Requests.
+@severity:high
+@subcomponent:accounting"
+    ::=  {  systemFaults 3596  }
+
+  bwAccountingRadiusServersNotConfigured  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Sending of the call logs is enabled, but no radius servers are configured.
+@severity:high
+@subcomponent:accounting"
+    ::=  {  systemFaults 3597  }
+
+  bwMaximumFailedVoicePortalLoginAttempts  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFailedAttempts, npAllowedAttempts, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "Triggered when a user is locked out because the maximum number of failed voice portal login attempts is reached.
+@severity:informational
+@subcomponent:voicePortal"
+    ::=  {  systemFaults 3598  }
+
+  bwASRDatabaseOutOfSync  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "ASR has received a rollback request for unknown user(s).  The databases are out of sync.
+@severity:high
+@subcomponent:nrs"
+    ::=  {  systemFaults 3599  }
+
+  bwCallLogRadiusServerUnreachable  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServerName, npConfiguredAddress, npResolvedAddress }
+    STATUS      current
+    DESCRIPTION
+        "A Call Detail Server is not responding to write Requests.
+@severity:high
+@subcomponent:callLogs"
+    ::=  {  systemFaults 3601  }
+
+  bwCallLogRadiusServersNotConfigured  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Sending of the call logs is enabled, but no radius servers are configured.
+@severity:high
+@subcomponent:callLogs"
+    ::=  {  systemFaults 3602  }
+
+  bwUserExceededMaxSimultaneousCalls  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCallPersonality, npUserId, npCallId, npRemoteParty }
+    STATUS      current
+    DESCRIPTION
+        "User exceeded the maximum number of simultaneous calls.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3604  }
+
+  bwUserExceededMaxCallTime  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCallAnswered, npUserId, npCallId, npRemoteParty }
+    STATUS      current
+    DESCRIPTION
+        "User exceeded maximum call time.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3605  }
+
+  bwInvalidRingbackMediaFile  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFilename, npUserId, npGroupId }
+    STATUS      current
+    DESCRIPTION
+        "Could not ringback file for user.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3606  }
+
+  bwPhysicalLocationOriginationBlocked NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npCallId, npDialedNumber, npDeviceLinePort, npReceivedPhysicalLocation, npConfiguredPhysicalLocation }
+    STATUS      current
+    DESCRIPTION
+        "User origination blocked by the Physical Location service.
+@severity:informational
+@subcomponent:callp"
+    ::=  {  systemFaults 3609  }
+
+  bwCallLogRadiusQueueNotProgressing  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "It has not been possible to send a call log taken from the Application Server file-based queue to a Call Detail Server over the last 60 attempts.
+@severity:high
+@subcomponent:callLogs"
+    ::=  {  systemFaults 3610  }
+
+  bwCallLogRadiusQueueFileDeleted NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFilename }
+    STATUS      current
+    DESCRIPTION
+        "A file older than a week has been deleted from the Application Server file-based queue as a safe guard against exhausting the file system space.
+@severity:high
+@subcomponent:callLogs"
+    ::=  {  systemFaults 3611  }
+
+  bwConcurrentCallsExceeded NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCallsLimit }
+    STATUS      current
+    DESCRIPTION
+        "A call failed because the number of concurrent calls attempted exceeds the licensed capacity.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3612  }
+
+  bwENServerUnreachable NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "EN server cannot be reached.
+@severity:high
+@subcomponent:emergency"
+    ::=  {  systemFaults 3613  }
+
+  bwENServerNumberInvalid NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCalledNumber }
+    STATUS      current
+    DESCRIPTION
+        "EN server returned an invalid number.
+@severity:high
+@subcomponent:emergency"
+    ::=  {  systemFaults 3614  }
+
+  bwXSOCICommunicationError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "The Execution Server cannot send OCI commands to the Provisioning Server.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3617  }
+
+  bwUserExceededMaxSimultaneousVideoCalls NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npCallPersonality, npUserId, npCallId, npRemoteParty }
+    STATUS      current
+    DESCRIPTION
+        "User exceeded the maximum number of simultaneous video calls.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3620  }
+
+  bwMediaTypeNotSupported NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npEndpointId }
+    STATUS      current
+    DESCRIPTION
+        "The call was rejected because there were no valid media types in the SDP.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3621  }
+
+  bwENTranslationFailed NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUrl }
+    STATUS      current
+    DESCRIPTION
+        "EN translation has failed.
+@severity:high
+@subcomponent:emergency"
+    ::=  {  systemFaults 3622  }
+
+  bwSOAPThreadNumberTooLow NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npNbOfSoapThreads }
+    STATUS      current
+    DESCRIPTION
+        "The SOAP subsystem could not process requests because the number of threads is too low.  This alarm can only be thrown once, until the server is restarted.
+@severity:high
+@subcomponent:soap"
+    ::=  {  systemFaults 3623  }
+
+  bwUserExceededMaxConcurrentRedirectedCalls NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteParty, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "Maximum number of concurrent redirected calls exceeded.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3624  }
+
+  bwUserExceededMaxFindMeFollowMeDepth NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteParty, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "Depth of Find Me/Follow Me chaining exceeded.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3625  }
+
+  bwUserExceededMaxRedirectionDepth NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteParty, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "Redirection depth limit exceeded.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3626  }
+
+  bwUserExceededMaxFindMeFollowMeInvocations NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteParty, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "Maximum number of concurrent Find Me/Follow Me invocations exceeded.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3627  }
+
+  bwTrunkGroupCapacityExceeded NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npServiceProviderId, npGroupName, npTrunkGroupName }
+    STATUS      current
+    DESCRIPTION
+        "The capacity of the Trunk Group was exceeded.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3628  }
+
+  bwTrunkGroupUnreachableDestination NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServiceProviderId, npGroupName, npTrunkGroupName }
+    STATUS      current
+    DESCRIPTION
+        "The Trunk Group was unreachable.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3629  }
+    
+  bwForwardDestinationLoop NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteParty, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "Forwarding loop detected.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3630  }
+
+  bwSmppRoutesExhausted NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "Cannot connect to any provisioned SMS-C. All MWI to mobile notifications are lost. This alarm is cleared by the Application Server once connection can be re-established.
+@severity:high
+@subcomponent:smpp"
+    ::= { systemFaults 3633 }
+
+  bwExternalCustomRingbackServerFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "A failure occurred while attempting to connect to an external custom ringback server.
+@severity:medium
+@subcomponent:sip"
+    ::=  {  systemFaults 3634  }
+
+--  bwCongestionManagementNeighborOverloaded was moved to BroadworksFault in R17.sp3
+--    ::= { systemFaults 3635 }
+
+--   bwDnsServerUnreachable was moved to BroadworksFault in R17.sp3
+--    ::= { systemFaults 3645 }
+
+--  bwDnsAllServersUnreachable was moved to BroadworksFault in R17.sp3
+--    ::= { systemFaults 3646 }
+
+  bwRemoteOfficeEmergencyCallBlocked   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "A remote office emergency call origination was blocked and sent to treatment.
+@severity:informational
+@subcomponent:emergency"
+    ::= { systemFaults 3647 }
+
+  bwEmergencyCallOriginated   NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "An emergency call origination has been performed.
+@severity:informational
+@subcomponent:emergency"
+    ::= { systemFaults 3648 }
+
+  bwACRFailureTemporaryCondition NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      obsolete
+    DESCRIPTION
+        "A temporary failure prevented an Accounting Request from being delivered over Diameter.  If file queuing is enabled, this request is attempted again later.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3654 }
+
+  bwACRFailurePermanentCondition NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      obsolete
+    DESCRIPTION
+        "A permanent failure prevented an Accounting Request from being delivered over Diameter. This request was discarded.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3655 }
+
+  bwACRBacklogQueueNotProgressing NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npPrimaryAddress, npSecondaryAddress }
+    STATUS      obsolete
+    DESCRIPTION
+        "It has not been possible to send a request taken from the Application Server file-based queue to an offline charging server over the last 60 or more attempts.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3656 }
+
+  bwACRBacklogQueueFileDeleted NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFilename, npPrimaryAddress, npSecondaryAddress }
+    STATUS      obsolete
+    DESCRIPTION
+        "A file older than the configured value has been deleted from the Application Server file-based queue for the Diameter Offline Charging interface as a safe guard against exhausting the file system space.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3657 }
+
+  bwACRBacklogQueuingDisabled  NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      obsolete
+    DESCRIPTION
+        "The disk is too full to continue file queuing of ACR requests. File queuing has been disabled automatically.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3658 }
+
+  bwSmppConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName, severity, alarmState ,component ,subcomponent ,problemText ,recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "A connection attempt (initial connection attempt on first SMS event, new connection after inactivity, or reconnection after unexpected connection close) failed or an open SMPP connection unexpectedly closed (due to network, peer, or other unknown reason).
+@severity:low
+@subcomponent:smpp
+@correlationrules:This alarm is cleared by the Application Server once connection is re-established or reconfigured."
+    ::= { systemFaults 3660 }
+
+  bwTrunkingLicensedCapacityExceeded NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The Application Server blocked a business trunking call because no license units were available.
+@severity:medium
+@subcomponent:trunking"
+    ::= { systemFaults 3662 }
+
+  bwCCRFailureTemporaryCondition NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      obsolete
+    DESCRIPTION
+        "A temporary failure prevented an online credit control request from being delivered over Diameter.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3663 }
+
+  bwCCRFailurePermanentCondition NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      obsolete
+    DESCRIPTION
+        "A permanent failure prevented an online credit control request from being delivered over Diameter.  This request was discarded.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3664 }
+
+  bwCommunicationBarringUserLockedOut NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaximumAttempt, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "The server detected repeated attempts by a user to activate or deactivate Communication Barring with an erroneous pin code or without a PIN.
+@severity:low
+@subcomponent:callp"
+    ::= { systemFaults 3666 }
+
+  bwMaxSessionsReached NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaxNumberOfSessions, npSubscriberId }
+    STATUS      current
+    DESCRIPTION
+        "The maximum number of sessions has been reached for the given subscriber level Id (SP / Ent or Group).
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3667 }
+
+  bwMaxOrigSessionsReached NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaxNumberOfSessions, npSubscriberId }
+    STATUS      current
+    DESCRIPTION
+        "The maximum number of originating sessions has been reached for the given subscriber level Id (SP / Ent or Group).
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3668 }
+
+  bwMaxTermSessionsReached NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaxNumberOfSessions, npSubscriberId }
+    STATUS      current
+    DESCRIPTION
+        "The maximum number of terminating sessions has been reached for the given subscriber level Id (SP / Ent or Group).
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3669 }
+
+  bwSACGroupMaxSessionsReached NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaxNumberOfSessions, npSACGroupId, npSubscriberId }
+    STATUS      current
+    DESCRIPTION
+        "The maximum number of sessions has been reached for the given SAC Group.
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3670 }
+
+  bwSACGroupMaxOrigSessionsReached NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaxNumberOfSessions, npSACGroupId, npSubscriberId }
+    STATUS      current
+    DESCRIPTION
+        "The maximum number of originating sessions has been reached for the given SAC Group.
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3671 }
+
+  bwSACGroupMaxTermSessionsReached NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMaxNumberOfSessions, npSACGroupId, npSubscriberId }
+    STATUS      current
+    DESCRIPTION
+        "The maximum number of terminating sessions has been reached for the given SAC Group.
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3672 }
+
+  bwXsInternalPeerConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServerName, npRemoteAddress, npRemotePort }
+    STATUS      current
+    DESCRIPTION
+        "A failure occurred on the internal Diameter connection to the PS.
+@severity:high
+@subcomponent:diameter
+@correlationrules:This alarm is cleared by the once connection is re-established or reconfigured."
+    ::= { systemFaults 3673 }
+
+  bwXsExternalPeerConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServerName, npRemoteAddress, npRemotePort }
+    STATUS      current
+    DESCRIPTION
+        "A failure occurred on a connection between the XS and a Diameter Peer.
+@severity:high
+@subcomponent:diameter
+@correlationrules:This alarm is cleared by the once connection is re-established or reconfigured."
+    ::= { systemFaults 3674 }
+
+  bwXsInternalInterfaceInitializationError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "The Diameter Interface cannot be initialized. 
+@severity:high
+@subcomponent:diameter"
+    ::= { systemFaults 3675 }
+
+  bwXsExternalInterfaceInitializationError NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "The Diameter Interface cannot be initialized. 
+@severity:high
+@subcomponent:diameter"
+    ::= { systemFaults 3676 }
+
+  bwRfFailureTemporaryCondition NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "A temporary failure prevented an Accounting Request from being delivered over Diameter.  If file queuing is enabled, this request is attempted again later.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3677 }
+
+  bwRfFailurePermanentCondition NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "A permanent failure prevented an Accounting Request from being delivered over Diameter.  This request was discarded.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3678 }
+
+  bwRfBacklogQueueNotProgressing NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npPrimaryAddress }
+    STATUS      current
+    DESCRIPTION
+        "It has not been possible to send a request taken from the Application Server file-based queue to an offline charging server over the last 60 or more attempts.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3679 }
+
+  bwRfBacklogQueueFileDeleted NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFilename, npPrimaryAddress }
+    STATUS      current
+    DESCRIPTION
+        "A file older than the configured value has been deleted from the Application Server file-based queue for the Diameter offline charging interface as a safe guard against exhausting the file system space. File content may have been partially transmitted.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3680 }
+
+  bwRfBacklogQueuingDisabled  NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The disk is too full to continue file queuing of ACR requests. File queuing has been disabled automatically.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3681 }
+
+  bwRoFailureTemporaryCondition NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "A temporary failure prevented an online credit control request from being delivered over Diameter.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3682 }
+
+  bwRoFailurePermanentCondition NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason, npRemoteAddress, npUserId, npCallId }
+    STATUS      current
+    DESCRIPTION
+        "A permanent failure prevented an online credit control request from being delivered over Diameter.  This request was discarded.
+@severity:high
+@subcomponent:accounting"
+    ::= { systemFaults 3683 }
+
+  bwInvalidPreAlertingMediaFile NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npFileURL, npUserId, npGroupId }
+    STATUS      current
+    DESCRIPTION
+        "Failure to play a media file because the URL specified to the Media Server was invalid, or contained invalid data.
+@severity:low
+@subcomponent:callp"
+    ::= { systemFaults 3684 }
+
+  bwStateReplicationLinkFailure NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The state replication link with the peer application server is down.
+@severity:high
+@subcomponent:callp"
+    ::= { systemFaults 3685 }
+
+  bwStateReplicationSoftwareMismatch NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The peer application server runs an incompatible release or patch.
+@severity:high
+@subcomponent:callp"
+    ::= { systemFaults 3686 }
+
+  bwStateReplicationSplitBrains NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "State replication has lost synchronization with its peer application server.
+@severity:high
+@subcomponent:callp"
+    ::= { systemFaults 3687 }
+
+  bwStateReplicationLockTimeout NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npObjectId }
+    STATUS      current
+    DESCRIPTION
+        "A timeout occurred trying to acquire lock for a replicated shared data object.
+@severity:medium
+@subcomponent:callp"
+    ::= { systemFaults 3688 }
+
+  bwUnknownNetworkRoaming NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npMSCAddr}
+    STATUS      current
+    DESCRIPTION
+        "Subscriber is roaming in an unknown network.
+@severity:low
+@subcomponent:callp"
+    ::= { systemFaults 3689 }
+
+  bwRoutePointFailure NOTIFICATION-TYPE
+    OBJECTS { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRoutePointName}
+    STATUS      current
+    DESCRIPTION
+        "A Route Point has failed.
+@severity:high
+@subcomponent:routePoint"
+    ::= { systemFaults 3690 }
+
+  bwCNAMSoapServerUnreachable NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "The Calling Name Retrieval SOAP server is unreachable.
+@severity:high
+@subcomponent:soap"
+    ::=  {  systemFaults 3691  }
+	
+  bwMediaCrConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npMediaServerAddress }
+    STATUS      current
+    DESCRIPTION
+        "The Cr connection with the Media Server is down.  This alarm is cleared once the connection is restored.
+@severity:high
+@subcomponent:mediaCrInterface"
+    ::=  {  systemFaults 3692  }
+	
+  bwGroupPagingBlockedDueToRedirection NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npUserDN, npUserId }
+    STATUS      current
+    DESCRIPTION
+        "A group page attempt resulted in a failure since redirection to a paging group's DN is not permitted.
+@severity:low
+@subcomponent:callp"
+    ::=  {  systemFaults 3693  }
+	
+  bwTrunkGroupIsUnavailable NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServiceProviderId, npGroupName, npTrunkGroupName, npDeviceName }
+    STATUS      current
+    DESCRIPTION
+        "The trunk group is now unavailable for routing calls.
+@severity:medium
+@subcomponent:callp"
+    ::=  {  systemFaults 3694  }
+	
+  bwCCGroupOutOfSync NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npServiceProviderId, npGroupId }
+    STATUS      current
+    DESCRIPTION
+        "Failed to write an event to the centralized database in the context of call center reporting.  The centralized database is not synchronized for the specified group.
+@severity:high
+@subcomponent:ccreporting"
+    ::=  {  systemFaults 3695  }
+	
+  bwCCEnterpriseOutOfSync NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npEnterpriseId  }
+    STATUS      current
+    DESCRIPTION
+        "Failed to write an event to the centralized database in the context of call center reporting.  The centralized database is not synchronized for the specified enterprise.
+@severity:high
+@subcomponent:ccreporting"
+    ::=  {  systemFaults 3696  }
+	
+  bwSCFServerNotResponding  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "SCF server is not responding to the Application Server SIP requests. This alarm is generated when the Application Server is running in SCF-IMS-Only mode.
+@severity:high
+@subcomponent:callP"
+    ::=  {  systemFaults 3697  }
+
+  bwEmergencyCallLongDuration  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserId, npUserNumber }
+    STATUS      current
+    DESCRIPTION
+        "Emergency call duration has exceeded the expected maximum, an indication that it might be hung.
+@severity:medium
+@subcomponent:emergency"
+    ::=  {  systemFaults 3698  }
+
+  bwIMRNAllocationFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npReason }
+    STATUS      current
+    DESCRIPTION
+        "The Application Server fails to allocate an IMRN.
+@severity:high
+@subcomponent:callp"
+    ::=  {  systemFaults 3700  }
+
+  bwIMRNAllocationTimeOut  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npIMRNNumber, npUserId, npGroupId }
+    STATUS      current
+    DESCRIPTION
+        "The Application Server times out on a previously allocated IMRN, i.e, does not receive request within the life span of IMRN allocation.
+@severity:low
+@subcomponent:callp"
+    ::=  {  systemFaults 3701  }
+
+  bwIMRNAllocationNotFound  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npIMRNNumber, npSIPCallID, npFrom }
+    STATUS      current
+    DESCRIPTION
+        "The Application Server fails to find an IMRN allocation for an incoming request to an IMRN.
+@severity:low
+@subcomponent:callp"
+    ::=  {  systemFaults 3702  }
+
+  bwCallLogReportingOverload  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This alarm indicates that centralized database reporting is unable to keep up with call log inflow. The alarm thresholds are:
+Medium: Connectivity to the database exists, but memory based queues have reached 75% capacity.
+High: Connectivity to the database is down or memory based queues have reached maximum capacity. Call Log event data is being persisted to the local file system for later recovery.
+Critical: Data for new calls is being dropped.  The cause could be due to a burst of traffic whereby new events must be shed because the queues are full, or the cause could be that the file space configured for call log event data has been consumed.
+@severity:medium, high, critical
+@subcomponent:callLogs"
+    ::=  {  systemFaults 3703  }
+
+  bwCallRecordingPlatformError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The recording attempt was unsuccessful because the 3PCR platform is unreachable (due to connectivity issues) or the 3PCR platform is experiencing issues that are preventing the Application Server from establishing a dialog with it (due to 4xx/5xx/6xx error).
+@severity:high (if the 3PCR platform is unreachable), medium (if the 3PCR platform returns 4xx/5xx/6xx when the Application Server attempts recording)
+@subcomponent:callp"
+    ::=  {  systemFaults 3704  }
+
+  bwRedundancyLinkFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The redundancy link with the peer Application Server is down.
+@severity:high
+@subcomponent:callp"
+-- @feature:176431
+    ::=  {  systemFaults 3708  }
+    
+END

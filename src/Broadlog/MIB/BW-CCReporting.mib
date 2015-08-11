@@ -1,0 +1,356 @@
+--===============================================================
+-- File Name : BW-CCReporting.mib
+-- Author    : BroadSoft Inc.
+-- Copyright 2000-2010, BroadSoft, Inc. All rights reserved. 
+-- Proprietary Property of BroadSoft, Inc. Gaithersburg, MD.
+--===============================================================
+
+BW-CCReporting DEFINITIONS ::= BEGIN
+    IMPORTS
+      DisplayString 
+        FROM SNMPv2-TC
+      MODULE-COMPLIANCE, OBJECT-GROUP          
+        FROM SNMPv2-CONF
+      enterprises, MODULE-IDENTITY, OBJECT-TYPE, Gauge32, Counter32, Unsigned32
+        FROM SNMPv2-SMI;
+
+  broadsoft MODULE-IDENTITY
+    LAST-UPDATED  "201008230000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc
+220 Perry Parkway
+Gaithersburg, MD  20877
+
+301-977-9440"
+    DESCRIPTION
+      "This is the MIB for the CC Reporting application."
+    REVISION    "201008230000Z"
+      DESCRIPTION     "Creation."
+    ::= { enterprises 6431 }
+
+  broadworks OBJECT IDENTIFIER
+    ::= { broadsoft 1 }
+
+  ccReporting OBJECT IDENTIFIER
+    ::= { broadworks 25 }
+
+  ccrDatabaseModule OBJECT IDENTIFIER
+    ::= { ccReporting 1 }
+
+  ccrDatabaseStats OBJECT IDENTIFIER
+    ::= { ccrDatabaseModule 1 }
+
+  ccrOracle OBJECT IDENTIFIER
+    ::= { ccrDatabaseStats 1 }
+
+  smtp OBJECT IDENTIFIER
+      ::= { ccReporting 2 }
+
+  reportRequests OBJECT IDENTIFIER
+      ::= { ccReporting 3 }
+
+  queueStats OBJECT IDENTIFIER
+      ::= { ccReporting 4 }
+
+  bwCCReportingMibConformance OBJECT IDENTIFIER
+    ::= { ccReporting 1000 }
+
+-- ccrOracle ::  ...............................
+
+   bwCCReportingOpenedTransactions  OBJECT-TYPE
+      SYNTAX         Gauge32
+      MAX-ACCESS     read-only
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of opened transaction with the database."
+      ::=  {  ccrOracle  1  }
+
+   bwCCReportingCommittedTransactions  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of committed transactions to the database since the last restart."
+      ::=  {  ccrOracle  2  }
+
+   bwCCReportingFailedTransactions  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of failed transactions with the database."
+      ::=  {  ccrOracle  3  }
+
+   bwCCReportingCriticalErrors  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of critical errors encountered during processing with the database."
+      ::=  {  ccrOracle  4  }
+
+-- SMTP ::  ...............................
+
+   bwSMTPTotalPrimaryEmailSendAttempts  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of message deliveries to the primary SMTP server."
+      ::=  {  smtp  1  }
+
+   bwSMTPTotalSecondaryEmailSendAttempts  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of message deliveries to the secondary SMTP server."
+      ::=  {  smtp  2  }
+
+   bwSMTPPrimaryUnSuccessfulEmailSendAttempts  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of message deliveries that failed on the primary SMTP server."
+      ::=  {  smtp  3  }
+
+   bwSMTPSecondaryUnSuccessfulEmailSendAttempts  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This counter reflects the total number of message deliveries that failed on the secondary SMTP server."
+      ::=  {  smtp  4  }
+
+-- Report Requests ::  ...............................
+
+   bwReportRequests  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This is the number of report requests received by the application."
+      ::=  {  reportRequests  1  }
+
+   bwReportFailures  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This is the number of report requests that could not be processed by the application."
+      ::=  {  reportRequests  2  }
+
+   bwRealTimeStatsAccess  OBJECT-TYPE
+      SYNTAX         Counter32
+      MAX-ACCESS     read-write
+      STATUS         current
+      DESCRIPTION
+            "This is the number of report requests received by the application that required the computation of real-time statistics."
+      ::=  {  reportRequests  3  }
+
+-- Queue Stats ::  ...............................
+
+  bwCCReportingQueueResets  OBJECT-TYPE
+    SYNTAX         Counter32
+    MAX-ACCESS     read-only
+    STATUS         current
+    DESCRIPTION
+          "When set to a value other then 0, all the queue statistic stored under queueStatsTable are reset to 0."
+    ::=  {  queueStats 1  }
+
+  bwCCReportingQueueStatsTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF BwCCReportingQueueStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "This table contains statistics about the CC Reporting internal queues"
+    ::= { queueStats 2 }
+
+  bwCCReportingQueueStatsEntry OBJECT-TYPE
+    SYNTAX      BwCCReportingQueueStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION 
+        "Each row contains"
+    INDEX       { bwCCReportingQueueIndex }
+    ::= { bwCCReportingQueueStatsTable 1 }
+
+  BwCCReportingQueueStatsEntry ::= SEQUENCE {
+    bwCCReportingQueueIndex                 Unsigned32,
+    bwCCReportingQueueName                  DisplayString,
+    bwCCReportingQueueSize                  Counter32,
+    bwCCReportingQueueTimeAvg               Gauge32,
+    bwCCReportingQueueTimeMin               Gauge32,
+    bwCCReportingQueueTimeMax               Gauge32,
+    bwCCReportingQueueLengthCurrent         Gauge32,
+    bwCCReportingQueueLengthAvg             Gauge32,
+    bwCCReportingQueueLengthMax             Gauge32,
+    bwCCReportingQueueTimeMaxTimestampMSB   Gauge32,
+    bwCCReportingQueueTimeMaxTimestampLSB   Gauge32,
+    bwCCReportingQueueLengthMaxTimestampMSB Gauge32,
+    bwCCReportingQueueLengthMaxTimestampLSB Gauge32    
+  }
+
+  bwCCReportingQueueIndex OBJECT-TYPE
+    SYNTAX      Unsigned32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "This is the index of the queue stats table entry."
+    ::= { bwCCReportingQueueStatsEntry 1 }
+
+  bwCCReportingQueueName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the name of the queue stats table entry."
+    ::= { bwCCReportingQueueStatsEntry 2 }
+
+  bwCCReportingQueueSize OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION 
+        "Displays the size of the queue."
+    ::= { bwCCReportingQueueStatsEntry 3 }
+
+  bwCCReportingQueueTimeAvg OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the average time that an element spends in the queue since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 4 }
+
+  bwCCReportingQueueTimeMin OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the minimum time that an element spent in the queue since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 5 }
+
+  bwCCReportingQueueTimeMax OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the maximum time that an element spent in the queue since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 6 }
+
+  bwCCReportingQueueLengthCurrent OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the current number of elements in the queue since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 7 }
+
+  bwCCReportingQueueLengthAvg OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the average number of elements in the queue since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 8 }
+
+  bwCCReportingQueueLengthMax OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the maximum number ofelements in the queue since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 9 }
+
+  bwCCReportingQueueTimeMaxTimestampMSB OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the most significant bytes of the timestamp at which the maximum queue time was recorded, since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 10 }
+
+  bwCCReportingQueueTimeMaxTimestampLSB OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the least significant bytes of the timestamp at which the maximum queue time was recorded, since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 11 }
+
+  bwCCReportingQueueLengthMaxTimestampMSB OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the most significant bytes of the timestamp at which the maximum queue length was recorded, since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 12 }
+
+  bwCCReportingQueueLengthMaxTimestampLSB OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION 
+        "Displays the least significant bytes of the timestamp at which the maximum queue length was recorded, since the last reset."
+    ::= { bwCCReportingQueueStatsEntry 13 }
+
+-- BroadWorks CC Reporting MIB Conformance Definition  ...........................................
+
+bwCCReportingMibGroups     OBJECT IDENTIFIER ::= { bwCCReportingMibConformance 1 }
+bwCCReportingMibCompliancy OBJECT IDENTIFIER ::= { bwCCReportingMibConformance 2 }
+
+bwCCReportingPersistencyStatsGroup OBJECT-GROUP
+    OBJECTS { bwCCReportingOpenedTransactions,
+              bwCCReportingCommittedTransactions,
+              bwCCReportingFailedTransactions,
+              bwCCReportingCriticalErrors }
+  STATUS  current
+  DESCRIPTION
+     "This group defines statistics for the CC Reporting."
+  ::= { bwCCReportingMibGroups 1 }
+
+bwCCReportingSMTPStatsGroup OBJECT-GROUP
+    OBJECTS { bwSMTPTotalPrimaryEmailSendAttempts,
+              bwSMTPTotalSecondaryEmailSendAttempts,
+              bwSMTPPrimaryUnSuccessfulEmailSendAttempts,
+              bwSMTPSecondaryUnSuccessfulEmailSendAttempts }
+  STATUS  current
+  DESCRIPTION
+     "This group defines statistics for the CC Reporting SMTP stats."
+  ::= { bwCCReportingMibGroups 2 }
+
+bwCCReportingReportRequestStatsGroup OBJECT-GROUP
+    OBJECTS { bwReportRequests, bwReportFailures, bwRealTimeStatsAccess }
+  STATUS  current
+  DESCRIPTION
+     "This group defines statistics for the CC Reporting Report Request."
+  ::= { bwCCReportingMibGroups 3 }
+
+bwCCReportingQueueStatsGroup OBJECT-GROUP
+    OBJECTS { bwCCReportingQueueIndex, bwCCReportingQueueName, 
+              bwCCReportingQueueSize, bwCCReportingQueueTimeAvg,
+              bwCCReportingQueueTimeMin, bwCCReportingQueueTimeMax,
+              bwCCReportingQueueLengthCurrent, bwCCReportingQueueLengthAvg,
+              bwCCReportingQueueLengthMax, bwCCReportingQueueTimeMaxTimestampMSB,
+              bwCCReportingQueueTimeMaxTimestampLSB,
+              bwCCReportingQueueLengthMaxTimestampMSB,
+              bwCCReportingQueueLengthMaxTimestampLSB }
+  STATUS  current
+  DESCRIPTION
+     "This group defines statistics for the CC Reporting Queue Stats."
+  ::= { bwCCReportingMibGroups 4 }
+
+  bwCCReportingBasicCompliance MODULE-COMPLIANCE
+    STATUS      current
+    DESCRIPTION 
+        "BroadWorks CC Reporting MIB compliance"
+    MODULE
+        MANDATORY-GROUPS        { bwCCReportingPersistencyStatsGroup,
+                                  bwCCReportingSMTPStatsGroup,
+                                  bwCCReportingReportRequestStatsGroup,
+                                  bwCCReportingQueueStatsGroup }
+    ::= { bwCCReportingMibCompliancy 1 }
+
+END

@@ -1,0 +1,63 @@
+-- File Name : BW-NSPortalFault.mib
+
+BW-NSPortalFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress, npDeviceType, npDeviceName, npNodeId
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks NS Portal application."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200912020000Z"
+                DESCRIPTION     "Created the MIB based on the defunct BW-NetworkServerFault MIB."
+    ::=  {  common  1  }
+
+  bwServiceControlProxyConnFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The service control proxy experienced communication problems with a specific Application Server.
+@severity:informational
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1036  }
+
+  bwServiceControlProxyConnTerminated  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates a CAP connection between the service control proxy and the Application Server has been terminated.
+@severity:informational
+@subcomponent:unspecified"
+    ::=  {  systemFaults 1037  }
+
+  bwLocationAPIRequestError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "An error occurred while processing a location API request.
+@severity:high
+@subcomponent:nslocation"
+    ::=  {  systemFaults 1040  }
+
+  bwSCPNetworkDeviceNodeIsFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npDeviceType, npDeviceName, npNodeId }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is generated whenever a network device node that was previously responding does not respond to an application-level ping.
+@severity:high
+@subcomponent:networkDeviceManagement"
+    ::=  {  systemFaults 1251  }
+
+END

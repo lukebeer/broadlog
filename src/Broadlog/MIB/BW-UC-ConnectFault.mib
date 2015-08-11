@@ -1,0 +1,66 @@
+-- File Name : BW-UC-ConnectFault.mib
+BW-UC-ConnectFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npExceptionMessage, npMessage, npUserId, npRequestUriUser, npCallId, npTreatment, npSipErrorCode, npInstanceName, npPolicyFeature, npRemoteAddress, npStackTrace, npReason, npRequest, npReceivedVersion, npExpectedVersion, npDeviceType, npDeviceName, npNodeId, npNbTransactions, npPeriod, npCurrentThresholdValue, npUserUid, npSessionKey, npEndpointId
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks UC-Connect Application."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200906020000Z"
+                DESCRIPTION     "Added Session Audit fault."
+    REVISION    "200903310000Z"
+                DESCRIPTION     "Creation of the UC-Connect Fault MIB."
+    ::=  {  common  1  }
+
+  bwCapClientConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The connection to the Application Server is down.
+@severity:high
+@subcomponent:cap
+@correlationrules:This alarm is cleared once the connection is restored."
+    ::=  {  systemFaults 8500  }
+
+  bwLocationApiClientNetworkServerConnectionFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The connection to the Network Server or Location Server is down.
+@severity:high
+@subcomponent:nslocation
+@correlationrules:This alarm is cleared once the connection is restored."
+    ::=  {  systemFaults 8501  }
+
+  bwCSTASessionRegistrationFailure NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "MOC client registration failed.
+@severity:informational
+@subcomponent:sip
+@correlationrules:This alarm is cleared once the connection is restored."
+    ::=  {  systemFaults 8502  }
+
+bwAuditAbnormalCallTermination  NOTIFICATION-TYPE
+  OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npUserUid, npSessionKey, npEndpointId }
+    STATUS  current
+    DESCRIPTION
+      "This notification is sent when the MOC server does not respond to the SIP audit. Session audit has terminated the SIP dialog when this notification is sent.
+@severity:low
+@subcomponent:sip"
+    ::= { systemFaults 8503 }
+END

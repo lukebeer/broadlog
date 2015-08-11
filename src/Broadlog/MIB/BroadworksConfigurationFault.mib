@@ -1,0 +1,86 @@
+--===============================================================
+-- File Name : BroadworksConfigurationFault.mib
+-- Date      : 02/09/2009
+-- Author    : BroadSoft Inc.
+--===============================================================
+BroadworksConfigurationFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, 
+    component, subcomponent, problemText, recommendedActionsText, npConfigVersion
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "200902090000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "The MIB defines the faults for the Configuration subsystem. "
+    REVISION    "200902090000Z"
+    DESCRIPTION
+        "MIB Creation"
+    ::=  {  common  1  }
+
+  bwPMconfigdLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the configuration agent has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMconfigdLaunched, bwPMconfigdShutDown, bwPMconfigdRestarted, and bwPMconfigdDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the configd process."
+    ::=  {  systemFaults 6101  }
+
+  bwPMconfigdShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the configuration agent has been shutdown.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMconfigdLaunched, bwPMconfigdShutDown, bwPMconfigdRestarted, and bwPMconfigdDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the configd process."
+    ::=  {  systemFaults 6102  }
+
+  bwPMconfigdRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the configuration agent has been restarted.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMconfigdLaunched, bwPMconfigdShutDown, bwPMconfigdRestarted, and bwPMconfigdDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the configd process."
+    ::=  {  systemFaults 6103  }
+
+  bwPMconfigdDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the configuration agent as abnormally terminated.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMconfigdLaunched, bwPMconfigdShutDown, bwPMconfigdRestarted, and bwPMconfigdDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the configd process."
+    ::=  {  systemFaults 6104  }
+
+  bwConfigurationChanged  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npConfigVersion }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the configuration agent as loaded a new configuration version.
+@severity:informational
+@subcomponent:configd"
+    ::=  {  systemFaults 6105  }
+
+  bwConfigurationFailed  NOTIFICATION-TYPE
+    OBJECTS     { identifier ,timeStamp ,alarmName ,systemName ,severity ,component ,subcomponent ,problemText ,recommendedActionsText, npConfigVersion }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the configuration agent as failed to loaded a new configuration version.
+@severity:high
+@subcomponent:configd"
+    ::=  {  systemFaults 6106  }
+
+END

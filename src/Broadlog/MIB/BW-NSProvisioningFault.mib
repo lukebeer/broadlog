@@ -1,0 +1,175 @@
+-- File Name : BW-NSProvisioningFault.mib
+
+BW-NSProvisioningFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npStackTrace, npReason, npRequest, npExceptionMessage, npMessage, npInstanceName, npRemoteAddress, npExpectedVersion, npReceivedVersion
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks NS Provisioning application."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200912020000Z"
+                DESCRIPTION     "Created the MIB based on the defunct BW-NetworkServerFault MIB."
+    ::=  {  common  1  }
+
+  bwPMNSProvisioningServerLaunched  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Network Server (NS) Provisioning Server has been started.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMNSProvisioningServerLaunched, bwPMNSProvisioningServerShutDown, bwPMNSProvisioningServerRestarted, and bwPMNSProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Provisioning Server process."
+    ::=  {  systemFaults 1005  }
+
+  bwPMNSProvisioningServerShutDown  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that the Network Server (NS) Provisioning Server has been manually shut down.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMNSProvisioningServerLaunched, bwPMNSProvisioningServerShutDown, bwPMNSProvisioningServerRestarted, and bwPMNSProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Provisioning Server process."
+    ::=  {  systemFaults 1006  }
+
+  bwPMNSProvisioningServerRestarted  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Network Server (NS) Provisioning Server restart.
+@severity:informational
+@subcomponent:processmonitor
+@correlationrules:bwPMNSProvisioningServerLaunched, bwPMNSProvisioningServerShutDown, bwPMNSProvisioningServerRestarted, and bwPMNSProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Provisioning Server process."
+    ::=  {  systemFaults 1007  }
+
+  bwPMNSProvisioningServerDeath  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "This notification provides the date and time of the Network Server (NS) Provisioning Server death.
+@severity:critical
+@subcomponent:processmonitor
+@correlationrules:bwPMNSProvisioningServerLaunched, bwPMNSProvisioningServerShutDown, bwPMNSProvisioningServerRestarted, and bwPMNSProvisioningServerDeath can be correlated into a single alarm.  These events have to be considered as a transition of the state machine for the management of the Network Server Provisioning Server process."
+    ::=  {  systemFaults 1008  }
+
+  bwNSSynchUnknownHostnameError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when a Network Server synchronization event is received from an unknown host.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1024  }
+
+  bwNSSynchTrustedKeyError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when a Network Server Synch event is received from host with an invalid sync key.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1025  }
+
+  bwNSSynchExceptionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npStackTrace }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when an internal error is generated while processing a sync request.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1026  }
+
+  bwNSSynchUpdateXMLError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npReason, npRequest }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when a request from a given device cannot be processed by the Network Server sync API.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1027  }
+
+  bwNSSynchUpdateFailureError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npReason, npRequest }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when a request from a given device cannot be processed by the Network Server sync API.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1028  }
+
+  bwNSSynchUpdateExceptionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npMessage, npRequest }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when a request from a given device cannot be processed by the Network Server sync API because of an internal software error.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1029  }
+
+  bwNSSynchUpdateIncorrectVersionError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npReceivedVersion }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when a request is received with an unknown version of the sync API protocol.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1030  }
+
+  bwNSSynchUpdateIncorrectProtocolError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress, npExpectedVersion, npReceivedVersion }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is sent when a request is received with an unknown version of the sync API protocol.
+@severity:medium
+@subcomponent:nssynch"
+    ::=  {  systemFaults 1031  }
+
+  bwNSPSPolicyDeploymentError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npExceptionMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification states that the Network Server has problems deploying a policy.
+@severity:low
+@subcomponent:filesystem"
+    ::=  {  systemFaults 1301  }
+
+  bwNSPSDatabaseDataInconsistencyError  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "This notification indicates that an inconsistency has been introduced in the database.
+@severity:medium
+@subcomponent:database"
+    ::=  {  systemFaults 1302  }
+
+  bwNSPSInvalidDialPlan  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMessage }
+    STATUS      current
+    DESCRIPTION
+        "States that a dial plan contains an invalid entry.
+@severity:medium
+@subcomponent:database"
+    ::=  {  systemFaults 1303  }
+
+  bwNSPSSCRPInconsistentList  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npInstanceName }
+    STATUS      current
+    DESCRIPTION
+        "One of the Service Center policy instances has an inconsistent service center routing list.
+@severity:informational
+@subcomponent:database"
+    ::=  {  systemFaults 1304  }
+
+END

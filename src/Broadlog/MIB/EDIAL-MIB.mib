@@ -1,0 +1,1142 @@
+-- This file machine generated on Thu Oct 23 17:10:56 2008
+-- from $Id: servermib.pl,v 1.1.4.3 2007/08/08 21:49:17 phil.budne Exp $
+-- by $Id: mibmaker.pm,v 1.13 2006/04/10 18:28:06 phil.budne Exp $
+-- DO NOT EDIT BY HAND!!!
+
+EDIAL-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, NOTIFICATION-TYPE, OBJECT-TYPE,
+      enterprises, Counter32, Integer32, Unsigned32
+	FROM SNMPv2-SMI
+    DateAndTime, DisplayString, TEXTUAL-CONVENTION
+	FROM SNMPv2-TC
+    InetAddressType, InetAddress
+	FROM INET-ADDRESS-MIB;
+
+
+edial MODULE-IDENTITY
+    LAST-UPDATED "200708082149Z"
+    ORGANIZATION "eDial, Inc (a division of Alcatel-Lucent)"
+    CONTACT-INFO
+	"Postal: Alcatel-Lucent
+		 One Cranberry Hill
+		 Lexington, MA 02421
+		 781-879-1689
+
+	WWW:	 http://www.alcatel-lucent.com/"
+    DESCRIPTION
+	"This document contains the management information that is
+	common to all elements in an eDial Server."
+    REVISION	"200402252000Z"
+    DESCRIPTION
+	"Released with ACS 5.6.0;
+	Supports only NOTIFICATIONs."
+    REVISION	"200510032144Z"
+    DESCRIPTION
+	"Released with ACS 6.0;
+	Adds Monitoring (read only)."
+    REVISION	"200708082149Z"
+    DESCRIPTION
+	"Released with ACS 7.1;
+	Updates corporate name, postal address."
+    ::= { enterprises 19631 }
+
+
+-- ****************
+-- Textual Conventions
+-- establish length limits for strings used as indices
+
+
+DomString ::= TEXTUAL-CONVENTION
+    STATUS	current
+    DESCRIPTION
+          "Denotes an eDial Server Virtual Server Domain name."
+    SYNTAX	OCTET STRING (SIZE (1..64))
+
+OrgString ::= TEXTUAL-CONVENTION
+    STATUS	current
+    DESCRIPTION
+          "Denotes an eDial Server Organization name."
+    SYNTAX	OCTET STRING (SIZE (1..64))
+
+UserString ::= TEXTUAL-CONVENTION
+    STATUS	current
+    DESCRIPTION
+	"Denotes an eDial Server User name."
+    SYNTAX	OCTET STRING (SIZE (1..64))
+
+CallIdString ::= TEXTUAL-CONVENTION
+    STATUS	current
+    DESCRIPTION
+	"Denotes an eDial Server Call Id."
+    SYNTAX	OCTET STRING (SIZE (1..70))
+
+ServerStatus ::= TEXTUAL-CONVENTION
+    STATUS	current
+    DESCRIPTION
+	"A Value that represents the status of an eDial Server process
+	or server watchdog process.
+
+	normal(0)	process or watchdog process running normally.
+	notRunning(1)	process or watchdog process not running.
+	disabled(100)	process or watchdog process disabled."
+    SYNTAX	INTEGER {
+                    normal(0),
+                    notRunning(1),
+                    disabled(100)
+		}
+
+
+-- ****************
+-- Common Group
+
+common OBJECT IDENTIFIER ::= { edial 1 }
+
+systemFaults OBJECT IDENTIFIER ::= { common 1 }
+products OBJECT IDENTIFIER ::= { common 2 }
+monitoring OBJECT IDENTIFIER ::= { common 3 }
+
+-- ****************
+-- System Faults Group
+
+faultFields OBJECT IDENTIFIER ::= { systemFaults 1 }
+
+timeStamp OBJECT-TYPE
+    SYNTAX	DateAndTime
+    MAX-ACCESS	accessible-for-notify
+    STATUS	current
+    DESCRIPTION
+	"The date and time at which the fault was generated."
+    ::= { faultFields 2 }
+
+msgString OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	accessible-for-notify
+    STATUS	current
+    DESCRIPTION
+	"The fault message string."
+    ::= { faultFields 3 }
+
+systemName OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	accessible-for-notify
+    STATUS	current
+    DESCRIPTION
+	"The hostname of the system generating the fault."
+    ::= { faultFields 4 }
+
+problemText OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	accessible-for-notify
+    STATUS	current
+    DESCRIPTION
+	"Text describing the nature of the problem.
+	The text consists of constant and variable portions."
+    ::= { faultFields 9 }
+
+notification NOTIFICATION-TYPE
+    OBJECTS	{ timeStamp, msgString, systemName, problemText }
+    STATUS	current
+    DESCRIPTION
+	"A notification indicates detection of an abnormal
+	condition in the system."
+    ::= { systemFaults 2 }
+
+
+-- ****************
+-- Products Group
+
+acs OBJECT IDENTIFIER ::= { products 1 }
+
+-- ****************
+-- Monitoring Group
+
+call OBJECT IDENTIFIER ::= { monitoring 1 }
+media OBJECT IDENTIFIER ::= { monitoring 2 }
+user OBJECT IDENTIFIER ::= { monitoring 3 }
+disk OBJECT IDENTIFIER ::= { monitoring 4 }
+trunk OBJECT IDENTIFIER ::= { monitoring 5 }
+site OBJECT IDENTIFIER ::= { monitoring 6 }
+replication OBJECT IDENTIFIER ::= { monitoring 7 }
+server OBJECT IDENTIFIER ::= { monitoring 8 }
+
+-- ****************
+-- call Group
+
+-- Active Call table
+
+activeCallTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF ActiveCallEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table of Active Calls controlled by this system."
+    ::= { call 1 }
+
+activeCallEntry OBJECT-TYPE
+    SYNTAX	ActiveCallEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Active Call Table Entry."
+    INDEX	{ activeCallCallId }
+    ::= { activeCallTable 1 }
+
+ActiveCallEntry ::= SEQUENCE {
+	activeCallCallId
+		CallIdString,
+	activeCallOwner
+		DisplayString,
+	activeCallCreator
+		DisplayString,
+	activeCallVanity
+		DisplayString,
+	activeCallLeader
+		DisplayString,
+	activeCallSubject
+		DisplayString,
+	activeCallStartTime
+		DateAndTime,
+	activeCallEndTime
+		DateAndTime,
+	activeCallRecurrence
+		DisplayString,
+	activeCallProject
+		DisplayString,
+	activeCallDepartment
+		DisplayString
+	}
+
+activeCallCallId OBJECT-TYPE
+    SYNTAX	CallIdString
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Call Id for this Active Call."
+    ::= { activeCallEntry 1 }
+
+activeCallOwner OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Owner name for this Active Call."
+    ::= { activeCallEntry 2 }
+
+activeCallCreator OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Creator name for this Active Call."
+    ::= { activeCallEntry 3 }
+
+activeCallVanity OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Vanity information for this Active Call."
+    ::= { activeCallEntry 4 }
+
+activeCallLeader OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Leader information for this Active Call."
+    ::= { activeCallEntry 5 }
+
+activeCallSubject OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Subject Information for this Active Call."
+    ::= { activeCallEntry 6 }
+
+activeCallStartTime OBJECT-TYPE
+    SYNTAX	DateAndTime
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Start time for this Active Call.
+	
+	If not known, then this variable will have the value
+	corresponding to January 1, year 0000, 00:00:00.0, which is
+	encoded as (hex)'00 00 01 01 00 00 00 00'."
+    ::= { activeCallEntry 7 }
+
+activeCallEndTime OBJECT-TYPE
+    SYNTAX	DateAndTime
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"End Time for this Active Call.
+	
+	If not known, then this variable will have the value
+	corresponding to January 1, year 0000, 00:00:00.0, which is
+	encoded as (hex)'00 00 01 01 00 00 00 00'."
+    ::= { activeCallEntry 8 }
+
+activeCallRecurrence OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Recurrence information for this Active Call."
+    ::= { activeCallEntry 9 }
+
+activeCallProject OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Project information for this Active Call."
+    ::= { activeCallEntry 10 }
+
+activeCallDepartment OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Department information for this Active Call."
+    ::= { activeCallEntry 11 }
+
+-- Active Call Leg table
+
+activeCallLegTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF ActiveCallLegEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table of Active Call Legs."
+    ::= { call 2 }
+
+activeCallLegEntry OBJECT-TYPE
+    SYNTAX	ActiveCallLegEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Active Call Leg Table Entry."
+    INDEX	{ activeCallLegCallId, activeCallLegLegId }
+    ::= { activeCallLegTable 1 }
+
+ActiveCallLegEntry ::= SEQUENCE {
+	activeCallLegCallId
+		CallIdString,
+	activeCallLegLegId
+		Unsigned32,
+	activeCallLegInfo
+		DisplayString,
+	activeCallLegUpFor
+		Unsigned32
+	}
+
+activeCallLegCallId OBJECT-TYPE
+    SYNTAX	CallIdString
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Call Id for this Active Call Leg."
+    ::= { activeCallLegEntry 1 }
+
+activeCallLegLegId OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Leg Id for this Active Call Leg."
+    ::= { activeCallLegEntry 2 }
+
+activeCallLegInfo OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Information for this Active Call Leg."
+    ::= { activeCallLegEntry 3 }
+
+activeCallLegUpFor OBJECT-TYPE
+    SYNTAX	Unsigned32
+    UNITS	"Seconds"
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Uptime in seconds for this Active Call Leg."
+    ::= { activeCallLegEntry 4 }
+
+-- ****************
+-- media Group
+
+-- Active Media Call table
+
+activeMediaTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF ActiveMediaEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table of all Active Calls with legs that
+	terminate on this physical system."
+    ::= { media 1 }
+
+activeMediaEntry OBJECT-TYPE
+    SYNTAX	ActiveMediaEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Active Media Call Table Entry."
+    INDEX	{ activeMediaCallId }
+    ::= { activeMediaTable 1 }
+
+ActiveMediaEntry ::= SEQUENCE {
+	activeMediaCallId
+		CallIdString,
+	activeMediaOwner
+		DisplayString,
+	activeMediaCreator
+		DisplayString,
+	activeMediaVanity
+		DisplayString,
+	activeMediaLeader
+		DisplayString,
+	activeMediaSubject
+		DisplayString,
+	activeMediaStartTime
+		DateAndTime,
+	activeMediaEndTime
+		DateAndTime,
+	activeMediaRecurrence
+		DisplayString,
+	activeMediaProject
+		DisplayString,
+	activeMediaDepartment
+		DisplayString
+	}
+
+activeMediaCallId OBJECT-TYPE
+    SYNTAX	CallIdString
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Call Id for this Active Media Call."
+    ::= { activeMediaEntry 1 }
+
+activeMediaOwner OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Owner name for this Active Media Call."
+    ::= { activeMediaEntry 2 }
+
+activeMediaCreator OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Creator name for this Active Media Call."
+    ::= { activeMediaEntry 3 }
+
+activeMediaVanity OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Vanity information for this Active Media Call."
+    ::= { activeMediaEntry 4 }
+
+activeMediaLeader OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Leader information for this Active Media Call."
+    ::= { activeMediaEntry 5 }
+
+activeMediaSubject OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Subject Information for this Active Media Call."
+    ::= { activeMediaEntry 6 }
+
+activeMediaStartTime OBJECT-TYPE
+    SYNTAX	DateAndTime
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Start time for this Active Media Call.
+	
+	If not known, then this variable will have the value
+	corresponding to January 1, year 0000, 00:00:00.0, which is
+	encoded as (hex)'00 00 01 01 00 00 00 00'."
+    ::= { activeMediaEntry 7 }
+
+activeMediaEndTime OBJECT-TYPE
+    SYNTAX	DateAndTime
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"End Time for this Active Media Call.
+	
+	If not known, then this variable will have the value
+	corresponding to January 1, year 0000, 00:00:00.0, which is
+	encoded as (hex)'00 00 01 01 00 00 00 00'."
+    ::= { activeMediaEntry 8 }
+
+activeMediaRecurrence OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Recurrence information for this Active Media Call."
+    ::= { activeMediaEntry 9 }
+
+activeMediaProject OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Project information for this Active Media Call."
+    ::= { activeMediaEntry 10 }
+
+activeMediaDepartment OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Department information for this Active Media Call."
+    ::= { activeMediaEntry 11 }
+
+-- Active Media Call Leg table
+
+activeMediaLegTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF ActiveMediaLegEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table of Active Media Call Legs."
+    ::= { media 2 }
+
+activeMediaLegEntry OBJECT-TYPE
+    SYNTAX	ActiveMediaLegEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Active Media Call Leg Table Entry."
+    INDEX	{ activeMediaLegCallId, activeMediaLegLegId }
+    ::= { activeMediaLegTable 1 }
+
+ActiveMediaLegEntry ::= SEQUENCE {
+	activeMediaLegCallId
+		CallIdString,
+	activeMediaLegLegId
+		Unsigned32,
+	activeMediaLegInfo
+		DisplayString,
+	activeMediaLegUpFor
+		Unsigned32
+	}
+
+activeMediaLegCallId OBJECT-TYPE
+    SYNTAX	CallIdString
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Call Id for this Active Media Call Leg."
+    ::= { activeMediaLegEntry 1 }
+
+activeMediaLegLegId OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Leg Id for this Active Media Call Leg."
+    ::= { activeMediaLegEntry 2 }
+
+activeMediaLegInfo OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Information for this Active Media Call Leg."
+    ::= { activeMediaLegEntry 3 }
+
+activeMediaLegUpFor OBJECT-TYPE
+    SYNTAX	Unsigned32
+    UNITS	"Seconds"
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Uptime in seconds for this Active Media Call Leg."
+    ::= { activeMediaLegEntry 4 }
+
+-- ****************
+-- User Group
+
+-- Active User table
+
+activeUserTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF ActiveUserEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table of users who are currently logged into the
+	Instant Collaboration System on this server."
+    ::= { user 1 }
+
+activeUserEntry OBJECT-TYPE
+    SYNTAX	ActiveUserEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Active User Entry."
+    INDEX	{ activeUserIndex }
+    ::= { activeUserTable 1 }
+
+ActiveUserEntry ::= SEQUENCE {
+	activeUserIndex
+		Integer32,
+	activeUserUsername
+		UserString,
+	activeUserDomain
+		DomString,
+	activeUserOrganization
+		OrgString,
+	activeUserStatus
+		INTEGER,
+	activeUserTime
+		Unsigned32,
+	activeUserAddressType
+		InetAddressType,
+	activeUserAddress
+		InetAddress,
+	activeUserPort
+		INTEGER
+	}
+
+activeUserIndex OBJECT-TYPE
+    SYNTAX	Integer32 (1..32767)
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Index for this Active User Entry."
+    ::= { activeUserEntry 1 }
+
+activeUserUsername OBJECT-TYPE
+    SYNTAX	UserString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"User name for this Active User."
+    ::= { activeUserEntry 2 }
+
+activeUserDomain OBJECT-TYPE
+    SYNTAX	DomString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Domain name for this Active User."
+    ::= { activeUserEntry 3 }
+
+activeUserOrganization OBJECT-TYPE
+    SYNTAX	OrgString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Organization name for this Active User."
+    ::= { activeUserEntry 4 }
+
+activeUserStatus OBJECT-TYPE
+    SYNTAX	INTEGER {
+			idle(0),
+			onPhone(1)
+			}
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Status of this user."
+    ::= { activeUserEntry 5 }
+
+activeUserTime OBJECT-TYPE
+    SYNTAX	Unsigned32
+    UNITS	"Seconds"
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Time in seconds this user has been active."
+    ::= { activeUserEntry 6 }
+
+activeUserAddressType OBJECT-TYPE
+    SYNTAX	InetAddressType
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Remote Internet Address type for this Active User."
+    ::= { activeUserEntry 7 }
+
+activeUserAddress OBJECT-TYPE
+    SYNTAX	InetAddress
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Remote Internet Address for this Active User."
+    ::= { activeUserEntry 8 }
+
+activeUserPort OBJECT-TYPE
+    SYNTAX	INTEGER (0..65535)
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Remote TCP Port for this Active User."
+    ::= { activeUserEntry 9 }
+
+-- ****************
+-- Trunk Group
+
+trunkCount OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Number of PSTN Trunks on this server."
+    ::= { trunk 1 }
+
+-- PSTN Trunk Status table
+
+trunkTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF TrunkEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table with Status information of PSTN Trunks."
+    ::= { trunk 2 }
+
+trunkEntry OBJECT-TYPE
+    SYNTAX	TrunkEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"per Trunk information."
+    INDEX	{ trunkIndex }
+    ::= { trunkTable 1 }
+
+TrunkEntry ::= SEQUENCE {
+	trunkIndex
+		Integer32,
+	trunkStatus
+		INTEGER,
+	trunkChannelsFree
+		Integer32,
+	trunkChannelsActive
+		Integer32,
+	trunkChannelsOutOfService
+		Integer32
+	}
+
+trunkIndex OBJECT-TYPE
+    SYNTAX	Integer32 (1..8)
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Index for this PSTN Trunk."
+    ::= { trunkEntry 1 }
+
+trunkStatus OBJECT-TYPE
+    SYNTAX	INTEGER {
+			inService(1),
+			quiescent(2),
+			down(3)
+			}
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Status of this trunk."
+    ::= { trunkEntry 2 }
+
+trunkChannelsFree OBJECT-TYPE
+    SYNTAX	Integer32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Channels free on this PSTN Trunk."
+    ::= { trunkEntry 3 }
+
+trunkChannelsActive OBJECT-TYPE
+    SYNTAX	Integer32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Channels active on this PSTN Trunk."
+    ::= { trunkEntry 4 }
+
+trunkChannelsOutOfService OBJECT-TYPE
+    SYNTAX	Integer32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Channels out of service on this PSTN Trunk."
+    ::= { trunkEntry 5 }
+
+-- ****************
+-- Site Group
+
+-- Stacked Server table
+
+stackServerTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF StackServerEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table with Information on Servers which are
+	members of the local Server Stack."
+    ::= { site 1 }
+
+stackServerEntry OBJECT-TYPE
+    SYNTAX	StackServerEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Stacked Server Table Entry."
+    INDEX	{ stackServerIndex }
+    ::= { stackServerTable 1 }
+
+StackServerEntry ::= SEQUENCE {
+	stackServerIndex
+		Integer32,
+	stackServerHostname
+		DisplayString,
+	stackServerStackName
+		DisplayString,
+	stackServerStatus
+		DisplayString,
+	stackServerUsers
+		Integer32
+	}
+
+stackServerIndex OBJECT-TYPE
+    SYNTAX	Integer32 (1..32767)
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Stacked Server Index."
+    ::= { stackServerEntry 1 }
+
+stackServerHostname OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Fully qualified domain name for a Stacked Server."
+    ::= { stackServerEntry 2 }
+
+stackServerStackName OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Stack name for this Stacked Server."
+    ::= { stackServerEntry 3 }
+
+stackServerStatus OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Status of this Stacked Server."
+    ::= { stackServerEntry 4 }
+
+stackServerUsers OBJECT-TYPE
+    SYNTAX	Integer32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"User Count for this Stacked Server."
+    ::= { stackServerEntry 5 }
+
+-- Site Connection table
+
+remoteSiteTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF RemoteSiteEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table with Information on Remote Connected Sites
+	with which users can establish distributed conferences."
+    ::= { site 2 }
+
+remoteSiteEntry OBJECT-TYPE
+    SYNTAX	RemoteSiteEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Site Connection Table Entry."
+    INDEX	{ remoteSiteIndex }
+    ::= { remoteSiteTable 1 }
+
+RemoteSiteEntry ::= SEQUENCE {
+	remoteSiteIndex
+		Integer32,
+	remoteSiteHostname
+		DisplayString,
+	remoteSiteStackName
+		DisplayString,
+	remoteSiteStatus
+		DisplayString,
+	remoteSiteUsers
+		Integer32
+	}
+
+remoteSiteIndex OBJECT-TYPE
+    SYNTAX	Integer32 (1..32767)
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Site Connection Index."
+    ::= { remoteSiteEntry 1 }
+
+remoteSiteHostname OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Fully qualified domain name for a Site Connection."
+    ::= { remoteSiteEntry 2 }
+
+remoteSiteStackName OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Stack name for this Site Connection."
+    ::= { remoteSiteEntry 3 }
+
+remoteSiteStatus OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Status of this Site Connection."
+    ::= { remoteSiteEntry 4 }
+
+remoteSiteUsers OBJECT-TYPE
+    SYNTAX	Integer32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"User Count for this Site Connection."
+    ::= { remoteSiteEntry 5 }
+
+-- ****************
+-- Data Replication Group
+
+replEnabled OBJECT-TYPE
+    SYNTAX	INTEGER {
+			disabled(0),
+			enabled(1)
+			}
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Server Data Replication Enabled."
+    ::= { replication 1 }
+
+replStartTime OBJECT-TYPE
+    SYNTAX	DateAndTime
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Data Replication Start Time.
+	
+	If not known, then this variable will have the value
+	corresponding to January 1, year 0000, 00:00:00.0, which is
+	encoded as (hex)'00 00 01 01 00 00 00 00'."
+    ::= { replication 2 }
+
+replBackupServer OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Data Replication Backup Server."
+    ::= { replication 3 }
+
+replBackupServerAddressType OBJECT-TYPE
+    SYNTAX	InetAddressType
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Data Replication Backup Server Address Type."
+    ::= { replication 4 }
+
+replBackupServerAddress OBJECT-TYPE
+    SYNTAX	InetAddress
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Data Replication Backup Server Address."
+    ::= { replication 5 }
+
+replPeerStatus OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Data Replication Peer Status."
+    ::= { replication 6 }
+
+replPeerStatusChange OBJECT-TYPE
+    SYNTAX	DateAndTime
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Date and time of last Replication Peer Status change.
+	
+	If not known, then this variable will have the value
+	corresponding to January 1, year 0000, 00:00:00.0, which is
+	encoded as (hex)'00 00 01 01 00 00 00 00'."
+    ::= { replication 7 }
+
+replTxNewUpdates OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Number of database changes on this server that need to be replicated."
+    ::= { replication 8 }
+
+replTxQueuedUpdates OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Number of currently queued outgoing data replication updates."
+    ::= { replication 9 }
+
+replTxPendingUpdates OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Number of currently data replication updates sent,
+	but not yet confirmed."
+    ::= { replication 10 }
+
+replTxCompletedUpdates OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Count of completed outgoing data replication updates."
+    ::= { replication 11 }
+
+replTxUpdateErrors OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Count of outgoing data replication update errors."
+    ::= { replication 12 }
+
+replRxNewUpdates OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Number of current new incomming data replication updates."
+    ::= { replication 13 }
+
+replRxPendingUpdates OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Number of incomming data replication updates currently
+	being processed by the database."
+    ::= { replication 14 }
+
+replRxCompletedUpdates OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Count of succesfully completed incomming data replication
+	updates processed."
+    ::= { replication 15 }
+
+replRxUpdateErrors OBJECT-TYPE
+    SYNTAX	Unsigned32
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Count of data replication update errors."
+    ::= { replication 16 }
+
+-- ****************
+-- Server Group
+
+serverVersion OBJECT-TYPE
+    SYNTAX	DisplayString
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Server Software Version."
+    ::= { server 1 }
+
+-- Server Process Status table
+
+serverProcessTable OBJECT-TYPE
+    SYNTAX	SEQUENCE OF ServerProcessEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Table with information on status of server processes
+	within the ACS Server."
+    ::= { server 2 }
+
+serverProcessEntry OBJECT-TYPE
+    SYNTAX	ServerProcessEntry
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"Status information for a Server Process."
+    INDEX	{ serverProcessName }
+    ::= { serverProcessTable 1 }
+
+ServerProcessEntry ::= SEQUENCE {
+	serverProcessName
+		DisplayString,
+	serverProcessStatus
+		ServerStatus,
+	serverProcessWatchdogStatus
+		ServerStatus
+	}
+
+serverProcessName OBJECT-TYPE
+    SYNTAX	DisplayString (SIZE (1..32))
+    MAX-ACCESS	not-accessible
+    STATUS	current
+    DESCRIPTION
+	"The name of this server process."
+    ::= { serverProcessEntry 1 }
+
+serverProcessStatus OBJECT-TYPE
+    SYNTAX	ServerStatus
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"The status of this server process."
+    ::= { serverProcessEntry 2 }
+
+serverProcessWatchdogStatus OBJECT-TYPE
+    SYNTAX	ServerStatus
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"The status of the watchdog for this server process."
+    ::= { serverProcessEntry 3 }
+
+END

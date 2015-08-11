@@ -1,0 +1,153 @@
+
+-- File Name : BW-AccessMediationServerFault.mib
+BW-AccessMediationServerFault DEFINITIONS ::= BEGIN
+  IMPORTS
+    NOTIFICATION-TYPE, MODULE-IDENTITY
+      FROM SNMPv2-SMI
+    common, faultFields, identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npExceptionMessage, npMessage, npRemoteAddress, npDeviceAddress, npError, npMacAddress, npConfiguredAddress
+      FROM BroadworksFault;
+
+  systemFaults MODULE-IDENTITY
+    LAST-UPDATED  "201009140000Z"
+    ORGANIZATION  "Broadsoft, Inc"
+    CONTACT-INFO  "Broadsoft, Inc.
+220 Perry Parkway
+Gaithersburg, MD  20877
+301-977-9440"
+    DESCRIPTION
+        "This MIB defines the faults for the BroadWorks Access Mediation Server."
+    REVISION    "201105020000Z"
+                DESCRIPTION     "Added object 'correlationParameter' in the OBJECTS clause of applicable faults."
+    REVISION    "201009140000Z"
+                DESCRIPTION     "Moved object 'alarmState' after object 'severity' in the OBJECTS clause of applicable faults."
+    REVISION    "200908190000Z"
+                DESCRIPTION     "Access Mediation Server MIB creation"
+    ::=  {  common  1  }
+
+  bwAMSLicenseViolation  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The Access Mediation Server cant run because of a license violation.
+@severity:critical
+@subcomponent:licensing"
+    ::=  {  systemFaults 8601  }
+
+  bwAMSApplicationServerCommunicationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The Access Mediation Server is unable to contact an Application Server.
+@severity:critical
+@subcomponent:sip"
+    ::=  {  systemFaults 8602  }
+
+  bwAMSColocatedCommunicationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npRemoteAddress }
+    STATUS      current
+    DESCRIPTION
+        "The network communication channel to the collocated Access Mediation Server is closed.  This could be because of a failure or manual shutdown of the collocated Access Mediation Server.
+@severity:high
+@subcomponent:bcct"
+    ::=  {  systemFaults 8603  }
+
+  bwAMSDeviceMgtServerFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npDeviceAddress, npError }
+    STATUS      current
+    DESCRIPTION
+        "Timeout when contacting device management server for device configuration files.  The alarm clears when communication with the device management server re-establishes.
+@severity:critical
+@subcomponent:http"
+    ::=  {  systemFaults 8604  }
+
+  bwAMSNoTcpPortsAvailable  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The operating system reports that there are no available resources for new TCP connections.
+@severity:informational
+@subcomponent:sccp"
+    ::=  {  systemFaults 8605  }
+
+  bwAMSNoSccpLicensesAvailable  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npMacAddress }
+    STATUS      current
+    DESCRIPTION
+        "Maximum number of SCCP registrations reached.
+@severity:informational
+@subcomponent:licensing"
+    ::=  {  systemFaults 8606  }
+
+  bwAMSRegistrationThreshold  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "The Access Mediation Server determines there are too many simultaneous SCCP registrations.  Additional registrations are throttled.  The alarm clears once the number of outstanding registrations is half that of the registration threshold.
+@severity:low
+@subcomponent:sccp"
+    ::=  {  systemFaults 8607  }
+
+  bwAMSSccpCommunicationInitializationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "The Access Mediation Server was unable to initialize the SCCP interface.
+@severity:critical
+@subcomponent:sccp"
+    ::=  {  systemFaults 8608  }
+
+  bwAMSSipCommunicationInitializationFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter }
+    STATUS      current
+    DESCRIPTION
+        "The Access Mediation Server was unable to initialize the SIP interface.
+@severity:critical
+@subcomponent:sip"
+    ::=  {  systemFaults 8609  }
+
+  bwAMSRtpVirtualIp  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText, npConfiguredAddress }
+    STATUS      current
+    DESCRIPTION
+        "This alarm is set when the Access Mediation Server assumes responsibility for virtual IP addresses and associated RTP sessions normally owned by its collocated partner.  This is likely due to a collocated partner Access Mediation Server failure or manual shutdown. The alarm is clears when the collocated Access Mediation Server is restarted and the virtual IP addresses and RTP sessions are returned to the original Access Mediation Server.
+@severity:high
+@subcomponent:rtp"
+    ::=  {  systemFaults 8610  }
+
+  bwAMSRtpNoPortsAvailable  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "There are no ports available for routing RTP packets within the Access Mediation Server.
+@severity:high
+@subcomponent:rtp"
+    ::=  {  systemFaults 8611  }
+    
+  bwAMSRtpSessionMirrorResync  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "The RTP session data has been compromised between this Access Mediation Server and the collocated Access Mediation Server. A resync of this data has occurred. This could be due to the communication link between temporarily disrupted or a restarted Access Mediation Server.
+@severity:high
+@subcomponent:rtp"
+    ::=  {  systemFaults 8612  }    
+
+  bwAMSLinesExceedCapacity  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, alarmState, component, subcomponent, problemText, recommendedActionsText, correlationParameter, npMacAddress }
+    STATUS      current
+    DESCRIPTION
+        "The number of configured private lines, shared call appearances, and Busy Lamp Field appearances exceed the capacity of the device.
+@severity:low
+@subcomponent:sccp"
+    ::=  {  systemFaults 8613  }    
+
+  bwAMSBLFNotifyParsingFailure  NOTIFICATION-TYPE
+    OBJECTS     { identifier, timeStamp, alarmName, systemName, severity, component, subcomponent, problemText, recommendedActionsText }
+    STATUS      current
+    DESCRIPTION
+        "Parsing the Dialog NOTIFY event failed. 
+@severity:low
+@subcomponent:sip"
+    ::=  {  systemFaults 8614  }    
+
+END
